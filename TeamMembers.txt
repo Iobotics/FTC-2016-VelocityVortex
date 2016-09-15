@@ -1,6 +1,7 @@
 Students:
 Ethan Higa
 Matthew H. Leong
+Darren Kam
 
 Mentor:
 Arnaud Devie
