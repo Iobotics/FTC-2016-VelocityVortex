@@ -2,6 +2,7 @@ Students:
 Ethan Higa
 Matthew H. Leong
 Darren Kam
+Joel Tsuchitori
 
 Mentor:
 Arnaud Devie
