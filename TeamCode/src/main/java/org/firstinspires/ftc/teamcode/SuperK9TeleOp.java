@@ -33,7 +33,9 @@ package org.firstinspires.ftc.teamcode;
 
 import android.graphics.Color;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DigitalChannelController;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -52,6 +54,8 @@ import java.lang.Math;
  * <p>
  * Enables control of the robot via the gamepad
  */
+@TeleOp(name="SuperK9: Teleop", group="SuperK9")
+//@Disabled
 public class SuperK9TeleOp extends SuperK9Base {
 
 
