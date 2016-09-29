@@ -162,6 +162,7 @@ public class ConceptVuforiaNavigation extends LinearOpMode {
         float mmPerInch        = 25.4f;
         float mmBotWidth       = 18 * mmPerInch;            // ... or whatever is right for your robot
         float mmFTCFieldWidth  = (12*12 - 2) * mmPerInch;   // the FTC field is ~11'10" center-to-center of the glass panels
+        float mmFTCFieldTileWidth = mmFTCFieldWidth / 6;
 
         /**
          * In order for localization to work, we need to tell the system where each target we
@@ -219,16 +220,16 @@ public class ConceptVuforiaNavigation extends LinearOpMode {
          * - Then we rotate it  90 around the field's Z access to face it away from the audience.
          * - Finally, we translate it back along the X axis towards the red audience wall.
          */
-        OpenGLMatrix redTargetLocationOnField = OpenGLMatrix
+        OpenGLMatrix redGearTargetLocationOnField = OpenGLMatrix
                 /* Then we translate the target off to the RED WALL. Our translation here
                 is a negative translation in X.*/
-                .translation(-mmFTCFieldWidth/2, 0, 0)
+                .translation(-mmFTCFieldWidth/2, (-mmFTCFieldTileWidth)/2, 0)
                 .multiplied(Orientation.getRotationMatrix(
                         /* First, in the fixed (field) coordinate system, we rotate 90deg in X, then 90 in Z */
                         AxesReference.EXTRINSIC, AxesOrder.XZX,
                         AngleUnit.DEGREES, 90, 90, 0));
-        gearTarget.setLocation(redTargetLocationOnField);
-        RobotLog.ii(TAG, "Red Gear Target=%s", format(redTargetLocationOnField));/*
+        gearTarget.setLocation(redGearTargetLocationOnField);
+        RobotLog.ii(TAG, "Red Gear Target=%s", format(redGearTargetLocationOnField));/*
 
        /*
         * To place the Tool Target on the Red Audience wall:
@@ -236,48 +237,48 @@ public class ConceptVuforiaNavigation extends LinearOpMode {
                 * - Then we rotate it  90 around the field's Z access to face it away from the audience.
                 * - Finally, we translate it back along the X axis towards the red audience wall.
         */
-        OpenGLMatrix redTargetLocationOnField2 = OpenGLMatrix
+        OpenGLMatrix redToolTargetLocationOnField = OpenGLMatrix
                 /* Then we translate the target off to the RED WALL. Our translation here
                 is a negative translation in X.*/
-                .translation(-mmFTCFieldWidth/2, 0, 0)
+                .translation(-mmFTCFieldWidth/2, 3*mmFTCFieldTileWidth/2, 0)
                 .multiplied(Orientation.getRotationMatrix(
                         /* First, in the fixed (field) coordinate system, we rotate 90deg in X, then 90 in Z */
                         AxesReference.EXTRINSIC, AxesOrder.XZX,
                         AngleUnit.DEGREES, 90, 90, 0));
-        toolTarget.setLocation(redTargetLocationOnField2);
-        RobotLog.ii(TAG, "Red Tool Target=%s", format(redTargetLocationOnField2));
+        toolTarget.setLocation(redToolTargetLocationOnField);
+        RobotLog.ii(TAG, "Red Tool Target=%s", format(redToolTargetLocationOnField));
 
        /*
         * To place the Lego Target on the Blue Audience wall:
         * - First we rotate it 90 around the field's X axis to flip it upright
         * - Finally, we translate it along the Y axis towards the blue audience wall.
         */
-        OpenGLMatrix blueTargetLocationOnField = OpenGLMatrix
+        OpenGLMatrix blueLegoTargetLocationOnField = OpenGLMatrix
                 /* Then we translate the target off to the Blue Audience wall.
                 Our translation here is a positive translation in Y.*/
-                .translation(0, mmFTCFieldWidth/2, 0)
+                .translation(3*(-mmFTCFieldTileWidth)/2, mmFTCFieldWidth/2, 0)
                 .multiplied(Orientation.getRotationMatrix(
                         /* First, in the fixed (field) coordinate system, we rotate 90deg in X */
                         AxesReference.EXTRINSIC, AxesOrder.XZX,
                         AngleUnit.DEGREES, 90, 0, 0));
-        legoTarget.setLocation(blueTargetLocationOnField);
-        RobotLog.ii(TAG, "Blue Lego Target=%s", format(blueTargetLocationOnField));
+        legoTarget.setLocation(blueLegoTargetLocationOnField);
+        RobotLog.ii(TAG, "Blue Lego Target=%s", format(blueLegoTargetLocationOnField));
 
         /*
         * To place the Wheel Target on the Blue Audience wall:
         * - First we rotate it 90 around the field's X axis to flip it upright
         * - Finally, we translate it along the Y axis towards the blue audience wall.
         */
-        OpenGLMatrix blueTargetLocationOnField2 = OpenGLMatrix
+        OpenGLMatrix blueWheelTargetLocationOnField = OpenGLMatrix
                 /* Then we translate the target off to the Blue Audience wall.
                 Our translation here is a positive translation in Y.*/
-                .translation(0, mmFTCFieldWidth/2, 0)
+                .translation(mmFTCFieldTileWidth/2, mmFTCFieldWidth/2, 0)
                 .multiplied(Orientation.getRotationMatrix(
                         /* First, in the fixed (field) coordinate system, we rotate 90deg in X */
                         AxesReference.EXTRINSIC, AxesOrder.XZX,
                         AngleUnit.DEGREES, 90, 0, 0));
-        wheelTarget.setLocation(blueTargetLocationOnField2);
-        RobotLog.ii(TAG, "Blue Wheel Target=%s", format(blueTargetLocationOnField2));
+        wheelTarget.setLocation(blueWheelTargetLocationOnField);
+        RobotLog.ii(TAG, "Blue Wheel Target=%s", format(blueWheelTargetLocationOnField));
 
         /**
          * Create a transformation matrix describing where the phone is on the robot. Here, we
