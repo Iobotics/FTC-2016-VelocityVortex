@@ -21,6 +21,10 @@ public class Team1TeleOp extends OpMode {
     DcMotor intakeMotor;
     DcMotor catapultMotor;
 
+    int flyWheelStrength;
+    int currentPos;
+    int motorRotations;
+
     @Override
     public void init() {
         leftFrontMotor = hardwareMap.dcMotor.get("leftFront");
@@ -60,12 +64,26 @@ public class Team1TeleOp extends OpMode {
         }
 
 
+        flyWheelStrength = 1;
+        motorRotations = 1120*3;
+
         if(gamepad1.a == true){
-            catapultMotor.setPower(.7);
+
+            rightBackMotor.setTargetPosition(motorRotations);
+            leftBackMotor.setTargetPosition(motorRotations);
+            rightFrontMotor.setTargetPosition(motorRotations);
+            leftFrontMotor.setTargetPosition(motorRotations);
+
+            while(currentPos < motorRotations) {
+                catapultMotor.setPower(flyWheelStrength);
+                currentPos = catapultMotor.getCurrentPosition();
+            }
         }
         else{
             catapultMotor.setPower(0);
         }
+
+        catapultMotor.setPower(0);
 
         telemetry.addData("Left Front Motor Power", leftFrontMotor.getPowerFloat());
         telemetry.update();

@@ -18,8 +18,12 @@ public class Team2TeleOp extends OpMode {
     DcMotor rightBackMotor;
     DcMotor leftBackMotor;
     DcMotor intakeMotor;
-    DcMotor rightFlyWheelMotor;
-    DcMotor leftFlyWheelMotor;
+    DcMotor catapultMotor;
+    DcMotor elevatorMotor;
+
+    int currentPos = 0;
+    int catapultStrength;
+    int motorRotations;
 
     @Override
     public void init() {
@@ -28,13 +32,12 @@ public class Team2TeleOp extends OpMode {
         leftBackMotor = hardwareMap.dcMotor.get("leftRear");
         rightBackMotor = hardwareMap.dcMotor.get("rightRear");
         intakeMotor = hardwareMap.dcMotor.get("intakeMotor");
-        leftFlyWheelMotor = hardwareMap.dcMotor.get("leftFlyWheel");
-        rightFlyWheelMotor = hardwareMap.dcMotor.get("rightFlyWheel");
+        catapultMotor = hardwareMap.dcMotor.get("catapult");
+        elevatorMotor = hardwareMap.dcMotor.get("elevator");
 
         rightBackMotor.setDirection(DcMotor.Direction.REVERSE);
         rightFrontMotor.setDirection(DcMotor.Direction.REVERSE);
         intakeMotor.setDirection(DcMotor.Direction.REVERSE);
-        leftFlyWheelMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         gamepad1.setJoystickDeadzone((float) .1);
 }
@@ -56,16 +59,38 @@ public class Team2TeleOp extends OpMode {
             intakeMotor.setPower(0);
         }
 
+        catapultStrength = 1;
+        motorRotations = 1120*3;
+
         if(gamepad1.a == true){
-            rightFlyWheelMotor.setPower(1);
-            leftFlyWheelMotor.setPower(1);
+
+            rightBackMotor.setTargetPosition(motorRotations);
+            leftBackMotor.setTargetPosition(motorRotations);
+            rightFrontMotor.setTargetPosition(motorRotations);
+            leftFrontMotor.setTargetPosition(motorRotations);
+
+            while(currentPos < motorRotations) {
+                catapultMotor.setPower(catapultStrength);
+                currentPos = catapultMotor.getCurrentPosition();
+            }
         }
         else{
-            leftFlyWheelMotor.setPower(0);
-            rightFlyWheelMotor.setPower(0);
+            catapultMotor.setPower(0);
         }
+
+        if(gamepad1.dpad_down == true){
+            elevatorMotor.setPower(1);
+        }
+        else if(gamepad1.dpad_up == true){
+            elevatorMotor.setPower(-1);
+        }
+
+        catapultMotor.setPower(0);
 
         telemetry.addData("Left Front Motor Power", leftFrontMotor.getPowerFloat());
         telemetry.update();
+
     }
+
 }
+
