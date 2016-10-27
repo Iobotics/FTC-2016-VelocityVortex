@@ -16,7 +16,7 @@ public class ColorSensorTest extends OpMode {
 
     AdafruitI2cColorSensor colorSensorL;
     DeviceInterfaceModule cdim;
-
+    String color;
     static final int LED_CHANNEL = 5;
 
     @Override
@@ -32,7 +32,16 @@ public class ColorSensorTest extends OpMode {
         telemetry.addData("red", colorSensorL.red());
         telemetry.addData("green", colorSensorL.green());
         telemetry.addData("blue", colorSensorL.blue());
-        //telemetry.addData("color", ) // TODO - Differentiate between red and blue
+        if(colorSensorL.red() > 1400 && colorSensorL.blue() <1500 && colorSensorL.green()< 1000){
+            color= "red";
+        }
+        else if(colorSensorL.red() < 1000 && colorSensorL.blue() >2000 && colorSensorL.green()< 1000){
+            color = "blue";
+        }
+        else{
+            color = "not red or blue";
+        }
+        telemetry.addData("color", color);
         telemetry.addData("info", colorSensorL.getConnectionInfo());
         telemetry.update();
     }

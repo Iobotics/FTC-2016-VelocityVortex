@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -9,17 +10,16 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
  * Created by Teacher on 9/28/2016.
  */
 
-@TeleOp(name ="Team2: TeleOp", group ="Team2")
+@TeleOp(name ="Team1: TeleOp", group ="Team1")
 //@Disabled
-public class Team2TeleOp extends OpMode {
+public class Team1TeleOp extends OpMode {
 
     DcMotor rightFrontMotor;
     DcMotor leftFrontMotor;
     DcMotor rightBackMotor;
     DcMotor leftBackMotor;
     DcMotor intakeMotor;
-    DcMotor rightFlyWheelMotor;
-    DcMotor leftFlyWheelMotor;
+    DcMotor catapultMotor;
 
     @Override
     public void init() {
@@ -28,13 +28,14 @@ public class Team2TeleOp extends OpMode {
         leftBackMotor = hardwareMap.dcMotor.get("leftRear");
         rightBackMotor = hardwareMap.dcMotor.get("rightRear");
         intakeMotor = hardwareMap.dcMotor.get("intakeMotor");
-        leftFlyWheelMotor = hardwareMap.dcMotor.get("leftFlyWheel");
-        rightFlyWheelMotor = hardwareMap.dcMotor.get("rightFlyWheel");
+        catapultMotor = hardwareMap.dcMotor.get("catapult");
 
+        leftBackMotor.setDirection(DcMotor.Direction.REVERSE);
         rightBackMotor.setDirection(DcMotor.Direction.REVERSE);
+        leftFrontMotor.setDirection(DcMotor.Direction.REVERSE);
         rightFrontMotor.setDirection(DcMotor.Direction.REVERSE);
         intakeMotor.setDirection(DcMotor.Direction.REVERSE);
-        leftFlyWheelMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        catapultMotor.setDirection(DcMotor.Direction.REVERSE);
 
         gamepad1.setJoystickDeadzone((float) .1);
 }
@@ -42,27 +43,28 @@ public class Team2TeleOp extends OpMode {
     @Override
     public void loop() {
 
+        //tank drive using joysticks
+
         leftFrontMotor.setPower(gamepad1.left_stick_y);
         rightBackMotor.setPower(gamepad1.right_stick_y);
         rightFrontMotor.setPower(gamepad1.right_stick_y);
         leftBackMotor.setPower(gamepad1.left_stick_y);
 
-        //activates intake when b button is pressed
+        //intake motor is controlled through dpad up and down
 
-        if(gamepad1.b == true){
+        if(gamepad1.dpad_down == true){
             intakeMotor.setPower(1);
         }
-        else{
-            intakeMotor.setPower(0);
+        else if(gamepad1.dpad_up == true){
+            intakeMotor.setPower(-1);
         }
 
+
         if(gamepad1.a == true){
-            rightFlyWheelMotor.setPower(1);
-            leftFlyWheelMotor.setPower(1);
+            catapultMotor.setPower(.7);
         }
         else{
-            leftFlyWheelMotor.setPower(0);
-            rightFlyWheelMotor.setPower(0);
+            catapultMotor.setPower(0);
         }
 
         telemetry.addData("Left Front Motor Power", leftFrontMotor.getPowerFloat());
