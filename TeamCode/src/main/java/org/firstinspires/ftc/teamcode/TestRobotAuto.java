@@ -29,7 +29,16 @@ public class TestRobotAuto extends OpMode {
         frontLeftMotor.setDirection(DcMotor.Direction.REVERSE);
         backLeftMotor.setDirection(DcMotor.Direction.REVERSE);
         long initial_time = System.currentTimeMillis();
-        while (System.currentTimeMillis() - initial_time < 5000) {
+    }
+
+    @Override
+    public void loop() {
+        int currentPosition = 0;
+        int distanceToTravel = distance(23.0);
+
+        frontLeftMotor.setTargetPosition(distanceToTravel);
+
+        while (frontLeftMotor.getTargetPosition() > 0){
             frontLeftMotor.setPower(1.0);
             frontRightMotor.setPower(1.0);
             backLeftMotor.setPower(1.0);
@@ -41,9 +50,19 @@ public class TestRobotAuto extends OpMode {
         backLeftMotor.setPower(0);
         backRightMotor.setPower(0);
     }
-
-    @Override
-    public void loop() {
-
+    public int distance(double distanceToGo){
+        int diameter = 15;
+        double circumference = diameter * Math.PI;
+        double ticks = 1120;
+        double ticksPerCentimeter = ticks / circumference;
+        double distanceInTicks = ticksPerCentimeter * distanceToGo;
+        return (int)distanceInTicks;
+    }
+    public int rotation (int distanceToTurn){
+        int chassisDiameter = 10;
+        double chassisCircumference = chassisDiameter * Math.PI;
+        double centimetersPerDegree = chassisCircumference / 360;
+        double DistanceToTurnInTicks = centimetersPerDegree * distanceToTurn;
+        return (int)DistanceToTurnInTicks;
     }
 }
