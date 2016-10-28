@@ -62,6 +62,9 @@ public class Team1TeleOp extends OpMode {
         else if(gamepad1.dpad_up == true){
             intakeMotor.setPower(-1);
         }
+        else{
+            intakeMotor.setPower(0);
+        }
 
 
         flyWheelStrength = 1;
