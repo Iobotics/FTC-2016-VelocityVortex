@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 /**
@@ -37,6 +38,7 @@ public class Team3TeleOp extends OpMode {
 
         leftBackMotor.setDirection(DcMotor.Direction.REVERSE);
         leftFrontMotor.setDirection(DcMotor.Direction.REVERSE);
+        shooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         leftBeaconServo.setPosition(.5);
         rightBeaconServo.setPosition(.5);
@@ -67,6 +69,8 @@ public class Team3TeleOp extends OpMode {
         //left trigger to use shooter
         if(gamepad1.left_trigger >0){
             shooterMotor.setPower(gamepad1.left_trigger);
+            telemetry.addData("encoder position", shooterMotor.getTargetPosition());
+            telemetry.update();
         }
         else{
             shooterMotor.setPower(0);
@@ -74,7 +78,7 @@ public class Team3TeleOp extends OpMode {
 
         //a for right servo; x for left servo;
         if(gamepad1.a == true && rightBeaconServo.getPosition() == .5){
-            rightBeaconServo.setPosition(1);
+            rightBeaconServo.setPosition(.5);
         }
         else if(gamepad1.x == true && leftBeaconServo.getPosition() == .5){
             leftBeaconServo.setPosition(0);
@@ -83,7 +87,7 @@ public class Team3TeleOp extends OpMode {
             leftBeaconServo.setPosition(.5);
         }
         else if(gamepad1.a == true && rightBeaconServo.getPosition() == 1) {
-            leftBeaconServo.setPosition(.5);
+            leftBeaconServo.setPosition(0);
         }
     }
 }
