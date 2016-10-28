@@ -1,29 +1,26 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.GyroSensor;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.GyroSensor;
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
-import com.qualcomm.robotcore.util.Range;
 
 /**
  * Created by Teacher on 9/28/2016.
  */
 
-@Autonomous(name="Team1: Autonomous", group="Team1")
+@Autonomous(name = "Team 1: Autonomous", group = "Team 1")
 //@Disabled
 public class Team1Auto extends OpMode {
+	
+	final int    ENCODER_TICKS_PER_REV = 1120; // Neverest 40
+    final int    WHEEL_DIAMETER        = 6;
+    final double INCHES_PER_TICK       = (WHEEL_DIAMETER * Math.PI) / ENCODER_TICKS_PER_REV; // INCHES / REV
+	
     DcMotor frontLeftMotor;
     DcMotor frontRightMotor;
     DcMotor backLeftMotor;
     DcMotor backRightMotor;
+    
     DcMotor catapultMotor;
 
     @Override
@@ -32,23 +29,23 @@ public class Team1Auto extends OpMode {
         frontRightMotor = hardwareMap.dcMotor.get("rightFront");
         backLeftMotor = hardwareMap.dcMotor.get("leftRear");
         backRightMotor = hardwareMap.dcMotor.get("rightRear");
+        
         catapultMotor = hardwareMap.dcMotor.get("catapult");
 
         frontRightMotor.setDirection(DcMotor.Direction.REVERSE);
         backRightMotor.setDirection(DcMotor.Direction.REVERSE);
+        
         catapultMotor.setDirection(DcMotor.Direction.REVERSE);
     }
 
     @Override
     public void loop() {
+        frontLeftMotor.setTargetPosition(targetPosition(12));
+        frontRightMotor.setTargetPosition(targetPosition(12));
+        backLeftMotor.setTargetPosition(targetPosition(12));
+        backRightMotor.setTargetPosition(targetPosition(12));
 
-        frontLeftMotor.setTargetPosition(targetPosition(12,6));
-        frontRightMotor.setTargetPosition(targetPosition(12,6));
-        backLeftMotor.setTargetPosition(targetPosition(12,6));
-        backRightMotor.setTargetPosition(targetPosition(12,6));
-
-        while(0 <= frontLeftMotor.getCurrentPosition())
-        {
+        while(frontLeftMotor.getCurrentPosition() >= 0) {
             frontLeftMotor.setPower(0.3);
             frontRightMotor.setPower(0.3);
             backLeftMotor.setPower(0.3);
@@ -59,21 +56,21 @@ public class Team1Auto extends OpMode {
         backLeftMotor.setPower(0.0);
         backRightMotor.setPower(0.0);
 
-        catapultMotor.setTargetPosition(targetPosition((90.76/0.0393701)* Math.PI/2,6)); //TODO- 90.76 mm
+        // TODO - Optimize code
+        catapultMotor.setTargetPosition(targetPosition((90.76/0.0393701)* Math.PI/2)); // 90.76 mm
 
-        while (0 <= catapultMotor.getCurrentPosition())
-        {
-            catapultMotor.setPower(.2);
+        while (catapultMotor.getCurrentPosition() >= 0) {
+            catapultMotor.setPower(0.2);
         }
         catapultMotor.setPower(0);
 
-        frontLeftMotor.setTargetPosition(targetPosition(24 * Math.PI/4,6));
-        frontRightMotor.setTargetPosition(targetPosition(24 * Math.PI/4,6));
-        backLeftMotor.setTargetPosition(targetPosition(24 * Math.PI/4,6));
-        backRightMotor.setTargetPosition(targetPosition(24 * Math.PI/4,6));
+        // TODO - Optimize code
+        frontLeftMotor.setTargetPosition(targetPosition(24 * Math.PI/4));
+        frontRightMotor.setTargetPosition(targetPosition(24 * Math.PI/4));
+        backLeftMotor.setTargetPosition(targetPosition(24 * Math.PI/4));
+        backRightMotor.setTargetPosition(targetPosition(24 * Math.PI/4));
 
-        while(0 <= frontLeftMotor.getCurrentPosition())
-        {
+        while(frontLeftMotor.getCurrentPosition() >= 0) {
             frontLeftMotor.setPower(0.3);
             frontRightMotor.setPower(-0.3);
             backLeftMotor.setPower(0.3);
@@ -84,13 +81,12 @@ public class Team1Auto extends OpMode {
         backLeftMotor.setPower(0.0);
         backRightMotor.setPower(0.0);
 
-        frontLeftMotor.setTargetPosition(targetPosition(12,6));
-        frontRightMotor.setTargetPosition(targetPosition(12,6));
-        backLeftMotor.setTargetPosition(targetPosition(12,6));
-        backRightMotor.setTargetPosition(targetPosition(12,6));
+        frontLeftMotor.setTargetPosition(targetPosition(12));
+        frontRightMotor.setTargetPosition(targetPosition(12));
+        backLeftMotor.setTargetPosition(targetPosition(12));
+        backRightMotor.setTargetPosition(targetPosition(12));
 
-        while(0 <= frontLeftMotor.getCurrentPosition())
-        {
+        while(frontLeftMotor.getCurrentPosition() >= 0) {
             frontLeftMotor.setPower(0.3);
             frontRightMotor.setPower(0.3);
             backLeftMotor.setPower(0.3);
@@ -107,12 +103,8 @@ public class Team1Auto extends OpMode {
         backRightMotor.setPower(0);
     }
 
-    private int targetPosition(double distanceToGo, double wheelDiameter){
-        double push;
-        double circumfrence;
-        circumfrence= wheelDiameter * Math.PI;
-        push= distanceToGo / circumfrence;
-        push= push * 1120;
-        return (int) push;
+    private int targetPosition(double distance){
+        double distanceInTicks = distance / INCHES_PER_TICK;
+        return (int) distanceInTicks;
     }
 }

@@ -8,9 +8,15 @@ import com.qualcomm.robotcore.hardware.DcMotor;
  * Created by Teacher on 9/28/2016.
  */
 
-@Autonomous(name="Team2: Autonomous", group="Team2")
+@Autonomous(name = "Team 2: Autonomous", group = "Team 2")
 //@Disabled
 public class Team2Auto extends OpMode {
+	
+	final int    ENCODER_TICKS_PER_REV = 1120; // Neverest 40
+	final int    CHASSIS_DIAMETER	   = 50;
+    final int    WHEEL_DIAMETER        = 15;
+    final double CM_PER_TICK		   = (WHEEL_DIAMETER * Math.PI) / ENCODER_TICKS_PER_REV; // CM / REV
+	
     DcMotor frontLeftMotor;
     DcMotor frontRightMotor;
     DcMotor backLeftMotor;
@@ -23,6 +29,7 @@ public class Team2Auto extends OpMode {
         frontRightMotor = hardwareMap.dcMotor.get("rightFront");
         backLeftMotor = hardwareMap.dcMotor.get("leftRear");
         backRightMotor = hardwareMap.dcMotor.get("rightRear");
+        
         intakeMotor = hardwareMap.dcMotor.get("intakeMotor");
 
         frontLeftMotor.setDirection(DcMotor.Direction.REVERSE);
@@ -30,7 +37,7 @@ public class Team2Auto extends OpMode {
 
         long initialTime = System.currentTimeMillis();
 
-        //runs intake and shooter on start
+        // Runs intake and shooter on start
         while (System.currentTimeMillis() - initialTime < 5000){
             intakeMotor.setPower(1.0);
         }
@@ -39,32 +46,37 @@ public class Team2Auto extends OpMode {
 
     @Override
     public void loop() {
-
         moveForward(110, 1.0);
-
     }
-    private int distance(double distanceToGo){
-        //a method to calculate the number of ticks to move the robot a number of inches
-        final int diameter = 15;
-        //final diameter of the wheels's
-        double circumference = diameter * Math.PI;
-        double ticks = 1120;
-        double ticksPerCentimeter = ticks / circumference;
-        double distanceInTicks = ticksPerCentimeter * distanceToGo;
-        return (int)distanceInTicks;
+    
+    /**
+     * A method to calculate the number of ticks to move the robot a number of inches
+     * @param distance
+     * @return distanceInTicks
+     */
+    private int distance(double distance){
+        double distanceInTicks = distance / CM_PER_TICK;
+        return (int) distanceInTicks;
     }
 
-    private int rotation (int distanceToTurn){
-        //method to calculate amount of ticks to move the robot to rotate it
-        int chassisDiameter = 50;
-        double chassisCircumference = chassisDiameter * Math.PI;
+    /**
+     * A method to calculate amount of ticks to move the robot to rotate it
+     * @param degrees
+     * @return distanceInTicks
+     */
+    private int rotation(int degrees){
+        double chassisCircumference = CHASSIS_DIAMETER * Math.PI;
         double centimetersPerDegree = chassisCircumference / 360;
-        double DistanceToTurnInTicks = centimetersPerDegree * distanceToTurn;
-        return (int)DistanceToTurnInTicks;
+        double distanceInTicks = centimetersPerDegree * degrees;
+        return (int) distanceInTicks;
     }
 
+    /**
+     * Method that moves a target distance at a target power
+     * @param targetDistance
+     * @param targetPower
+     */
     private void moveForward(int targetDistance, double targetPower){
-        //method that takes target distance in centimeters and power and moves forward accordingly
         int currentPosition = 0;
         int distanceToTravel = distance(targetDistance);
 
