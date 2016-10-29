@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 /**
@@ -13,6 +12,14 @@ import com.qualcomm.robotcore.hardware.Servo;
 @TeleOp(name = "Team 3: TeleOp", group = "Team 3")
 //@Disabled
 public class Team3TeleOp extends OpMode {
+
+    final int SHOOTER_TICKS 	  = 1120; // TODO - Calibrate value
+    final double LEFT_SERVO_HOME  = 0.45;
+    final double RIGHT_SERVO_HOME = 0.55;
+
+    int shooterOffset;
+    boolean leftBeaconButton;
+    boolean rightBeaconButton;
 
     DcMotor rightFrontMotor;
     DcMotor leftFrontMotor;
@@ -38,21 +45,27 @@ public class Team3TeleOp extends OpMode {
         rightBeaconServo = hardwareMap.servo.get("rightBeacon");
         leftBeaconServo = hardwareMap.servo.get("leftBeacon");
 
-        
         leftBackMotor.setDirection(DcMotor.Direction.REVERSE);
         leftFrontMotor.setDirection(DcMotor.Direction.REVERSE);
         
-        shooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        shooterMotor.setDirection(DcMotor.Direction.REVERSE);
+        shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooterOffset = shooterMotor.getCurrentPosition();
 
-        leftBeaconServo.setPosition(.5);  // TODO - Calibrate value
-        rightBeaconServo.setPosition(.5); // TODO - Calibrate value
+        leftBeaconServo.scaleRange(Servo.MIN_POSITION, LEFT_SERVO_HOME);
+        rightBeaconServo.scaleRange(Servo.MIN_POSITION, RIGHT_SERVO_HOME);
+        
+        leftBeaconServo.setPosition(1);
+        rightBeaconServo.setPosition(1);
+        
+        leftBeaconButton = true;
+        rightBeaconButton = true;
 
         gamepad1.setJoystickDeadzone((float) .1);
-}
+    }
 
     @Override
     public void loop() {
-
         leftFrontMotor.setPower(gamepad1.left_stick_y);
         rightBackMotor.setPower(gamepad1.right_stick_y);
         rightFrontMotor.setPower(gamepad1.right_stick_y);
@@ -60,36 +73,34 @@ public class Team3TeleOp extends OpMode {
 
         // Activates intake when right trigger is pressed
         if(gamepad1.right_trigger > 0) {
-            intakeMotor.setPower(gamepad1.right_trigger);
+            intakeMotor.setPower(1);
         }
         else if(gamepad1.right_bumper) {
             intakeMotor.setPower(-1);
         }
-        else{
+        else {
             intakeMotor.setPower(0);
         }
 
         // Left trigger to use shooter
         if(gamepad1.left_trigger > 0) {
-        	shooterMotor.setPower(gamepad1.left_trigger);
-            // TODO - Set a target position for shooter
-            //telemetry.addData("Encoder Target Position", shooterMotor.getTargetPosition());
-            //telemetry.update();
-        } else {
+            while((shooterMotor.getCurrentPosition() - shooterOffset) < SHOOTER_TICKS) {
+                shooterMotor.setPower(1);
+            }
             shooterMotor.setPower(0);
+            shooterOffset = shooterMotor.getCurrentPosition();
         }
 
         // A for right servo; X for left servo
-        // TODO - Check logic
-        if(gamepad1.a && rightBeaconServo.getPosition() == .5) {
-            rightBeaconServo.setPosition(.5);
+        if(gamepad1.a) {
+            double position = rightBeaconButton ? 1 : 0;
+            rightBeaconButton = !rightBeaconButton;
+            rightBeaconServo.setPosition(position);
         }
-        else if(gamepad1.x) {
-        	double position = (leftBeaconServo.getPosition() == 0) ? 0.5 : 0;
+        if(gamepad1.x) {
+            double position = leftBeaconButton ? 1 : 0;
+            leftBeaconButton = !leftBeaconButton;
             leftBeaconServo.setPosition(position);
-        }
-        else if(gamepad1.a && rightBeaconServo.getPosition() == 1) {
-            rightBeaconServo.setPosition(0);
         }
     }
 }
