@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 /**
  * Created by Teacher on 9/28/2016.
@@ -22,6 +23,7 @@ public class Team2Auto extends OpMode {
     DcMotor backLeftMotor;
     DcMotor backRightMotor;
     DcMotor intakeMotor;
+    DcMotor launcherMotor;
 
     @Override
     public void init() {
@@ -31,22 +33,24 @@ public class Team2Auto extends OpMode {
         backRightMotor = hardwareMap.dcMotor.get("rightRear");
         
         intakeMotor = hardwareMap.dcMotor.get("intakeMotor");
+        launcherMotor = hardwareMap.dcMotor.get("launcher");
 
         frontLeftMotor.setDirection(DcMotor.Direction.REVERSE);
         backLeftMotor.setDirection(DcMotor.Direction.REVERSE);
-
-        long initialTime = System.currentTimeMillis();
-
-        // Runs intake and shooter on start
-        while (System.currentTimeMillis() - initialTime < 5000){
-            intakeMotor.setPower(1.0);
-        }
-        intakeMotor.setPower(0.0);
+        launcherMotor.setDirection(DcMotor.Direction.REVERSE);
     }
 
     @Override
     public void loop() {
-        moveForward(110, 1.0);
+        moveForward(70, 1.0);
+
+        launcherMotor.setTargetPosition(3360);
+        while(launcherMotor.getTargetPosition() > 0){
+            launcherMotor.setPower(1.0);
+        }
+        launcherMotor.setPower(0.0);
+
+        moveForward(40, 1.0);
     }
     
     /**
