@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.hardware.Servo;
  * Created by Teacher on 9/28/2016.
  */
 
-@Autonomous(name = "Team 3: TeleOp", group = "Team 3")
+@Autonomous(name = "Team 3: Autonomous", group = "Team 3")
 //@Disabled
 public class Team3Auto extends OpMode {
 	

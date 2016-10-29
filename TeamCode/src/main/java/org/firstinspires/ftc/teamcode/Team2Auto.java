@@ -67,7 +67,7 @@ public class Team2Auto extends OpMode {
     @Override
     public void loop() {
         moveForward(127, 1.0); // Move forward 127 cm at 1.0 power
-        activateCatapult();
+        //activateCatapult();
         moveForward(23, 1.0); // Move forward 23 cm at 1.0 power
         
         requestOpModeStop();

@@ -54,9 +54,21 @@ public class Team2TeleOp extends OpMode {
         rightFrontMotor.setPower(gamepad1.right_stick_y);
         leftBackMotor.setPower(gamepad1.left_stick_y);
 
-        if(gamepad1.a) {
-        	while((catapultMotor.getCurrentPosition() - catapultOffset) < CATAPULT_TICKS) {
-                catapultMotor.setPower(1);
+        // Activates intake when B button is pressed
+        if (gamepad1.left_bumper) {
+            intakeMotor.setPower(1);
+        }
+        else {
+            intakeMotor.setPower(0);
+        }
+
+       /*if (gamepad1.a) {
+            while((catapultMotor.getCurrentPosition() - catapultOffset) < CATAPULT_TICKS) {
+                catapultMotor.setPower(.3);
+                telemetry.addData("Ticks", catapultMotor.getCurrentPosition() - catapultOffset);
+                telemetry.addData("catapult offset", catapultOffset);
+                telemetry.addData("catapult ticks",catapultMotor.getCurrentPosition());
+                telemetry.update();
             }
             catapultMotor.setPower(0);
             catapultOffset = catapultMotor.getCurrentPosition();
@@ -67,14 +79,18 @@ public class Team2TeleOp extends OpMode {
             intakeMotor.setPower(1);
         } else {
             intakeMotor.setPower(0);
-        }
+		}
+        */
 
-        if(gamepad1.y) {
+        if (gamepad1.right_bumper) {
             catapultMotor.setPower(1);
         } else {
             catapultMotor.setPower(0);
         }
-
+        telemetry.addData("Ticks", catapultMotor.getCurrentPosition() - catapultOffset);
+        telemetry.addData("catapult offset", catapultOffset);
+        telemetry.addData("catapult ticks",catapultMotor.getCurrentPosition());
+        telemetry.update();
     }
 }
 
