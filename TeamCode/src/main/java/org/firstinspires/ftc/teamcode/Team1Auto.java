@@ -23,6 +23,7 @@ public class Team1Auto extends OpMode {
     
     DcMotor catapultMotor;
 
+    int target;
     @Override
     public void init() {
         frontLeftMotor = hardwareMap.dcMotor.get("leftFront");
@@ -36,6 +37,12 @@ public class Team1Auto extends OpMode {
         backRightMotor.setDirection(DcMotor.Direction.REVERSE);
         
         catapultMotor.setDirection(DcMotor.Direction.REVERSE);
+
+        frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+
     }
 
     @Override
@@ -45,7 +52,7 @@ public class Team1Auto extends OpMode {
         backLeftMotor.setTargetPosition(targetPosition(12));
         backRightMotor.setTargetPosition(targetPosition(12));
 
-        while(frontLeftMotor.getCurrentPosition() >= 0) {
+        while(frontLeftMotor.getCurrentPosition() < targetPosition(12)) {
             frontLeftMotor.setPower(0.3);
             frontRightMotor.setPower(0.3);
             backLeftMotor.setPower(0.3);
@@ -65,12 +72,9 @@ public class Team1Auto extends OpMode {
         catapultMotor.setPower(0);
 
         // TODO - Optimize code
-        frontLeftMotor.setTargetPosition(targetPosition(24 * Math.PI/4));
-        frontRightMotor.setTargetPosition(targetPosition(24 * Math.PI/4));
-        backLeftMotor.setTargetPosition(targetPosition(24 * Math.PI/4));
-        backRightMotor.setTargetPosition(targetPosition(24 * Math.PI/4));
+        target = targetPosition(24 * Math.PI/4);
 
-        while(frontLeftMotor.getCurrentPosition() >= 0) {
+        while(frontLeftMotor.getCurrentPosition() <target ) {
             frontLeftMotor.setPower(0.3);
             frontRightMotor.setPower(-0.3);
             backLeftMotor.setPower(0.3);
@@ -86,7 +90,7 @@ public class Team1Auto extends OpMode {
         backLeftMotor.setTargetPosition(targetPosition(12));
         backRightMotor.setTargetPosition(targetPosition(12));
 
-        while(frontLeftMotor.getCurrentPosition() >= 0) {
+        while(frontLeftMotor.getCurrentPosition() >= targetPosition(12)) {
             frontLeftMotor.setPower(0.3);
             frontRightMotor.setPower(0.3);
             backLeftMotor.setPower(0.3);
