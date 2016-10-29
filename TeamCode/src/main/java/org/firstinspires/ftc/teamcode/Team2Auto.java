@@ -53,16 +53,12 @@ public class Team2Auto extends OpMode {
         long initialTime = System.currentTimeMillis();
 
         // Runs intake and shooter on start
-        while (System.currentTimeMillis() - initialTime < 5000){
-            intakeMotor.setPower(1.0);
-        }
-        intakeMotor.setPower(0.0);
     }
 
     @Override
     public void loop() {
         moveForward(127, 1.0);
-        activateCatapult();
+        //activateCatapult();
         moveForward(23, 1.0);
     }
     

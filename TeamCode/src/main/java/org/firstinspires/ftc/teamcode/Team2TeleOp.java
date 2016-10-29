@@ -55,31 +55,38 @@ public class Team2TeleOp extends OpMode {
         leftBackMotor.setPower(gamepad1.left_stick_y);
 
         // Activates intake when B button is pressed
-        if (gamepad1.b) {
+        if (gamepad1.left_bumper) {
             intakeMotor.setPower(1);
         }
         else {
             intakeMotor.setPower(0);
         }
 
-       if (gamepad1.a) {
+       /*if (gamepad1.a) {
             while ((catapultMotor.getCurrentPosition() - catapultOffset) < 3360) {
-                catapultMotor.setPower(1);
+                catapultMotor.setPower(.3);
+                telemetry.addData("Ticks", catapultMotor.getCurrentPosition() - catapultOffset);
+                telemetry.addData("catapult offset", catapultOffset);
+                telemetry.addData("catapult ticks",catapultMotor.getCurrentPosition());
+                telemetry.update();
             }
             catapultMotor.setPower(0);
             catapultOffset = catapultMotor.getCurrentPosition();
 
         }
+        */
 
-
-        if (gamepad1.y) {
+        if (gamepad1.right_bumper) {
             catapultMotor.setPower(1);
         }
 
         else {
             catapultMotor.setPower(0);
         }
-
+        telemetry.addData("Ticks", catapultMotor.getCurrentPosition() - catapultOffset);
+        telemetry.addData("catapult offset", catapultOffset);
+        telemetry.addData("catapult ticks",catapultMotor.getCurrentPosition());
+        telemetry.update();
     }
 }
 
