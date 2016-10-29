@@ -21,7 +21,7 @@ public class Team1TeleOp extends OpMode {
     DcMotor catapultMotor;
 
     final int FLYWHEEL_POWER = 1;
-    final int TARGET_POS = 3 * 1120; // Three rotations
+    final int CATAPULT_TICKS = 3 * 1120; // Three rotations
 
     int catapultOffset;
 
@@ -31,7 +31,7 @@ public class Team1TeleOp extends OpMode {
         rightFrontMotor = hardwareMap.dcMotor.get("rightFront");
         leftBackMotor = hardwareMap.dcMotor.get("leftRear");
         rightBackMotor = hardwareMap.dcMotor.get("rightRear");
-        
+
         intakeMotor = hardwareMap.dcMotor.get("intakeMotor");
         catapultMotor = hardwareMap.dcMotor.get("catapult");
 
@@ -39,7 +39,7 @@ public class Team1TeleOp extends OpMode {
         rightBackMotor.setDirection(DcMotor.Direction.REVERSE);
         leftFrontMotor.setDirection(DcMotor.Direction.REVERSE);
         rightFrontMotor.setDirection(DcMotor.Direction.REVERSE);
-        
+
         intakeMotor.setDirection(DcMotor.Direction.REVERSE);
 
         catapultMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -57,7 +57,7 @@ public class Team1TeleOp extends OpMode {
         rightFrontMotor.setPower(gamepad1.right_stick_y);
         rightBackMotor.setPower(gamepad1.right_stick_y);
 
-        // Intake motor is controlled through D-pad up and down
+        // Intake motor is controlled through left bumper and right bumper
         if(gamepad1.left_bumper){
             intakeMotor.setPower(1);
         }
@@ -68,14 +68,14 @@ public class Team1TeleOp extends OpMode {
             intakeMotor.setPower(0);
         }
 
-         if(gamepad1.a){
-             while((catapultMotor.getCurrentPosition() - catapultOffset) < TARGET_POS) {
+        if(gamepad1.right_trigger>0){
+             while((catapultMotor.getCurrentPosition() - catapultOffset) < CATAPULT_TICKS) {
                  catapultMotor.setPower(1);
              }
              catapultMotor.setPower(0);
              catapultOffset = catapultMotor.getCurrentPosition();
         }
-        if(gamepad1.b){
+        else if(gamepad1.a){
             catapultMotor.setPower(1);
         }
         else{
