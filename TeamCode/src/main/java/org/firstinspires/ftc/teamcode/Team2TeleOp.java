@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 /**
  * Created by Teacher on 9/28/2016.
@@ -37,7 +38,6 @@ public class Team2TeleOp extends OpMode {
 
         leftBackMotor.setDirection(DcMotor.Direction.REVERSE);
         leftFrontMotor.setDirection(DcMotor.Direction.REVERSE);
-        
         intakeMotor.setDirection(DcMotor.Direction.REVERSE);
 
         catapultMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -57,16 +57,28 @@ public class Team2TeleOp extends OpMode {
         // Activates intake when B button is pressed
         if (gamepad1.b) {
             intakeMotor.setPower(1);
-        } else {
+        }
+        else {
             intakeMotor.setPower(0);
         }
 
-        if (gamepad1.a) {
-            while ((catapultMotor.getCurrentPosition() - catapultOffset) < TARGET_POS) {
-                catapultMotor.setPower(CATAPULT_POWER);
+       if (gamepad1.a) {
+            while ((catapultMotor.getCurrentPosition() - catapultOffset) < 3360) {
+                catapultMotor.setPower(1);
             }
+            catapultMotor.setPower(0);
+            catapultOffset = catapultMotor.getCurrentPosition();
+
         }
-        catapultMotor.setPower(0);
+
+
+        if (gamepad1.y) {
+            catapultMotor.setPower(1);
+        }
+
+        else {
+            catapultMotor.setPower(0);
+        }
 
     }
 }
