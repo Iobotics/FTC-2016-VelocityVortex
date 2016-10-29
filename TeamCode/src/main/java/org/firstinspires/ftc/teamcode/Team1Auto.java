@@ -23,6 +23,8 @@ public class Team1Auto extends OpMode {
     
     DcMotor catapultMotor;
 
+    int leftOffset;
+    int catapultOffset;
     @Override
     public void init() {
         frontLeftMotor = hardwareMap.dcMotor.get("leftFront");
@@ -32,45 +34,80 @@ public class Team1Auto extends OpMode {
         
         catapultMotor = hardwareMap.dcMotor.get("catapult");
 
-        frontRightMotor.setDirection(DcMotor.Direction.REVERSE);
-        backRightMotor.setDirection(DcMotor.Direction.REVERSE);
+       leftOffset = frontLeftMotor.getCurrentPosition();
+        catapultOffset = catapultMotor.getCurrentPosition();
+
+        frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        catapultMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        catapultMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        //frontRightMotor.setDirection(DcMotor.Direction.REVERSE);
+        //backRightMotor.setDirection(DcMotor.Direction.REVERSE);
         
         catapultMotor.setDirection(DcMotor.Direction.REVERSE);
     }
 
     @Override
     public void loop() {
-        frontLeftMotor.setTargetPosition(targetPosition(12));
-        frontRightMotor.setTargetPosition(targetPosition(12));
-        backLeftMotor.setTargetPosition(targetPosition(12));
-        backRightMotor.setTargetPosition(targetPosition(12));
 
-        while(frontLeftMotor.getCurrentPosition() >= 0) {
+        frontLeftMotor.setTargetPosition(targetPosition(59-(22+17.5)));
+        frontRightMotor.setTargetPosition(targetPosition(59-(22+17.5)));
+        backLeftMotor.setTargetPosition(targetPosition(59-(22+17.5)));
+        backRightMotor.setTargetPosition(targetPosition(59-(22+17.5)));
+
+        frontLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        while(frontLeftMotor.getCurrentPosition() - leftOffset <= frontLeftMotor.getTargetPosition()) {
             frontLeftMotor.setPower(0.3);
             frontRightMotor.setPower(0.3);
             backLeftMotor.setPower(0.3);
             backRightMotor.setPower(0.3);
+
+            telemetry.addData("Current Position", frontLeftMotor.getCurrentPosition());
+            telemetry.addData("Target Position", frontLeftMotor.getTargetPosition());
+            telemetry.update();
         }
+        telemetry.addData("Is Out", 0);
+        telemetry.update();
+
         frontLeftMotor.setPower(0.0);
         frontRightMotor.setPower(0.0);
         backLeftMotor.setPower(0.0);
         backRightMotor.setPower(0.0);
 
-        // TODO - Optimize code
-        catapultMotor.setTargetPosition(targetPosition((90.76/0.0393701)* Math.PI/2)); // 90.76 mm
+        catapultMotor.setTargetPosition(targetPosition(1120 * 3)); // 90.76 mm is the diameter of the catapult shell
+// I put 3x the circumfrence as the distance of the catapult to move launch the ball
 
-        while (catapultMotor.getCurrentPosition() >= 0) {
+        catapultMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        while (catapultMotor.getCurrentPosition() - catapultOffset <= catapultMotor.getTargetPosition()) {
             catapultMotor.setPower(0.2);
         }
         catapultMotor.setPower(0);
 
-        // TODO - Optimize code
+        //will turn 1/4 of the robot in a circular motion
         frontLeftMotor.setTargetPosition(targetPosition(24 * Math.PI/4));
         frontRightMotor.setTargetPosition(targetPosition(24 * Math.PI/4));
         backLeftMotor.setTargetPosition(targetPosition(24 * Math.PI/4));
         backRightMotor.setTargetPosition(targetPosition(24 * Math.PI/4));
 
-        while(frontLeftMotor.getCurrentPosition() >= 0) {
+        frontLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        while(frontLeftMotor.getCurrentPosition() <= frontLeftMotor.getTargetPosition()) {
             frontLeftMotor.setPower(0.3);
             frontRightMotor.setPower(-0.3);
             backLeftMotor.setPower(0.3);
@@ -86,7 +123,12 @@ public class Team1Auto extends OpMode {
         backLeftMotor.setTargetPosition(targetPosition(12));
         backRightMotor.setTargetPosition(targetPosition(12));
 
-        while(frontLeftMotor.getCurrentPosition() >= 0) {
+        frontLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        while(frontLeftMotor.getCurrentPosition() <= frontLeftMotor.getTargetPosition()) {
             frontLeftMotor.setPower(0.3);
             frontRightMotor.setPower(0.3);
             backLeftMotor.setPower(0.3);
