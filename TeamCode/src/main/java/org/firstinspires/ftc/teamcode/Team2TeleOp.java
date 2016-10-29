@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 /**
  * Created by Teacher on 9/28/2016.
@@ -22,7 +21,7 @@ public class Team2TeleOp extends OpMode {
     DcMotor catapultMotor;
 
     final int CATAPULT_POWER = 1;
-    final int TARGET_POS = 3 * 1120; // Three rotations
+    final int CATAPULT_TICKS = 3 * 1120; // Three rotations
 
     int catapultOffset;
 
@@ -38,6 +37,7 @@ public class Team2TeleOp extends OpMode {
 
         leftBackMotor.setDirection(DcMotor.Direction.REVERSE);
         leftFrontMotor.setDirection(DcMotor.Direction.REVERSE);
+        
         intakeMotor.setDirection(DcMotor.Direction.REVERSE);
 
         catapultMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -49,34 +49,29 @@ public class Team2TeleOp extends OpMode {
     @Override
     public void loop() {
 
-        leftFrontMotor.setPower(gamepad1.left_stick_y);
+    	leftFrontMotor.setPower(gamepad1.left_stick_y);
         rightBackMotor.setPower(gamepad1.right_stick_y);
         rightFrontMotor.setPower(gamepad1.right_stick_y);
         leftBackMotor.setPower(gamepad1.left_stick_y);
 
-        // Activates intake when B button is pressed
-        if (gamepad1.b) {
-            intakeMotor.setPower(1);
-        }
-        else {
-            intakeMotor.setPower(0);
-        }
-
-       if (gamepad1.a) {
-            while ((catapultMotor.getCurrentPosition() - catapultOffset) < 3360) {
+        if(gamepad1.a) {
+        	while((catapultMotor.getCurrentPosition() - catapultOffset) < CATAPULT_TICKS) {
                 catapultMotor.setPower(1);
             }
             catapultMotor.setPower(0);
             catapultOffset = catapultMotor.getCurrentPosition();
-
+        }
+        
+        // Activates intake when B button is pressed
+        if(gamepad1.b) {
+            intakeMotor.setPower(1);
+        } else {
+            intakeMotor.setPower(0);
         }
 
-
-        if (gamepad1.y) {
+        if(gamepad1.y) {
             catapultMotor.setPower(1);
-        }
-
-        else {
+        } else {
             catapultMotor.setPower(0);
         }
 

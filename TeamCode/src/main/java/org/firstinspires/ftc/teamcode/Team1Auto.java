@@ -92,7 +92,8 @@ public class Team1Auto extends OpMode {
             backLeftMotor.setPower(0.3);
             backRightMotor.setPower(0.3);
         }
-        stop();
+
+        requestOpModeStop();
     }
 
     @Override
@@ -103,6 +104,11 @@ public class Team1Auto extends OpMode {
         backRightMotor.setPower(0);
     }
 
+    /**
+     * Method to convert inches to ticks
+     * @param distance
+     * @return distanceInTicks
+     */
     private int targetPosition(double distance){
         double distanceInTicks = distance / INCHES_PER_TICK;
         return (int) distanceInTicks;
