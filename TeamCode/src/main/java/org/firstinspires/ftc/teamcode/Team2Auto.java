@@ -13,15 +13,22 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 public class Team2Auto extends OpMode {
 	
 	final int    ENCODER_TICKS_PER_REV = 1120; // Neverest 40
-	final int    CHASSIS_DIAMETER	   = 50;
-    final int    WHEEL_DIAMETER        = 15;
+	final int    CHASSIS_DIAMETER	   = 18;
+    final int    WHEEL_DIAMETER        = 10;
     final double CM_PER_TICK		   = (WHEEL_DIAMETER * Math.PI) / ENCODER_TICKS_PER_REV; // CM / REV
+
+    int catapultOffset;
+
+    final int TARGET_POS = 3 * 1120; // Three rotations
 	
     DcMotor frontLeftMotor;
     DcMotor frontRightMotor;
     DcMotor backLeftMotor;
     DcMotor backRightMotor;
     DcMotor intakeMotor;
+    DcMotor catapultMotor;
+
+    int leftMotorOffset;
 
     @Override
     public void init() {
@@ -29,11 +36,18 @@ public class Team2Auto extends OpMode {
         frontRightMotor = hardwareMap.dcMotor.get("rightFront");
         backLeftMotor = hardwareMap.dcMotor.get("leftRear");
         backRightMotor = hardwareMap.dcMotor.get("rightRear");
-        
+        catapultMotor = hardwareMap.dcMotor.get("catapult");
+
         intakeMotor = hardwareMap.dcMotor.get("intakeMotor");
 
         frontLeftMotor.setDirection(DcMotor.Direction.REVERSE);
         backLeftMotor.setDirection(DcMotor.Direction.REVERSE);
+
+        backLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        catapultMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         long initialTime = System.currentTimeMillis();
 
@@ -46,7 +60,9 @@ public class Team2Auto extends OpMode {
 
     @Override
     public void loop() {
-        moveForward(110, 1.0);
+        moveForward(127, 1.0);
+        activateCatapult();
+        moveForward(23, 1.0);
     }
     
     /**
@@ -54,6 +70,9 @@ public class Team2Auto extends OpMode {
      * @param distance
      * @return distanceInTicks
      */
+
+
+
     private int distance(double distance){
         double distanceInTicks = distance / CM_PER_TICK;
         return (int) distanceInTicks;
@@ -80,18 +99,25 @@ public class Team2Auto extends OpMode {
         int currentPosition = 0;
         int distanceToTravel = distance(targetDistance);
 
-        frontLeftMotor.setTargetPosition(distanceToTravel);
-
-        while (frontLeftMotor.getTargetPosition() > currentPosition){
+        while ((frontLeftMotor.getCurrentPosition() - leftMotorOffset) > distanceToTravel){
             frontLeftMotor.setPower(targetPower);
             frontRightMotor.setPower(targetPower);
             backLeftMotor.setPower(targetPower);
             backRightMotor.setPower(targetPower);
+            leftMotorOffset = frontLeftMotor.getCurrentPosition();
         }
 
         frontLeftMotor.setPower(0);
         frontRightMotor.setPower(0);
         backLeftMotor.setPower(0);
         backRightMotor.setPower(0);
+    }
+
+    private void activateCatapult(){
+        while((catapultMotor.getCurrentPosition() - catapultOffset) < TARGET_POS) {
+            catapultMotor.setPower(1);
+        }
+        catapultMotor.setPower(0);
+        catapultOffset = catapultMotor.getCurrentPosition();
     }
 }

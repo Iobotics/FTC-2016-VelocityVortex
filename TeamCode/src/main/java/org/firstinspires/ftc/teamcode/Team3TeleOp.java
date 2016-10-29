@@ -48,7 +48,7 @@ public class Team3TeleOp extends OpMode {
         rightBeaconServo.setPosition(.5); // TODO - Calibrate value
 
         gamepad1.setJoystickDeadzone((float) .1);
-}
+    }
 
     @Override
     public void loop() {
@@ -70,7 +70,7 @@ public class Team3TeleOp extends OpMode {
         }
 
         // Left trigger to use shooter
-        if(gamepad1.left_trigger > 0) {
+        if(gamepad1.left_trigger > .5) {
         	shooterMotor.setPower(gamepad1.left_trigger);
             // TODO - Set a target position for shooter
             //telemetry.addData("Encoder Target Position", shooterMotor.getTargetPosition());
@@ -80,16 +80,17 @@ public class Team3TeleOp extends OpMode {
         }
 
         // A for right servo; X for left servo
-        // TODO - Check logic
-        if(gamepad1.a && rightBeaconServo.getPosition() == .5) {
-            rightBeaconServo.setPosition(.5);
+        boolean leftBeaconButton = true;
+        boolean rightBeaconButton = true;
+        if(gamepad1.a) {
+            double position = (rightBeaconButton) ? .5 : 0;
+            rightBeaconButton = !rightBeaconButton;
+            rightBeaconServo.setPosition(position);
         }
         else if(gamepad1.x) {
-        	double position = (leftBeaconServo.getPosition() == 0) ? 0.5 : 0;
+        	double position = (leftBeaconButton) ? 0.5 : 0;
+            leftBeaconButton = !leftBeaconButton;
             leftBeaconServo.setPosition(position);
-        }
-        else if(gamepad1.a && rightBeaconServo.getPosition() == 1) {
-            rightBeaconServo.setPosition(0);
         }
     }
 }
