@@ -68,14 +68,18 @@ public class Team1TeleOp extends OpMode {
             intakeMotor.setPower(0);
         }
 
-        if(gamepad1.a){
+        if(gamepad1.right_trigger>0){
              while((catapultMotor.getCurrentPosition() - catapultOffset) < CATAPULT_TICKS) {
                  catapultMotor.setPower(1);
+                 leftFrontMotor.setPower(gamepad1.left_stick_y);
+                 leftBackMotor.setPower(gamepad1.left_stick_y);
+                 rightFrontMotor.setPower(gamepad1.right_stick_y);
+                 rightBackMotor.setPower(gamepad1.right_stick_y);
              }
              catapultMotor.setPower(0);
              catapultOffset = catapultMotor.getCurrentPosition();
         }
-        else if(gamepad1.b){
+        else if(gamepad1.a){
             catapultMotor.setPower(1);
         }
         else{
