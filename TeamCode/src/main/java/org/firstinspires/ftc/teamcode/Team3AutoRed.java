@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
  * Created by Teacher on 9/28/2016.
@@ -23,13 +24,14 @@ public class Team3AutoRed extends OpMode {
         NONE
     }
 
+    final int SHOOTER_ROTATION = 765;
     final int TICK_OFFSET = 450; // Calibrate value
     final double LEFT_OFFSET = 0.25;
     final int ENCODER_TICKS_PER_REV = 1120;
-    final int    WHEEL_DIAMETER        = 4;
-    final double INCHES_PER_TICK       = (WHEEL_DIAMETER * Math.PI) / ENCODER_TICKS_PER_REV;
+    final int WHEEL_DIAMETER = 4;
+    final double INCHES_PER_TICK = (WHEEL_DIAMETER * Math.PI) / ENCODER_TICKS_PER_REV;
     final double ROBOT_RADIUS = 8; // Inches
-    final double LEFT_SERVO_HOME = 0.45;
+    final double LEFT_SERVO_HOME = 0.74;
     final double RIGHT_SERVO_HOME = 0.55;
 
     int leftOffset;
@@ -74,7 +76,7 @@ public class Team3AutoRed extends OpMode {
         leftBackMotor.setDirection(DcMotor.Direction.REVERSE);
         leftFrontMotor.setDirection(DcMotor.Direction.REVERSE);
 
-        leftBeaconServo.scaleRange(leftBeaconServo.MIN_POSITION, LEFT_SERVO_HOME);
+        leftBeaconServo.scaleRange(0.132, LEFT_SERVO_HOME);
         rightBeaconServo.scaleRange(rightBeaconServo.MIN_POSITION, RIGHT_SERVO_HOME);
 
         leftBeaconServo.setPosition(1);
@@ -91,7 +93,11 @@ public class Team3AutoRed extends OpMode {
 
     @Override
     public void loop() {
-        this.drive(48, 1.0);
+        this.drive(24, 1.0);
+        this.shootBall();
+        //this.runIntake(20);
+        //this.shootBall();
+        this.drive(28, 1.0);
         //this.turn(-90, 1.0);
         /*
         this.drive(43, 1.0);
@@ -171,6 +177,23 @@ public class Team3AutoRed extends OpMode {
         }
         this.setPower(0, 0);
         this.resetEncoders();
+    }
+
+    private void shootBall() {
+        while((shooterMotor.getCurrentPosition() - shooterOffset) < SHOOTER_ROTATION) {
+            shooterMotor.setPower(1);
+        }
+        shooterMotor.setPower(0);
+        shooterOffset = shooterMotor.getCurrentPosition();
+    }
+
+    private void runIntake(int seconds) {
+        ElapsedTime time = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
+        time.reset();
+        while(time.seconds() < seconds) {
+            intakeMotor.setPower(1);
+        }
+        intakeMotor.setPower(0);
     }
 
     // FIXME - Find color sensor threshold
