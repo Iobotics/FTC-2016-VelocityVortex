@@ -58,21 +58,11 @@ public class Team3Calibration extends OpMode {
 
     @Override
     public void loop() {
-
-        // Left trigger to use shooter
-        if(gamepad1.left_trigger > 0) {
-            while((shooterMotor.getCurrentPosition() - shooterOffset) < TARGET_POS) {
-                shooterMotor.setPower(gamepad1.left_trigger);
-                telemetry.addData("Shooter position", shooterMotor.getCurrentPosition() - shooterOffset);
-                telemetry.update();
-            }
-            shooterMotor.setPower(0);
-            shooterOffset = shooterMotor.getCurrentPosition();
-        }
-
         leftBeaconServo.setPosition(gamepad1.left_stick_x);
         rightBeaconServo.setPosition(gamepad1.right_stick_x);
 
+        telemetry.addData("Left trigger", gamepad1.left_trigger > 0);
+        telemetry.addData("Left bumper", gamepad1.left_bumper);
         telemetry.addData("Left Servo Pos", leftBeaconServo.getPosition());
         telemetry.addData("Right Servo Pos", rightBeaconServo.getPosition());
         telemetry.addData("Shooter pos", shooterMotor.getCurrentPosition() - shooterOffset);

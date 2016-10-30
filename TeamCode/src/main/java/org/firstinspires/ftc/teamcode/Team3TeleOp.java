@@ -13,13 +13,14 @@ import com.qualcomm.robotcore.hardware.Servo;
 //@Disabled
 public class Team3TeleOp extends OpMode {
 
-    final int SHOOTER_TICKS 	  = 1120; // TODO - Calibrate value
+    final int SHOOTER_ROTATION 	  = 765;
     final double LEFT_SERVO_HOME  = 0.45;
     final double RIGHT_SERVO_HOME = 0.55;
 
     int shooterOffset;
-    boolean leftBeaconButton;
-    boolean rightBeaconButton;
+
+    boolean leftBeaconButton = false;
+    boolean rightBeaconButton = false;
 
     DcMotor rightFrontMotor;
     DcMotor leftFrontMotor;
@@ -45,23 +46,18 @@ public class Team3TeleOp extends OpMode {
         rightBeaconServo = hardwareMap.servo.get("rightBeacon");
         leftBeaconServo = hardwareMap.servo.get("leftBeacon");
 
-        leftBackMotor.setDirection(DcMotor.Direction.REVERSE);
-        leftFrontMotor.setDirection(DcMotor.Direction.REVERSE);
+        rightBackMotor.setDirection(DcMotor.Direction.REVERSE);
+        rightFrontMotor.setDirection(DcMotor.Direction.REVERSE);
         
         shooterMotor.setDirection(DcMotor.Direction.REVERSE);
         shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooterOffset = shooterMotor.getCurrentPosition();
 
-        leftBeaconServo.scaleRange(Servo.MIN_POSITION, LEFT_SERVO_HOME);
-        rightBeaconServo.scaleRange(Servo.MIN_POSITION, RIGHT_SERVO_HOME);
-        
+        leftBeaconServo.scaleRange(leftBeaconServo.MIN_POSITION, LEFT_SERVO_HOME);
+        rightBeaconServo.scaleRange(rightBeaconServo.MIN_POSITION, RIGHT_SERVO_HOME);
+
         leftBeaconServo.setPosition(1);
         rightBeaconServo.setPosition(1);
-        
-        leftBeaconButton = true;
-        rightBeaconButton = true;
-
-        gamepad1.setJoystickDeadzone((float) .1);
     }
 
     @Override
@@ -84,24 +80,27 @@ public class Team3TeleOp extends OpMode {
 
         // Left trigger to use shooter
         if(gamepad1.left_trigger > 0) {
-            while((shooterMotor.getCurrentPosition() - shooterOffset) < SHOOTER_TICKS) {
+            while((shooterMotor.getCurrentPosition() - shooterOffset) < SHOOTER_ROTATION) {
                 shooterMotor.setPower(1);
             }
             shooterMotor.setPower(0);
             shooterOffset = shooterMotor.getCurrentPosition();
         }
+        if(gamepad1.left_bumper) {
+            shooterMotor.setPower(1);
+        } else {
+            shooterMotor.setPower(0);
+        }
 
-        // A for right servo; X for left servo
-        if(gamepad1.a) {
-            double position = rightBeaconButton ? 1 : 0;
-            rightBeaconButton = !rightBeaconButton;
-            rightBeaconServo.setPosition(position);
-        }
-        if(gamepad1.x) {
-            double position = leftBeaconButton ? 1 : 0;
-            leftBeaconButton = !leftBeaconButton;
-            leftBeaconServo.setPosition(position);
-        }
+        if(gamepad1.a && !rightBeaconButton) {
+            rightBeaconServo.setPosition((rightBeaconServo.getPosition() < 0.2) ? 1 : 0);
+            rightBeaconButton = true;
+        } else if(!gamepad1.a) rightBeaconButton = false;
+
+        if(gamepad1.x && !leftBeaconButton) {
+            leftBeaconServo.setPosition((leftBeaconServo.getPosition() < 0.2) ? 1 : 0);
+            leftBeaconButton = true;
+        } else if(!gamepad1.x) leftBeaconButton = false;
     }
 }
 
