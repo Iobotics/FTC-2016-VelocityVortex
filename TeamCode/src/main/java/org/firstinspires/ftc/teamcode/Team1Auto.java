@@ -12,17 +12,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 //@Disabled
 public class Team1Auto extends OpMode {
 
-    public enum FtcColor {
-        RED,
-        BLUE,
-        NONE
-    }
-
 	final int    ENCODER_TICKS_PER_REV = 1120; // Neverest 40
     final int    WHEEL_DIAMETER        = 6;
     final double INCHES_PER_TICK       = (WHEEL_DIAMETER * Math.PI) / ENCODER_TICKS_PER_REV; // INCHES / REV
-
-    private Team1Auto.FtcColor teamColor;
 
     DcMotor frontLeftMotor;
     DcMotor frontRightMotor;
@@ -37,11 +29,6 @@ public class Team1Auto extends OpMode {
     int leftMotorOffset;
 
     int targetRotations;
-
-    public Team1Auto(FtcColor teamColor) {
-        this.teamColor = teamColor;
-    }
-
     @Override
     public void init() {
         frontLeftMotor = hardwareMap.dcMotor.get("leftFront");
@@ -75,12 +62,9 @@ public class Team1Auto extends OpMode {
 
         this.activateCatapult();
 
-        if(teamColor == FtcColor.RED || teamColor ==FtcColor.NONE) {
-            this.rotate(90, 0.3, 'l');
-        }
-        else if(teamColor ==FtcColor.BLUE){
-            this.rotate(90, 0.3, 'r');
-        }
+        // TODO - Optimize code
+        this.rotate(90, 0.3 ,'l');
+
         this.moveRobot(12,0.3);
 
         requestOpModeStop();

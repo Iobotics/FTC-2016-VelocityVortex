@@ -1,0 +1,202 @@
+[33mcommit 38770175888f32b3c0741c7f4d0325e8af589a24[m
+Author: Joel Tsuchitori <jtt2001@iolani.org>
+Date:   Fri Oct 28 21:04:44 2016 -1000
+
+    changes made to team2 teleOp
+
+[33mcommit 06bfce2805100450ccdbd7540f217f36ec731f37[m
+Merge: 1ae0532 7a90fe9
+Author: Joel Tsuchitori <jtt2001@iolani.org>
+Date:   Fri Oct 28 18:54:38 2016 -1000
+
+    Merge branch 'master' of https://github.com/Iobotics/FTC-2016-VelocityVortex
+
+[33mcommit 1ae053206e503f826638aec8866277b63b5493bc[m
+Author: Joel Tsuchitori <jtt2001@iolani.org>
+Date:   Fri Oct 28 18:54:09 2016 -1000
+
+    Fixed Team 2 Teleop
+
+[33mcommit 7a90fe918b70d4307c192daf6036d648d7270ff7[m
+Author: Darren Kam <dmk1801@iolani.org>
+Date:   Fri Oct 28 18:15:53 2016 -1000
+
+    Added in-progress Team 3 Auto, updated TeleOp, added calibration class
+
+[33mcommit a6a449bfc4a1bfb53897f4ed3b93c088234b913b[m
+Merge: 763c0d2 25950e5
+Author: Matthew Leong <mah2001@iolani.org>
+Date:   Fri Oct 28 18:03:16 2016 -1000
+
+    Merge branch 'master' of https://github.com/Iobotics/FTC-2016-VelocityVortex
+
+[33mcommit 763c0d2c21884ebf882066285f35803c7a4208f9[m
+Author: Matthew Leong <mah2001@iolani.org>
+Date:   Fri Oct 28 17:32:16 2016 -1000
+
+    completed team 2 autonomous code and fixed errors in team1 teleop
+
+[33mcommit 25950e5bd62f25b279c476d3274f90f0d88bbef7[m
+Author: Joel Tsuchitori <jtt2001@iolani.org>
+Date:   Fri Oct 28 17:09:05 2016 -1000
+
+    Fixed Team 2 TeleOP to work on the robot
+
+[33mcommit 15d7bac48e4e209f9392153aec5159bc56f5bb16[m
+Author: Darren Kam <dmk1801@iolani.org>
+Date:   Fri Oct 28 01:37:54 2016 -1000
+
+    Optimized code and other misc. changes
+
+[33mcommit 13bc49d0d6dd75f582ff40f5eb07d35b92e49acb[m
+Author: Matthew Leong <mah2001@iolani.org>
+Date:   Thu Oct 27 16:59:19 2016 -1000
+
+    minor changes to team 3 teleOp code
+
+[33mcommit 3f896d4e2ec0a4e1dc49180801acb4f0cd91db80[m
+Author: Matthew Leong <mah2001@iolani.org>
+Date:   Thu Oct 27 15:35:14 2016 -1000
+
+    edit to team 1 teleOp
+
+[33mcommit 1a3f27e9e4552d472e7b12d71c65a6f930a41084[m
+Merge: a4fe8ef f143fed
+Author: Matthew Leong <mah2001@iolani.org>
+Date:   Wed Oct 26 21:04:47 2016 -1000
+
+    Merge branch 'master' of https://github.com/Iobotics/FTC-2016-VelocityVortex
+
+[33mcommit a4fe8ef61d72a18ea7af8ad3c4f48e38c6022b49[m
+Author: Matthew Leong <mah2001@iolani.org>
+Date:   Wed Oct 26 21:03:42 2016 -1000
+
+    Made changes to the team one and two teleops and added team three teleop could use some tuning
+
+[33mcommit f143feda5fc3b68dd4d12e8d90c1e289a14b6596[m
+Merge: 9e6d3b9 679c805
+Author: Joel Tsuchitori <jtt2001@iolani.org>
+Date:   Wed Oct 26 17:09:32 2016 -1000
+
+    Resolved Conflict with TestRobotAuto.java
+
+[33mcommit 9e6d3b9ae85d36c980e292eb45ae0f533bfb444d[m
+Author: Joel Tsuchitori <jtt2001@iolani.org>
+Date:   Wed Oct 26 17:06:31 2016 -1000
+
+    Added simple autonomous for Team 2
+
+[33mcommit 567e58da83410b044b21b1cc10056c0d2c51352f[m
+Author: Joel Tsuchitori <jtt2001@iolani.org>
+Date:   Wed Oct 26 16:53:35 2016 -1000
+
+    Added simple autonomous for Team 2
+
+[33mcommit 679c8058bf352451b4633d92addd070ed916899d[m
+Merge: 1374585 75c6807
+Author: Ethan Higa <ewh1901@iolani.org>
+Date:   Wed Oct 26 16:36:00 2016 -1000
+
+    Merge branch 'master' of https://github.com/Iobotics/FTC-2016-VelocityVortex
+
+[33mcommit 137458580b9bfabfa8f59e7a606b71d9ffe96856[m
+Author: Ethan Higa <ewh1901@iolani.org>
+Date:   Wed Oct 26 16:06:34 2016 -1000
+
+    Drivetrain,Catapult
+
+[33mcommit 75c6807cd9a27793c42d31248b5673ba31ad83b2[m
+Author: Matthew Leong <mah2001@iolani.org>
+Date:   Wed Oct 26 16:04:18 2016 -1000
+
+    Adding the teleOps for team one and two
+
+[33mcommit 4367fe5df67c6ab2085517072c839fa1fd1f5de9[m
+Author: Matthew Leong <mah2001@iolani.org>
+Date:   Mon Oct 24 17:49:07 2016 -1000
+
+    Added Team 2 TeleOp Code
+
+[33mcommit 185196834a2df445ed0d153efaf3fddf96263a28[m
+Author: Darren Kam <dmk1801@iolani.org>
+Date:   Mon Oct 17 16:03:08 2016 -1000
+
+    Updated to FTC SDK v2.35
+
+[33mcommit 01051c79ad716e46fe7cc903fb2c96830f477626[m
+Author: Ethan Higa <ewh1901@iolani.org>
+Date:   Wed Oct 5 18:24:41 2016 -1000
+
+    Added Color Sensor Test class
+
+[33mcommit a962bf42d53ad7e60d2f9b7334e318d030abd02b[m
+Author: Darren Kam <dmk1801@iolani.org>
+Date:   Wed Sep 28 17:50:04 2016 -1000
+
+    Fixed Vuforia concept class for beacon images
+
+[33mcommit 52a0943d598ab655d8c22ee8bbb9b2e505baa49a[m
+Author: Darren Kam <dmk1801@iolani.org>
+Date:   Mon Sep 26 17:38:08 2016 -1000
+
+    Added Vuforia concept program to TeamCode
+
+[33mcommit 0317218f3097c9e5a68846f9ec3d527114760c04[m
+Author: Darren Kam <dmk1801@iolani.org>
+Date:   Fri Sep 23 12:44:45 2016 -1000
+
+    Added necessary @TeleOp annotation
+
+[33mcommit 8c2a91ae2b777ef9fd72c1ca0ca472336c7aeb24[m
+Author: Darren Kam <dmk1801@iolani.org>
+Date:   Wed Sep 21 18:02:20 2016 -1000
+
+    Updated old 8898 code to work with new phones
+
+[33mcommit 0fab9e46fcfb6a44a3dead64e296e8d8fedf9ebc[m
+Author: Darren Kam <dmk1801@iolani.org>
+Date:   Mon Sep 19 12:49:46 2016 -1000
+
+    Integrate with FTC SDK
+
+[33mcommit 521ee3da7788dfd7561505200165dd52bb60caf5[m
+Author: Joel Tsuchitori <jtt2001@iolani.org>
+Date:   Fri Sep 16 16:30:19 2016 -1000
+
+    Joel Tsuchitori
+
+[33mcommit 8690d7dc2918d9adef6adfb956277ebfc117b84b[m
+Author: Darren Kam <dmk1801@iolani.org>
+Date:   Wed Sep 14 17:06:33 2016 -1000
+
+    Darren Kam
+
+[33mcommit e9804b0710293f5b6a2ad62669c6daff020c40ce[m
+Author: Matthew Leong <mah2001@iolani.org>
+Date:   Wed Sep 14 17:01:25 2016 -1000
+
+    Matthew
+
+[33mcommit b040652cb97fc052b43c7a81425b3a95a8b86a31[m
+Author: Ethan Higa <ewh1901@iolani.org>
+Date:   Wed Sep 14 16:55:48 2016 -1000
+
+    Ethan Higa
+
+[33mcommit b40ded5441e6d05bd26eee85bf1ba7375ff0852f[m
+Author: Arnaud Devie <arnaud.devie@hawaii.edu>
+Date:   Wed Sep 14 16:50:29 2016 -1000
+
+    List of team members
+
+[33mcommit 877a7b79cba3fb379170b9480d9229491adf1920[m
+Author: Darren Kam <darrenk4290@users.noreply.github.com>
+Date:   Sat Sep 10 13:55:01 2016 -1000
+
+    Create README.md
+
+[33mcommit e3bc8eabe437657293a386e531eaaefc30f38585[m
+Author: Darren Kam <dmk1801@iolani.org>
+Date:   Sat Sep 10 13:49:09 2016 -1000
+
+    Initial check-in
