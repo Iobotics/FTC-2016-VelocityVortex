@@ -2,7 +2,9 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.Servo;
 
 /**
@@ -30,6 +32,9 @@ public class Team3Calibration extends OpMode {
     Servo rightBeaconServo;
     Servo leftBeaconServo;
 
+    DeviceInterfaceModule cdim;
+    ColorSensor sensorRGB;
+
     @Override
     public void init() {
         leftFrontMotor = hardwareMap.dcMotor.get("leftFront");
@@ -42,6 +47,9 @@ public class Team3Calibration extends OpMode {
 
         rightBeaconServo = hardwareMap.servo.get("rightBeacon");
         leftBeaconServo = hardwareMap.servo.get("leftBeacon");
+
+        cdim = hardwareMap.deviceInterfaceModule.get("dim");
+        sensorRGB = hardwareMap.colorSensor.get("color");
 
         leftBackMotor.setDirection(DcMotor.Direction.REVERSE);
         leftFrontMotor.setDirection(DcMotor.Direction.REVERSE);
@@ -65,6 +73,9 @@ public class Team3Calibration extends OpMode {
         telemetry.addData("Left bumper", gamepad1.left_bumper);
         telemetry.addData("Left Servo Pos", leftBeaconServo.getPosition());
         telemetry.addData("Right Servo Pos", rightBeaconServo.getPosition());
+        telemetry.addData("Red", sensorRGB.red());
+        telemetry.addData("Green", sensorRGB.green());
+        telemetry.addData("Blue", sensorRGB.blue());
         telemetry.addData("Shooter pos", shooterMotor.getCurrentPosition() - shooterOffset);
         telemetry.update();
     }
