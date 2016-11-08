@@ -31,7 +31,7 @@ public class Team1TeleOp extends OpMode {
         rightFrontMotor = hardwareMap.dcMotor.get("rightFront");
         leftBackMotor = hardwareMap.dcMotor.get("leftRear");
         rightBackMotor = hardwareMap.dcMotor.get("rightRear");
-        
+
         intakeMotor = hardwareMap.dcMotor.get("intakeMotor");
         catapultMotor = hardwareMap.dcMotor.get("catapult");
 
@@ -39,7 +39,7 @@ public class Team1TeleOp extends OpMode {
         rightBackMotor.setDirection(DcMotor.Direction.REVERSE);
         leftFrontMotor.setDirection(DcMotor.Direction.REVERSE);
         rightFrontMotor.setDirection(DcMotor.Direction.REVERSE);
-        
+
         intakeMotor.setDirection(DcMotor.Direction.REVERSE);
 
         catapultMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);

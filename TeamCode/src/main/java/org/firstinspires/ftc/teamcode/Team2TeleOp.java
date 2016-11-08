@@ -16,7 +16,7 @@ public class Team2TeleOp extends OpMode {
     DcMotor leftFrontMotor;
     DcMotor rightBackMotor;
     DcMotor leftBackMotor;
-    
+
     DcMotor intakeMotor;
     DcMotor catapultMotor;
 
@@ -24,6 +24,7 @@ public class Team2TeleOp extends OpMode {
     final int CATAPULT_TICKS = 3 * 1120; // Three rotations
 
     int catapultOffset;
+    int x =0;
 
     @Override
     public void init() {
@@ -31,24 +32,39 @@ public class Team2TeleOp extends OpMode {
         rightFrontMotor = hardwareMap.dcMotor.get("rightFront");
         leftBackMotor = hardwareMap.dcMotor.get("leftRear");
         rightBackMotor = hardwareMap.dcMotor.get("rightRear");
-        
+
         intakeMotor = hardwareMap.dcMotor.get("intakeMotor");
         catapultMotor = hardwareMap.dcMotor.get("catapult");
 
         leftBackMotor.setDirection(DcMotor.Direction.REVERSE);
         leftFrontMotor.setDirection(DcMotor.Direction.REVERSE);
-        
-        //intakeMotor.setDirection(DcMotor.Direction.REVERSE);
+
 
         catapultMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         catapultOffset = catapultMotor.getCurrentPosition();
 
         gamepad1.setJoystickDeadzone((float) .1);
+
+        leftFrontMotor.setPower(0);
+        rightBackMotor.setPower(0);
+        rightFrontMotor.setPower(0);
+        leftBackMotor.setPower(0);
+        intakeMotor.setPower(0);
+        catapultMotor.setPower(0);
+
 }
 
     @Override
     public void loop() {
-
+    while(x == 0){
+            leftFrontMotor.setPower(0);
+            rightBackMotor.setPower(0);
+            rightFrontMotor.setPower(0);
+            leftBackMotor.setPower(0);
+            intakeMotor.setPower(0);
+            catapultMotor.setPower(0);
+            x = 1;
+        }
     	leftFrontMotor.setPower(gamepad1.left_stick_y);
         rightBackMotor.setPower(gamepad1.right_stick_y);
         rightFrontMotor.setPower(gamepad1.right_stick_y);
@@ -75,7 +91,7 @@ public class Team2TeleOp extends OpMode {
             catapultMotor.setPower(0);
             catapultOffset = catapultMotor.getCurrentPosition();
         }
-        
+
         // Activates intake when B button is pressed
         if(gamepad1.b) {
             intakeMotor.setPower(1);
@@ -83,6 +99,8 @@ public class Team2TeleOp extends OpMode {
             intakeMotor.setPower(0);
 		}
         */
+
+        //right bumper for shooter
 
         if (gamepad1.right_bumper) {
             catapultMotor.setPower(1.0);
