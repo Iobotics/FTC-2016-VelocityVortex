@@ -1,10 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.ams.AMSColorSensorImpl;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -31,6 +30,7 @@ public class Team3AutoBlue extends OpMode {
     final int    WHEEL_DIAMETER        = 4;
     final double INCHES_PER_TICK       = (WHEEL_DIAMETER * Math.PI) / ENCODER_TICKS_PER_REV;
     final double ROBOT_RADIUS = 8; // Inches
+    final double LEFT_SERVO_MIN = 0.132;
     final double LEFT_SERVO_HOME = 0.74;
     final double RIGHT_SERVO_HOME = 0.55;
 
@@ -52,8 +52,7 @@ public class Team3AutoBlue extends OpMode {
     Servo rightBeaconServo;
     Servo leftBeaconServo;
 
-    DeviceInterfaceModule cdim;
-    ColorSensor sensorRGB;
+    AMSColorSensorImpl sensorRGB;
 
     ModernRoboticsI2cGyro gyro;
     
@@ -72,8 +71,7 @@ public class Team3AutoBlue extends OpMode {
         rightBeaconServo = hardwareMap.servo.get("rightBeacon");
         leftBeaconServo = hardwareMap.servo.get("leftBeacon");
 
-        cdim = hardwareMap.deviceInterfaceModule.get("dim");
-        sensorRGB = hardwareMap.colorSensor.get("color");
+        sensorRGB = (AMSColorSensorImpl) hardwareMap.colorSensor.get("color");
 
         gyro = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
 
@@ -83,7 +81,7 @@ public class Team3AutoBlue extends OpMode {
         leftBackMotor.setDirection(DcMotor.Direction.REVERSE);
         leftFrontMotor.setDirection(DcMotor.Direction.REVERSE);
 
-        leftBeaconServo.scaleRange(0.132, LEFT_SERVO_HOME);
+        leftBeaconServo.scaleRange(LEFT_SERVO_MIN, LEFT_SERVO_HOME);
         rightBeaconServo.scaleRange(rightBeaconServo.MIN_POSITION, RIGHT_SERVO_HOME);
 
         leftBeaconServo.setPosition(1);

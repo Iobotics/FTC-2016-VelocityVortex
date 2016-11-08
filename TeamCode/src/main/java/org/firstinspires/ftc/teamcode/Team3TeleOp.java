@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class Team3TeleOp extends OpMode {
 
     final int SHOOTER_ROTATION 	  = 765;
+    final double LEFT_SERVO_MIN = 0.132;
     final double LEFT_SERVO_HOME  = 0.74;
     final double RIGHT_SERVO_HOME = 0.55;
 
@@ -53,7 +54,7 @@ public class Team3TeleOp extends OpMode {
         shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooterOffset = shooterMotor.getCurrentPosition();
 
-        leftBeaconServo.scaleRange(0.132, LEFT_SERVO_HOME);
+        leftBeaconServo.scaleRange(LEFT_SERVO_MIN, LEFT_SERVO_HOME);
         rightBeaconServo.scaleRange(rightBeaconServo.MIN_POSITION, RIGHT_SERVO_HOME);
 
         leftBeaconServo.setPosition(1);
@@ -84,6 +85,7 @@ public class Team3TeleOp extends OpMode {
                 shooterMotor.setPower(1);
             }
             shooterMotor.setPower(0);
+            shooterOffset = shooterMotor.getCurrentPosition();
         }
         if(gamepad1.left_bumper) {
             shooterMotor.setPower(1);
