@@ -14,17 +14,21 @@ import com.qualcomm.robotcore.hardware.Servo;
 //@Disabled
 public class Team3Calibration extends OpMode {
 
+	// Constants //
     final int SHOOTER_ROTATION 	  = 765;
-    final double LEFT_SERVO_MIN = 0.132;
-    final double LEFT_SERVO_HOME = 0.74;
+    final double LEFT_SERVO_MIN	  = 0.132;
+    final double RIGHT_SERVO_MIN  = 0;
+    final double LEFT_SERVO_HOME  = 0.74;
     final double RIGHT_SERVO_HOME = 0.55;
-    final boolean LED_STATE = false;
+    final boolean LED_STATE 	  = false;
 
+    // Member variables //
     int shooterOffset;
 
     boolean leftBeaconButton = false;
     boolean rightBeaconButton = false;
 
+    // Hardware declarations //
     DcMotor rightFrontMotor;
     DcMotor leftFrontMotor;
     DcMotor rightBackMotor;
@@ -41,21 +45,21 @@ public class Team3Calibration extends OpMode {
     @Override
     public void init() {
         leftFrontMotor = hardwareMap.dcMotor.get("leftFront");
-        rightFrontMotor = hardwareMap.dcMotor.get("rightFront");
         leftBackMotor = hardwareMap.dcMotor.get("leftRear");
+        rightFrontMotor = hardwareMap.dcMotor.get("rightFront");
         rightBackMotor = hardwareMap.dcMotor.get("rightRear");
 
-        rightBeaconServo = hardwareMap.servo.get("rightBeacon");
+        leftBackMotor.setDirection(DcMotor.Direction.REVERSE);
+        leftFrontMotor.setDirection(DcMotor.Direction.REVERSE);
+        
         leftBeaconServo = hardwareMap.servo.get("leftBeacon");
-
+        rightBeaconServo = hardwareMap.servo.get("rightBeacon");
+        
         leftBeaconServo.scaleRange(LEFT_SERVO_MIN, LEFT_SERVO_HOME);
-        rightBeaconServo.scaleRange(rightBeaconServo.MIN_POSITION, RIGHT_SERVO_HOME);
+        rightBeaconServo.scaleRange(RIGHT_SERVO_MIN, RIGHT_SERVO_HOME);
 
         leftBeaconServo.setPosition(0);
         rightBeaconServo.setPosition(0);
-
-        sensorRGB = (AMSColorSensorImpl) hardwareMap.colorSensor.get("color");
-        sensorRGB.enableLed(LED_STATE);
 
         shooterMotor = hardwareMap.dcMotor.get("shooter");
         shooterMotor.setDirection(DcMotor.Direction.REVERSE);
@@ -63,9 +67,9 @@ public class Team3Calibration extends OpMode {
         shooterOffset = shooterMotor.getCurrentPosition();
 
         intakeMotor = hardwareMap.dcMotor.get("intakeMotor");
-
-        leftBackMotor.setDirection(DcMotor.Direction.REVERSE);
-        leftFrontMotor.setDirection(DcMotor.Direction.REVERSE);
+        
+        sensorRGB = (AMSColorSensorImpl) hardwareMap.colorSensor.get("color");
+        sensorRGB.enableLed(LED_STATE);
     }
 
     @Override
@@ -92,9 +96,10 @@ public class Team3Calibration extends OpMode {
             shooterMotor.setPower(0);
             shooterOffset = shooterMotor.getCurrentPosition();
         }
-        if(gamepad1.left_bumper) {
+        else if(gamepad1.left_bumper) {
             shooterMotor.setPower(1);
-        } else {
+        }
+        else {
             shooterMotor.setPower(0);
         }
 
