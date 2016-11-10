@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.vuforia.ar.pl.SystemTools;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 /**
  * Created by Teacher on 9/28/2016.
  */
@@ -34,7 +36,7 @@ public class Team2Auto extends OpMode {
     int catapultOffset;
 
     long startTime;
-    
+
     ElapsedTime time;
 
     @Override
@@ -54,26 +56,27 @@ public class Team2Auto extends OpMode {
         backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        
+
         catapultMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         time = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
-        // Runs intake and shooter on start for 5 seconds
     }
 
     @Override
     public void loop() {
+        moveForward(10, 1);
+
         moveForwardTime(800, 1.0);
-
+        time.reset();
         activateCatapultTime();
-
-        activateIntake(3000, -1);
-
+        time.reset();
+        activateIntake(1500, -1);
+        time.reset();
         activateCatapultTime();
-
-        moveForwardTime(200, 1.0);
-
+        time.reset();
+        moveForwardTime(500, 1.0);
+        time.reset();
         this.requestOpModeStop();
     }
 
@@ -84,6 +87,8 @@ public class Team2Auto extends OpMode {
         backLeftMotor.setPower(0);
         frontRightMotor.setPower(0);
         backRightMotor.setPower(0);
+        catapultMotor.setPower(0);
+        intakeMotor.setPower(0);
     }
 
     /**
@@ -173,9 +178,9 @@ public class Team2Auto extends OpMode {
     }
 
     private void activateCatapultTime() {
-        startTime = System.currentTimeMillis();
+        time.reset();
 
-        while((System.currentTimeMillis() - startTime) < 1500) {
+        while(time.milliseconds() < 800) {
             catapultMotor.setPower(1);
         }
 
@@ -183,9 +188,9 @@ public class Team2Auto extends OpMode {
     }
 
     private void moveForwardTime(int targetTimeMil, double targetPower){
-        startTime = System.currentTimeMillis();
+        time.reset();
 
-        while((System.currentTimeMillis() - startTime) < targetTimeMil){
+        while(time.milliseconds() < targetTimeMil){
             frontLeftMotor.setPower(targetPower);
             backLeftMotor.setPower(targetPower);
             backRightMotor.setPower(targetPower);
@@ -198,11 +203,12 @@ public class Team2Auto extends OpMode {
     }
 
     private void activateIntake(long targetTimeMil, int targetPowerIntake){
-        startTime = System.currentTimeMillis();
+        time.reset();
 
-        while((System.currentTimeMillis() - startTime) < targetTimeMil) {
+        while(time.milliseconds() < targetTimeMil) {
             intakeMotor.setPower(targetPowerIntake);
         }
         intakeMotor.setPower(0);
     }
+
 }
