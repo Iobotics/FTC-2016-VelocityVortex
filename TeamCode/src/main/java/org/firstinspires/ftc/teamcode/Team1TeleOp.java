@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 /**
  * Created by Teacher on 9/28/2016.
@@ -25,6 +26,8 @@ public class Team1TeleOp extends OpMode {
 
     int catapultOffset;
 
+    long time;
+
     @Override
     public void init() {
         leftFrontMotor = hardwareMap.dcMotor.get("leftFront");
@@ -35,12 +38,14 @@ public class Team1TeleOp extends OpMode {
         intakeMotor = hardwareMap.dcMotor.get("intakeMotor");
         catapultMotor = hardwareMap.dcMotor.get("catapult");
 
-        leftBackMotor.setDirection(DcMotor.Direction.REVERSE);
+        //leftBackMotor.setDirection(DcMotor.Direction.REVERSE);
         rightBackMotor.setDirection(DcMotor.Direction.REVERSE);
-        leftFrontMotor.setDirection(DcMotor.Direction.REVERSE);
+        //leftFrontMotor.setDirection(DcMotor.Direction.REVERSE);
         rightFrontMotor.setDirection(DcMotor.Direction.REVERSE);
 
         intakeMotor.setDirection(DcMotor.Direction.REVERSE);
+
+        catapultMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         catapultMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         catapultOffset = catapultMotor.getCurrentPosition();
@@ -85,8 +90,17 @@ public class Team1TeleOp extends OpMode {
         else{
             catapultMotor.setPower(0);
         }
+        /*
+        if (gamepad1.right_trigger>0);
+        {
+            time = System.currentTimeMillis();
 
-        telemetry.addData("Catapult Motor Position", catapultMotor.getCurrentPosition());
-        telemetry.update();
+            while ((System.currentTimeMillis() - time) < 1500) {
+                catapultMotor.setPower(1);
+            }
+
+            catapultMotor.setPower(0);
+        }
+        */
     }
 }
