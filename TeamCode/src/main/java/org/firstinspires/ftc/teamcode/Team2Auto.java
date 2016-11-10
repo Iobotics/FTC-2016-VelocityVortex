@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.vuforia.ar.pl.SystemTools;
 
 /**
  * Created by Teacher on 9/28/2016.
@@ -19,6 +21,7 @@ public class Team2Auto extends OpMode {
     final int    WHEEL_DIAMETER        = 10; // CM
     final double CM_PER_TICK		   = (WHEEL_DIAMETER * Math.PI) / ENCODER_TICKS_PER_REV; // CM / REV
 
+
     DcMotor frontLeftMotor;
     DcMotor frontRightMotor;
     DcMotor backLeftMotor;
@@ -28,9 +31,9 @@ public class Team2Auto extends OpMode {
     DcMotor catapultMotor;
 
     int leftOffset;
-    int rightOffset;
-    
     int catapultOffset;
+
+    long startTime;
     
     ElapsedTime time;
 
@@ -57,19 +60,19 @@ public class Team2Auto extends OpMode {
         time = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
         // Runs intake and shooter on start for 5 seconds
-        while (time.seconds() < 5){
-            intakeMotor.setPower(1.0);
-        }
-        intakeMotor.setPower(0.0);
     }
 
     @Override
     public void loop() {
-        moveForwardTime(750, 1.0);
+        moveForwardTime(800, 1.0);
 
-        activateCatapult();
+        activateCatapultTime();
 
-        moveForwardTime(250, 1.0);
+        activateIntake(3000, -1);
+
+        activateCatapultTime();
+
+        moveForwardTime(200, 1.0);
 
         this.requestOpModeStop();
     }
@@ -87,8 +90,7 @@ public class Team2Auto extends OpMode {
      * A method to calculate the number of ticks to move the robot a number of inches
      * @param distance
      * @return distanceInTicks
-     */
-    private int distance(double distance){
+     */private int distance(double distance){
         double distanceInTicks = distance / CM_PER_TICK;
         return (int) distanceInTicks;
     }
@@ -169,9 +171,21 @@ public class Team2Auto extends OpMode {
         }
         catapultMotor.setPower(0);
     }
+
+    private void activateCatapultTime() {
+        startTime = System.currentTimeMillis();
+
+        while((System.currentTimeMillis() - startTime) < 1500) {
+            catapultMotor.setPower(1);
+        }
+
+        catapultMotor.setPower(0);
+    }
+
     private void moveForwardTime(int targetTimeMil, double targetPower){
-        time.reset();
-        while(time.milliseconds() <= targetTimeMil){
+        startTime = System.currentTimeMillis();
+
+        while((System.currentTimeMillis() - startTime) < targetTimeMil){
             frontLeftMotor.setPower(targetPower);
             backLeftMotor.setPower(targetPower);
             backRightMotor.setPower(targetPower);
@@ -183,10 +197,11 @@ public class Team2Auto extends OpMode {
         backRightMotor.setPower(0);
     }
 
-    private void activateIntake(){
-        time.reset();
-        while(time.milliseconds() <= 2000) {
-            intakeMotor.setPower(1);
+    private void activateIntake(long targetTimeMil, int targetPowerIntake){
+        startTime = System.currentTimeMillis();
+
+        while((System.currentTimeMillis() - startTime) < targetTimeMil) {
+            intakeMotor.setPower(targetPowerIntake);
         }
         intakeMotor.setPower(0);
     }

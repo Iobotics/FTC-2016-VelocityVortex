@@ -39,7 +39,6 @@ public class Team2TeleOp extends OpMode {
         leftBackMotor.setDirection(DcMotor.Direction.REVERSE);
         leftFrontMotor.setDirection(DcMotor.Direction.REVERSE);
 
-        intakeMotor.setDirection(DcMotor.Direction.REVERSE);
 
         catapultMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         catapultOffset = catapultMotor.getCurrentPosition();
@@ -71,9 +70,11 @@ public class Team2TeleOp extends OpMode {
         rightFrontMotor.setPower(gamepad1.right_stick_y);
         leftBackMotor.setPower(gamepad1.left_stick_y);
 
-        // Activates intake when left bumper is pressed
-        if (gamepad1.left_bumper) {
-            intakeMotor.setPower(1);
+        if(gamepad1.left_bumper) {
+            intakeMotor.setPower(-1.0);
+        }
+        else if(gamepad1.left_trigger > 0) {
+            intakeMotor.setPower(1.0);
         }
         else {
             intakeMotor.setPower(0);
@@ -102,11 +103,12 @@ public class Team2TeleOp extends OpMode {
         //right bumper for shooter
 
         if (gamepad1.right_bumper) {
-            catapultMotor.setPower(1);
+            catapultMotor.setPower(1.0);
         } else {
-            catapultMotor.setPower(0);
+            catapultMotor.setPower(0.0);
         }
         telemetry.addData("Ticks", catapultMotor.getCurrentPosition() - catapultOffset);
+        telemetry.addData("Intake motor", intakeMotor.getPower());
         telemetry.addData("catapult offset", catapultOffset);
         telemetry.addData("catapult ticks",catapultMotor.getCurrentPosition());
         telemetry.update();

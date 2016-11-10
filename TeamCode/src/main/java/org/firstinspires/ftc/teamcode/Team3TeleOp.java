@@ -13,15 +13,21 @@ import com.qualcomm.robotcore.hardware.Servo;
 //@Disabled
 public class Team3TeleOp extends OpMode {
 
+	
+	// Constants //
     final int SHOOTER_ROTATION 	  = 765;
+    final double LEFT_SERVO_MIN   = 0.132;
+    final double RIGHT_SERVO_MIN  = 0;
     final double LEFT_SERVO_HOME  = 0.74;
     final double RIGHT_SERVO_HOME = 0.55;
 
+    // Member variables //
     int shooterOffset;
 
     boolean leftBeaconButton = false;
     boolean rightBeaconButton = false;
-
+    
+    // Hardware declarations //
     DcMotor rightFrontMotor;
     DcMotor leftFrontMotor;
     DcMotor rightBackMotor;
@@ -53,8 +59,8 @@ public class Team3TeleOp extends OpMode {
         shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooterOffset = shooterMotor.getCurrentPosition();
 
-        leftBeaconServo.scaleRange(0.132, LEFT_SERVO_HOME);
-        rightBeaconServo.scaleRange(rightBeaconServo.MIN_POSITION, RIGHT_SERVO_HOME);
+        leftBeaconServo.scaleRange(LEFT_SERVO_MIN, LEFT_SERVO_HOME);
+        rightBeaconServo.scaleRange(RIGHT_SERVO_MIN, RIGHT_SERVO_HOME);
 
         leftBeaconServo.setPosition(1);
         rightBeaconServo.setPosition(1);
@@ -63,9 +69,9 @@ public class Team3TeleOp extends OpMode {
     @Override
     public void loop() {
         leftFrontMotor.setPower(gamepad1.left_stick_y);
-        rightBackMotor.setPower(gamepad1.right_stick_y);
-        rightFrontMotor.setPower(gamepad1.right_stick_y);
         leftBackMotor.setPower(gamepad1.left_stick_y);
+        rightFrontMotor.setPower(gamepad1.right_stick_y);
+        rightBackMotor.setPower(gamepad1.right_stick_y);
 
         // Activates intake when right trigger is pressed
         if(gamepad1.right_trigger > 0) {
@@ -84,6 +90,7 @@ public class Team3TeleOp extends OpMode {
                 shooterMotor.setPower(1);
             }
             shooterMotor.setPower(0);
+            shooterOffset = shooterMotor.getCurrentPosition();
         }
         if(gamepad1.left_bumper) {
             shooterMotor.setPower(1);
