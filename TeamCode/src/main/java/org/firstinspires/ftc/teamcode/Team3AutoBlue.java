@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.ams.AMSColorSensorImpl;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -62,7 +62,7 @@ public class Team3AutoBlue extends OpMode {
     Servo rightBeaconServo;
     Servo leftBeaconServo;
 
-    AMSColorSensorImpl sensorRGB;
+    ModernRoboticsI2cColorSensor sensorRGB;
 
     ModernRoboticsI2cGyro gyro;
     
@@ -82,7 +82,7 @@ public class Team3AutoBlue extends OpMode {
         leftBeaconServo = hardwareMap.servo.get("leftBeacon");
         rightBeaconServo = hardwareMap.servo.get("rightBeacon");
 
-        sensorRGB = (AMSColorSensorImpl) hardwareMap.colorSensor.get("color");
+        sensorRGB = (ModernRoboticsI2cColorSensor) hardwareMap.colorSensor.get("color");
 
         gyro = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
 
@@ -111,7 +111,7 @@ public class Team3AutoBlue extends OpMode {
         this.runIntake(5000);
         this.shootBall();
         this.autoDrive(24, 1.0); //TODO - Use this.autoDrivePID(24);
-        this.turn(-90, 1.0);
+        this.autoTurn(-90, 1.0);
         /*
         this.autoDrivePID(43, 1.0);
         this.readBeacon(teamColor);
@@ -218,18 +218,17 @@ public class Team3AutoBlue extends OpMode {
      * @param power (positive)
      */
     // TODO - Test
-    private void turn(int degrees, double power) {
+    private void autoTurn(int degrees, double power) {
         if(power < 0) throw new IllegalArgumentException("power = " + power);
-        
-        double distance = (degrees * (Math.PI / 180) * ROBOT_RADIUS) / (WHEEL_DIAMETER * Math.PI) * ENCODER_TICKS_PER_REV;
+
+        gyro.calibrate();
         
         if(degrees < 0) {
             power = -power;
             degrees = -degrees;
-            distance = -distance;
         }
 
-        while(getLeftPosition() < distance && getRightPosition() < -distance) {
+        while(gyro.getHeading() < degrees) {
             this.setPower(power, -power);
         }
     	this.setPower(0, 0);

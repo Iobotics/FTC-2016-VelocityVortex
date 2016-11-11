@@ -1,9 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.ams.AMSColorSensorImpl;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.Servo;
 
 /**
@@ -40,7 +41,7 @@ public class Team3Calibration extends OpMode {
     Servo rightBeaconServo;
     Servo leftBeaconServo;
 
-    AMSColorSensorImpl sensorRGB;
+    ModernRoboticsI2cColorSensor sensorRGB;
 
     @Override
     public void init() {
@@ -67,8 +68,8 @@ public class Team3Calibration extends OpMode {
         shooterOffset = shooterMotor.getCurrentPosition();
 
         intakeMotor = hardwareMap.dcMotor.get("intakeMotor");
-        
-        sensorRGB = (AMSColorSensorImpl) hardwareMap.colorSensor.get("color");
+
+        sensorRGB = (ModernRoboticsI2cColorSensor) hardwareMap.colorSensor.get("color");
         sensorRGB.enableLed(LED_STATE);
     }
 
