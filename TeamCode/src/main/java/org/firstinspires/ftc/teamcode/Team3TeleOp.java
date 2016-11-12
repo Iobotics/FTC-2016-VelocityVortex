@@ -15,7 +15,7 @@ public class Team3TeleOp extends OpMode {
 
 	
 	// Constants //
-    final int SHOOTER_ROTATION 	  = 765;
+    final int SHOOTER_ROTATION 	  = 760;
     final double LEFT_SERVO_MIN   = 0.132;
     final double RIGHT_SERVO_MIN  = 0;
     final double LEFT_SERVO_HOME  = 0.74;
@@ -93,7 +93,7 @@ public class Team3TeleOp extends OpMode {
             shooterOffset = shooterMotor.getCurrentPosition();
         }
         if(gamepad1.left_bumper) {
-            shooterMotor.setPower(1);
+            shooterMotor.setPower(0.6);
         } else {
             shooterMotor.setPower(0);
         }

@@ -1,11 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.DigitalChannelController;
+import com.qualcomm.robotcore.hardware.LED;
+import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 /**
@@ -17,16 +20,17 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class Team3Calibration extends OpMode {
 
 	// Constants //
-    final int SHOOTER_ROTATION 	  = 765;
+    final int LED_PORT            = 5;
+    final int SHOOTER_ROTATION 	  = 760;
     final double LEFT_SERVO_MIN	  = 0.132;
     final double RIGHT_SERVO_MIN  = 0;
     final double LEFT_SERVO_HOME  = 0.74;
     final double RIGHT_SERVO_HOME = 0.55;
-    final boolean LED_STATE 	  = false;
 
     // Member variables //
     int shooterOffset;
 
+    boolean ledState = false;
     boolean leftBeaconButton = false;
     boolean rightBeaconButton = false;
 
@@ -45,6 +49,10 @@ public class Team3Calibration extends OpMode {
     ColorSensor sensorRGB;
     DeviceInterfaceModule cdim;
 
+    ModernRoboticsI2cGyro gyro;
+
+    LightSensor lightSensor;
+
     @Override
     public void init() {
         leftFrontMotor = hardwareMap.dcMotor.get("leftFront");
@@ -55,27 +63,33 @@ public class Team3Calibration extends OpMode {
         leftBackMotor.setDirection(DcMotor.Direction.REVERSE);
         leftFrontMotor.setDirection(DcMotor.Direction.REVERSE);
 
+        intakeMotor = hardwareMap.dcMotor.get("intakeMotor");
+        shooterMotor = hardwareMap.dcMotor.get("shooter");
+
+        shooterMotor.setDirection(DcMotor.Direction.REVERSE);
+
         leftBeaconServo = hardwareMap.servo.get("leftBeacon");
         rightBeaconServo = hardwareMap.servo.get("rightBeacon");
 
         leftBeaconServo.scaleRange(LEFT_SERVO_MIN, LEFT_SERVO_HOME);
         rightBeaconServo.scaleRange(RIGHT_SERVO_MIN, RIGHT_SERVO_HOME);
 
-        leftBeaconServo.setPosition(0);
-        rightBeaconServo.setPosition(0);
+        leftBeaconServo.setPosition(1);
+        rightBeaconServo.setPosition(1);
 
-        shooterMotor = hardwareMap.dcMotor.get("shooter");
-        shooterMotor.setDirection(DcMotor.Direction.REVERSE);
-        shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        shooterOffset = shooterMotor.getCurrentPosition();
-
-        intakeMotor = hardwareMap.dcMotor.get("intakeMotor");
+        ledState = false;
 
         sensorRGB = hardwareMap.colorSensor.get("color");
-        cdim = hardwareMap.deviceInterfaceModule.get("dim");
 
-        cdim.setDigitalChannelMode(5, DigitalChannelController.Mode.OUTPUT);
-        cdim.setDigitalChannelState(5, LED_STATE);
+        cdim = hardwareMap.deviceInterfaceModule.get("dim");
+        cdim.setDigitalChannelMode(LED_PORT, DigitalChannelController.Mode.OUTPUT);
+        cdim.setDigitalChannelState(LED_PORT, ledState);
+
+        gyro = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
+        gyro.setHeadingMode(ModernRoboticsI2cGyro.HeadingMode.HEADING_CARTESIAN);
+        gyro.calibrate();
+
+        lightSensor = hardwareMap.lightSensor.get("light");
     }
 
     @Override
@@ -119,12 +133,12 @@ public class Team3Calibration extends OpMode {
             leftBeaconButton = true;
         } else if(!gamepad1.x) leftBeaconButton = false;
 
-        telemetry.addData("Left trigger", gamepad1.left_trigger > 0);
-        telemetry.addData("Left bumper", gamepad1.left_bumper);
+        telemetry.addData("Light Sensor", lightSensor.getLightDetected());
         telemetry.addData("Red", sensorRGB.red());
         telemetry.addData("Green", sensorRGB.green());
         telemetry.addData("Blue", sensorRGB.blue());
         telemetry.addData("Shooter pos", shooterMotor.getCurrentPosition() - shooterOffset);
+        telemetry.addData("Gyro", gyro.getHeading());
         telemetry.update();
     }
 
