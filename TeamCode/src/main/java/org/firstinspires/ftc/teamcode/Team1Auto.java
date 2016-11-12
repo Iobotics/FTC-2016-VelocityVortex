@@ -26,7 +26,7 @@ public class Team1Auto extends OpMode {
 
     DcMotor catapultMotor;
 
-    ModernRoboticsI2cGyro gyro;
+    //ModernRoboticsI2cGyro gyro;
 
 
     int catapultOffset;
@@ -42,7 +42,7 @@ public class Team1Auto extends OpMode {
         backRightMotor = hardwareMap.dcMotor.get("rightRear");
 
         catapultMotor = hardwareMap.dcMotor.get("catapult");
-        gyro = (ModernRoboticsI2cGyro) hardwareMap.i2cDevice.get("gyro");
+      //  gyro = (ModernRoboticsI2cGyro) hardwareMap.i2cDevice.get("gyro");
 
         frontRightMotor.setDirection(DcMotor.Direction.REVERSE);
         backRightMotor.setDirection(DcMotor.Direction.REVERSE);
@@ -69,9 +69,9 @@ public class Team1Auto extends OpMode {
 
         this.activateCatapult();
 
-        this.rotate(90, 0.3 ,'l');
+        //this.rotate(90, 0.3 ,'l');
 
-        this.moveRobot(12,0.3);
+        //this.moveRobot(12,0.3);
 
         requestOpModeStop();
     }
@@ -124,11 +124,16 @@ public class Team1Auto extends OpMode {
         double distanceInTicks = distance / INCHES_PER_TICK;
         return (int) distanceInTicks;
     }
-
-    private void rotate(int degrees, double power, char direction){
+/*
+    private void rotate(int degrees, double power){
         targetRotations = targetPosition(24 * Math.PI / (360/degrees));
         double degreesInRotationFraction = degrees/360;
-
+        frontLeftMotor.setPower(1);
+        frontRightMotor.setPower(1);
+        backLeftMotor.setPower(1);
+        backRightMotor.setPower(1);
+*/
+/*
         gyro.calibrate();
         while(gyro.isCalibrating() == true){}
 
@@ -146,6 +151,7 @@ public class Team1Auto extends OpMode {
                 frontRightMotor.setPower(power);
                 backLeftMotor.setPower(-power);
                 backRightMotor.setPower(power);
+
             }
         }
         else{}
@@ -157,5 +163,6 @@ public class Team1Auto extends OpMode {
         catapultOffset = catapultMotor.getCurrentPosition();
         rightMotorOffset = backRightMotor.getCurrentPosition();
         leftMotorOffset = backLeftMotor.getCurrentPosition();
-    }
+ */
+
 }

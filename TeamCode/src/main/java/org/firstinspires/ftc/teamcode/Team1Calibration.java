@@ -1,62 +1,39 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
  * Created by Teacher on 9/28/2016.
  */
 
-@TeleOp(name = "Team 1: TeleOp", group = "Team 1")
+@Autonomous(name = "Team 1 Calibration: Teleop", group = "Team 1")
 //@Disabled
-public class Team1TeleOp extends OpMode {
+public class Team1Calibration extends OpMode {
 
-    DcMotor rightFrontMotor;
-    DcMotor leftFrontMotor;
-    DcMotor rightBackMotor;
-    DcMotor leftBackMotor;
-    
-    DcMotor intakeMotor;
+    DcMotor frontLeftMotor;
+    DcMotor frontRightMotor;
+    DcMotor backLeftMotor;
+    DcMotor backRightMotor;
     DcMotor catapultMotor;
-
-    final int CATAPULT_TICKS = 3 * 1120; // Three rotations
-
-    int catapultOffset;
-
-    //ElapsedTime time;
+    DcMotor intakeMotor;
 
     @Override
     public void init() {
-        leftFrontMotor = hardwareMap.dcMotor.get("leftFront");
-        rightFrontMotor = hardwareMap.dcMotor.get("rightFront");
-        leftBackMotor = hardwareMap.dcMotor.get("leftRear");
-        rightBackMotor = hardwareMap.dcMotor.get("rightRear");
-
-        rightFrontMotor.setDirection(DcMotor.Direction.REVERSE);
-        leftBackMotor.setDirection(DcMotor.Direction.REVERSE);
-
-        intakeMotor = hardwareMap.dcMotor.get("intakeMotor");
+        frontLeftMotor = hardwareMap.dcMotor.get("leftFront");
+        frontRightMotor = hardwareMap.dcMotor.get("rightFront");
+        backLeftMotor = hardwareMap.dcMotor.get("leftRear");
+        backRightMotor = hardwareMap.dcMotor.get("rightRear");
         catapultMotor = hardwareMap.dcMotor.get("catapult");
 
-        intakeMotor.setDirection(DcMotor.Direction.REVERSE);
-
-        catapultMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        catapultOffset = catapultMotor.getCurrentPosition();
-
-        gamepad1.setJoystickDeadzone((float) .1);
-}
-
+    }
     @Override
     public void loop() {
-
-        // Tank drive
-        leftFrontMotor.setPower(gamepad1.left_stick_y);
-        leftBackMotor.setPower(gamepad1.left_stick_y);
-        rightFrontMotor.setPower(gamepad1.right_stick_y);
-        rightBackMotor.setPower(gamepad1.right_stick_y);
+        frontLeftMotor.setPower(gamepad1.left_stick_y);
+        backLeftMotor.setPower(gamepad1.left_stick_y);
+        frontRightMotor.setPower(gamepad1.right_stick_y);
+        backRightMotor.setPower(gamepad1.right_stick_y);
 
         // Intake motor is controlled through left bumper and right bumper
         if(gamepad1.left_bumper){
@@ -103,7 +80,19 @@ public class Team1TeleOp extends OpMode {
             catapultMotor.setPower(0);
         }
 
+        telemetry.addData("frontLeft Motor Position", frontLeftMotor.getCurrentPosition());
+        telemetry.addData("backLeft Motor Position", backLeftMotor.getCurrentPosition());
+        telemetry.addData("frontRight Motor Position", frontRightMotor.getCurrentPosition());
+        telemetry.addData("backRight Motor Position", backRightMotor.getCurrentPosition());
         telemetry.addData("Catapult Motor Position", catapultMotor.getCurrentPosition());
+        telemetry.addData("Intake Motor Position", intakeMotor.getCurrentPosition());
         telemetry.update();
+    }
+    @Override
+    public void stop() {
+        frontLeftMotor.setPower(0);
+        frontRightMotor.setPower(0);
+        backLeftMotor.setPower(0);
+        backRightMotor.setPower(0);
     }
 }

@@ -16,7 +16,6 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 @Autonomous(name = "Team 2: Autonomous", group = "Team 2")
 //@Disabled
 public class Team2Auto extends OpMode {
-	
 	final int    ENCODER_TICKS_PER_REV = 1120; // Neverest 40
 	final int 	 CATAPULT_TICKS 	   = 3 * ENCODER_TICKS_PER_REV; // Three rotations
 	final int    CHASSIS_DIAMETER	   = 18; // CM
@@ -28,12 +27,13 @@ public class Team2Auto extends OpMode {
     DcMotor frontRightMotor;
     DcMotor backLeftMotor;
     DcMotor backRightMotor;
-    
+
     DcMotor intakeMotor;
     DcMotor catapultMotor;
 
     int leftOffset;
     int catapultOffset;
+    int intakeOffset;
 
     long startTime;
 
@@ -45,7 +45,7 @@ public class Team2Auto extends OpMode {
         frontRightMotor = hardwareMap.dcMotor.get("rightFront");
         backLeftMotor = hardwareMap.dcMotor.get("leftRear");
         backRightMotor = hardwareMap.dcMotor.get("rightRear");
-        
+
         catapultMotor = hardwareMap.dcMotor.get("catapult");
         intakeMotor = hardwareMap.dcMotor.get("intakeMotor");
 
@@ -60,33 +60,35 @@ public class Team2Auto extends OpMode {
         catapultMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         time = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-
     }
 
     @Override
     public void loop() {
-        moveForwardTime(800, 1.0);
-        time.reset();
-        activateCatapultTime();
-        time.reset();
-        activateIntake(1500, -1);
-        time.reset();
-        activateCatapultTime();
-        time.reset();
-        moveForwardTime(500, 1.0);
-        time.reset();
-        this.requestOpModeStop();
+
+        moveForward(30, 1);
+
+        activateCatapult();
+
+        activateIntake(4, -1);
+
+        activateCatapult();
+
+        moveForward(30, 1);
+
+        turnDegrees(45,1, 'R');
+
+        moveForward(5, 0.5);
+
+        requestOpModeStop();
     }
 
     @Override
 
     public void stop() {
+        backRightMotor.setPower(0);
         frontLeftMotor.setPower(0);
         backLeftMotor.setPower(0);
         frontRightMotor.setPower(0);
-        backRightMotor.setPower(0);
-        catapultMotor.setPower(0);
-        intakeMotor.setPower(0);
     }
 
     /**
@@ -129,7 +131,7 @@ public class Team2Auto extends OpMode {
         frontRightMotor.setPower(0);
         backLeftMotor.setPower(0);
         backRightMotor.setPower(0);
-        
+
         leftOffset = frontLeftMotor.getCurrentPosition();
     }
     /*
@@ -176,9 +178,9 @@ public class Team2Auto extends OpMode {
     }
 
     private void activateCatapultTime() {
-        time.reset();
+        startTime = System.currentTimeMillis();
 
-        while(time.milliseconds() < 800) {
+        while((System.currentTimeMillis() - startTime) < 1200) {
             catapultMotor.setPower(1);
         }
 
@@ -186,9 +188,9 @@ public class Team2Auto extends OpMode {
     }
 
     private void moveForwardTime(double targetTimeMil, double targetPower){
-        time.reset();
+        startTime = System.currentTimeMillis();
 
-        while(time.milliseconds() < targetTimeMil){
+        while((System.currentTimeMillis() - startTime) < targetTimeMil){
             frontLeftMotor.setPower(targetPower);
             backLeftMotor.setPower(targetPower);
             backRightMotor.setPower(targetPower);
@@ -200,11 +202,10 @@ public class Team2Auto extends OpMode {
         backRightMotor.setPower(0);
     }
 
-    private void activateIntake(double targetTimeMil, int targetPowerIntake){
-        time.reset();
-
-        while(time.milliseconds() < targetTimeMil) {
-            intakeMotor.setPower(targetPowerIntake);
+    private void activateIntake(int targetRotations, double targetPower){
+        intakeOffset = intakeMotor.getCurrentPosition();
+        while((intakeMotor.getCurrentPosition() - intakeOffset) < targetRotations * 1120){
+            intakeMotor.setPower(targetPower);
         }
         intakeMotor.setPower(0);
     }
