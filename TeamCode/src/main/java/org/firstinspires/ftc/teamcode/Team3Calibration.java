@@ -1,10 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
+import com.qualcomm.robotcore.hardware.DigitalChannelController;
 import com.qualcomm.robotcore.hardware.Servo;
 
 /**
@@ -41,7 +42,8 @@ public class Team3Calibration extends OpMode {
     Servo rightBeaconServo;
     Servo leftBeaconServo;
 
-    ModernRoboticsI2cColorSensor sensorRGB;
+    ColorSensor sensorRGB;
+    DeviceInterfaceModule cdim;
 
     @Override
     public void init() {
@@ -52,10 +54,10 @@ public class Team3Calibration extends OpMode {
 
         leftBackMotor.setDirection(DcMotor.Direction.REVERSE);
         leftFrontMotor.setDirection(DcMotor.Direction.REVERSE);
-        
+
         leftBeaconServo = hardwareMap.servo.get("leftBeacon");
         rightBeaconServo = hardwareMap.servo.get("rightBeacon");
-        
+
         leftBeaconServo.scaleRange(LEFT_SERVO_MIN, LEFT_SERVO_HOME);
         rightBeaconServo.scaleRange(RIGHT_SERVO_MIN, RIGHT_SERVO_HOME);
 
@@ -69,8 +71,11 @@ public class Team3Calibration extends OpMode {
 
         intakeMotor = hardwareMap.dcMotor.get("intakeMotor");
 
-        sensorRGB = (ModernRoboticsI2cColorSensor) hardwareMap.colorSensor.get("color");
-        sensorRGB.enableLed(LED_STATE);
+        sensorRGB = hardwareMap.colorSensor.get("color");
+        cdim = hardwareMap.deviceInterfaceModule.get("dim");
+
+        cdim.setDigitalChannelMode(5, DigitalChannelController.Mode.OUTPUT);
+        cdim.setDigitalChannelState(5, LED_STATE);
     }
 
     @Override

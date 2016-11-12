@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
  * Created by Teacher on 9/28/2016.
@@ -20,7 +21,6 @@ public class Team1TeleOp extends OpMode {
     DcMotor intakeMotor;
     DcMotor catapultMotor;
 
-    final int FLYWHEEL_POWER = 1;
     final int CATAPULT_TICKS = 3 * 1120; // Three rotations
 
     int catapultOffset;
@@ -34,11 +34,6 @@ public class Team1TeleOp extends OpMode {
 
         intakeMotor = hardwareMap.dcMotor.get("intakeMotor");
         catapultMotor = hardwareMap.dcMotor.get("catapult");
-
-        leftBackMotor.setDirection(DcMotor.Direction.REVERSE);
-        rightBackMotor.setDirection(DcMotor.Direction.REVERSE);
-        leftFrontMotor.setDirection(DcMotor.Direction.REVERSE);
-        rightFrontMotor.setDirection(DcMotor.Direction.REVERSE);
 
         intakeMotor.setDirection(DcMotor.Direction.REVERSE);
 
@@ -69,6 +64,11 @@ public class Team1TeleOp extends OpMode {
         }
 
         if(gamepad1.right_trigger>0){
+
+        }
+            time.reset();
+            while (time.)
+            /*
              while((catapultMotor.getCurrentPosition() - catapultOffset) < CATAPULT_TICKS) {
                  catapultMotor.setPower(1);
                  leftFrontMotor.setPower(gamepad1.left_stick_y);
@@ -78,8 +78,8 @@ public class Team1TeleOp extends OpMode {
              }
              catapultMotor.setPower(0);
              catapultOffset = catapultMotor.getCurrentPosition();
-        }
-        else if(gamepad1.a){
+        }*/
+        if(gamepad1.right_trigger>0){
             catapultMotor.setPower(1);
         }
         else{

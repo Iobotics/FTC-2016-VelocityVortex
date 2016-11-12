@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
+import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
+import com.qualcomm.robotcore.hardware.DigitalChannelController;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
@@ -45,6 +47,7 @@ public class Team3AutoBlue extends OpMode {
     int leftOffset;
     int rightOffset;
     int shooterOffset;
+    boolean led = false;
     
     FtcColor teamColor;
     
@@ -62,7 +65,8 @@ public class Team3AutoBlue extends OpMode {
     Servo rightBeaconServo;
     Servo leftBeaconServo;
 
-    ModernRoboticsI2cColorSensor sensorRGB;
+    ColorSensor sensorRGB;
+    DeviceInterfaceModule cdim;
 
     ModernRoboticsI2cGyro gyro;
     
@@ -82,7 +86,11 @@ public class Team3AutoBlue extends OpMode {
         leftBeaconServo = hardwareMap.servo.get("leftBeacon");
         rightBeaconServo = hardwareMap.servo.get("rightBeacon");
 
-        sensorRGB = (ModernRoboticsI2cColorSensor) hardwareMap.colorSensor.get("color");
+        sensorRGB = hardwareMap.colorSensor.get("color");
+        cdim = hardwareMap.deviceInterfaceModule.get("dim");
+
+        cdim.setDigitalChannelMode(5, DigitalChannelController.Mode.OUTPUT);
+        cdim.setDigitalChannelState(5, led);
 
         gyro = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
 

@@ -65,8 +65,6 @@ public class Team2Auto extends OpMode {
 
     @Override
     public void loop() {
-        moveForward(10, 1);
-
         moveForwardTime(800, 1.0);
         time.reset();
         activateCatapultTime();
@@ -187,7 +185,7 @@ public class Team2Auto extends OpMode {
         catapultMotor.setPower(0);
     }
 
-    private void moveForwardTime(int targetTimeMil, double targetPower){
+    private void moveForwardTime(double targetTimeMil, double targetPower){
         time.reset();
 
         while(time.milliseconds() < targetTimeMil){
@@ -202,7 +200,7 @@ public class Team2Auto extends OpMode {
         backRightMotor.setPower(0);
     }
 
-    private void activateIntake(long targetTimeMil, int targetPowerIntake){
+    private void activateIntake(double targetTimeMil, int targetPowerIntake){
         time.reset();
 
         while(time.milliseconds() < targetTimeMil) {

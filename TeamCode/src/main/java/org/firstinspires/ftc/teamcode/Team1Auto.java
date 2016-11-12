@@ -1,8 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsUsbDevice;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsUsbLegacyModule;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 
 /**
  * Created by Teacher on 9/28/2016.
@@ -23,6 +26,8 @@ public class Team1Auto extends OpMode {
 
     DcMotor catapultMotor;
 
+    ModernRoboticsI2cGyro gyro;
+
 
     int catapultOffset;
     int rightMotorOffset;
@@ -37,6 +42,7 @@ public class Team1Auto extends OpMode {
         backRightMotor = hardwareMap.dcMotor.get("rightRear");
 
         catapultMotor = hardwareMap.dcMotor.get("catapult");
+        gyro = (ModernRoboticsI2cGyro) hardwareMap.i2cDevice.get("gyro");
 
         frontRightMotor.setDirection(DcMotor.Direction.REVERSE);
         backRightMotor.setDirection(DcMotor.Direction.REVERSE);
@@ -48,6 +54,7 @@ public class Team1Auto extends OpMode {
         backLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         catapultMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
 
         rightMotorOffset = backRightMotor.getCurrentPosition();
         catapultOffset = catapultMotor.getCurrentPosition();
@@ -62,7 +69,6 @@ public class Team1Auto extends OpMode {
 
         this.activateCatapult();
 
-        // TODO - Optimize code
         this.rotate(90, 0.3 ,'l');
 
         this.moveRobot(12,0.3);
@@ -121,8 +127,13 @@ public class Team1Auto extends OpMode {
 
     private void rotate(int degrees, double power, char direction){
         targetRotations = targetPosition(24 * Math.PI / (360/degrees));
+        double degreesInRotationFraction = degrees/360;
+
+        gyro.calibrate();
+        while(gyro.isCalibrating() == true){}
+
         if(direction == 'l') {
-            while (backLeftMotor.getCurrentPosition() - leftMotorOffset < targetRotations) {
+            while (gyro.getRotationFraction() < degreesInRotationFraction) {
                 frontLeftMotor.setPower(power);
                 frontRightMotor.setPower(-power);
                 backLeftMotor.setPower(power);
@@ -130,7 +141,7 @@ public class Team1Auto extends OpMode {
             }
         }
         else if (direction == 'r'){
-            while (backRightMotor.getCurrentPosition() - rightMotorOffset < targetRotations) {
+            while (gyro.getRotationFraction() < degreesInRotationFraction) {
                 frontLeftMotor.setPower(-power);
                 frontRightMotor.setPower(power);
                 backLeftMotor.setPower(-power);
