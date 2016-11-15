@@ -21,17 +21,14 @@ public class Team3AutoRed extends Team3Auto {
         this.shootBall();
         this.runIntake(5);
         this.shootBall();
-        this.autoDriveDistance(24, 0.6, 1.0);
-        /*
-        this.autoTurnInPlace(-90, 1.0);
-        this.autoDriveDistancePID(43, 1.0);
-        this.readBeacon(teamColor);
-        this.autoDriveDistancePID(6, 1.0);
-        this.resetServos();
-        this.autoDriveDistancePID(-10, 1.0);
-        this.turn(90, 1.0);
-        this.autoDriveDistancePID(36, 1.0);
-        */
+        this.autoTurnInPlace(135, 1.0);
+        this.autoDriveToBeacon();
+        this.autoPressBeacon();
+        this.autoTurnInPlace(90, 1.0);
+        this.autoDriveToBeacon();
+        this.autoPressBeacon();
+        this.autoTurnInPlace(20, 1.0);
+        this.autoDriveDistance(10, 1.0);
         requestOpModeStop();
     }
 }

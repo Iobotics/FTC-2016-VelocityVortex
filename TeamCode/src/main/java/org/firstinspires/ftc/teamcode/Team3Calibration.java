@@ -27,6 +27,9 @@ public class Team3Calibration extends OpMode {
     final double LEFT_SERVO_HOME  = 0.74;
     final double RIGHT_SERVO_HOME = 0.55;
 
+    final double REGULATOR_SERVO_MIN  = 0;
+    final double REGULATOR_SERVO_HOME = 1;
+
     // Member variables //
     int shooterOffset;
 
@@ -43,8 +46,10 @@ public class Team3Calibration extends OpMode {
     DcMotor intakeMotor;
     DcMotor shooterMotor;
 
-    Servo rightBeaconServo;
     Servo leftBeaconServo;
+    Servo rightBeaconServo;
+
+    Servo regulatorServo;
 
     ColorSensor sensorRGB;
     DeviceInterfaceModule cdim;
@@ -74,8 +79,12 @@ public class Team3Calibration extends OpMode {
         leftBeaconServo.scaleRange(LEFT_SERVO_MIN, LEFT_SERVO_HOME);
         rightBeaconServo.scaleRange(RIGHT_SERVO_MIN, RIGHT_SERVO_HOME);
 
+        regulatorServo.scaleRange(REGULATOR_SERVO_MIN, REGULATOR_SERVO_HOME);
+
         leftBeaconServo.setPosition(1);
         rightBeaconServo.setPosition(1);
+
+        regulatorServo.setPosition(1);
 
         ledState = false;
 
@@ -138,6 +147,7 @@ public class Team3Calibration extends OpMode {
         telemetry.addData("Green", sensorRGB.green());
         telemetry.addData("Blue", sensorRGB.blue());
         telemetry.addData("Shooter pos", shooterMotor.getCurrentPosition() - shooterOffset);
+        telemetry.addData("Regulator", regulatorServo.getPosition());
         telemetry.addData("Gyro", gyro.getHeading());
         telemetry.update();
     }

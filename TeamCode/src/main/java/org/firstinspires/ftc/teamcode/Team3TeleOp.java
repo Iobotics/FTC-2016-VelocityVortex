@@ -21,6 +21,9 @@ public class Team3TeleOp extends OpMode {
     final double LEFT_SERVO_HOME  = 0.74;
     final double RIGHT_SERVO_HOME = 0.55;
 
+    final double REGULATOR_SERVO_MIN  = 0;
+    final double REGULATOR_SERVO_HOME = 1;
+
     // Member variables //
     int shooterOffset;
 
@@ -35,9 +38,11 @@ public class Team3TeleOp extends OpMode {
     
     DcMotor intakeMotor;
     DcMotor shooterMotor;
-    
-    Servo rightBeaconServo;
+
     Servo leftBeaconServo;
+    Servo rightBeaconServo;
+
+    Servo regulatorServo;
 
     @Override
     public void init() {
@@ -52,6 +57,8 @@ public class Team3TeleOp extends OpMode {
         rightBeaconServo = hardwareMap.servo.get("rightBeacon");
         leftBeaconServo = hardwareMap.servo.get("leftBeacon");
 
+        regulatorServo = hardwareMap.servo.get("regulator");
+
         rightBackMotor.setDirection(DcMotor.Direction.REVERSE);
         rightFrontMotor.setDirection(DcMotor.Direction.REVERSE);
         
@@ -62,8 +69,12 @@ public class Team3TeleOp extends OpMode {
         leftBeaconServo.scaleRange(LEFT_SERVO_MIN, LEFT_SERVO_HOME);
         rightBeaconServo.scaleRange(RIGHT_SERVO_MIN, RIGHT_SERVO_HOME);
 
+        regulatorServo.scaleRange(REGULATOR_SERVO_MIN, REGULATOR_SERVO_HOME);
+
         leftBeaconServo.setPosition(1);
         rightBeaconServo.setPosition(1);
+
+        regulatorServo.setPosition(1);
     }
 
     @Override
@@ -107,6 +118,12 @@ public class Team3TeleOp extends OpMode {
             leftBeaconServo.setPosition((leftBeaconServo.getPosition() < 0.2) ? 1 : 0);
             leftBeaconButton = true;
         } else if(!gamepad1.x) leftBeaconButton = false;
+
+        if(gamepad1.y) {
+            regulatorServo.setPosition(0);
+        } else {
+            regulatorServo.setPosition(1);
+        }
     }
 
     private int getShooterPosition() {

@@ -371,9 +371,8 @@ public class Team3Auto extends OpMode {
 
     /**
      * Press the beacon with your team's color
-     * @param teamColor
      */
-    protected void autoPressBeacon(FtcColor teamColor) {
+    protected void autoPressBeacon() {
         if(sensorRGB.red() >= RED_THRESHOLD && sensorRGB.blue() <= BLUE_THRESHOLD && teamColor == FtcColor.RED) {
             leftBeaconServo.setPosition(LEFT_SERVO_MIN);
         } else {
