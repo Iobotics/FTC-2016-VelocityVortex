@@ -4,6 +4,7 @@ import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.vuforia.ar.pl.SystemTools;
 
@@ -13,12 +14,13 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  * Created by Teacher on 9/28/2016.
  */
 
-@Autonomous(name = "Team 2: Autonomous", group = "Team 2")
+@Autonomous(name = "Team 1: Autonomous w/o encoders", group = "Team 1")
 //@Disabled
-public class Team2Auto extends OpMode {
-	final int    ENCODER_TICKS_PER_REV = 1120; // Neverest 40
-	final int 	 CATAPULT_TICKS 	   = 3 * ENCODER_TICKS_PER_REV; // Three rotations
-	final int    CHASSIS_DIAMETER	   = 18; // CM
+public class Team1AutoWithoutEncoders extends OpMode {
+
+    final int    ENCODER_TICKS_PER_REV = 1120; // Neverest 40
+    final int 	 CATAPULT_TICKS 	   = 3 * ENCODER_TICKS_PER_REV; // Three rotations
+    final int    CHASSIS_DIAMETER	   = 18; // CM
     final int    WHEEL_DIAMETER        = 10; // CM
     final double CM_PER_TICK		   = (WHEEL_DIAMETER * Math.PI) / ENCODER_TICKS_PER_REV; // CM / REV
 
@@ -33,7 +35,6 @@ public class Team2Auto extends OpMode {
 
     int leftOffset;
     int catapultOffset;
-    int intakeOffset;
 
     long startTime;
 
@@ -49,8 +50,8 @@ public class Team2Auto extends OpMode {
         catapultMotor = hardwareMap.dcMotor.get("catapult");
         intakeMotor = hardwareMap.dcMotor.get("intakeMotor");
 
-        frontRightMotor.setDirection(DcMotor.Direction.REVERSE);
         backRightMotor.setDirection(DcMotor.Direction.REVERSE);
+        frontLeftMotor.setDirection(DcMotor.Direction.REVERSE);
 
         backLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -60,35 +61,28 @@ public class Team2Auto extends OpMode {
         catapultMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         time = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+
     }
 
     @Override
     public void loop() {
+        moveForwardTime(1800, 1.0);
 
-        moveForward(30, 1);
+        activateCatapultTime();
 
-        activateCatapult();
+        activateIntake(1500, 1);
 
-        activateIntake(4, -1);
+        activateCatapultTime();
 
-        activateCatapult();
+        moveForwardTime(900, 1.0);
 
-        moveForward(30, 1);
-
-        turnDegrees(45,1, 'R');
-
-        moveForward(5, 0.5);
-
-        requestOpModeStop();
+        this.requestOpModeStop();
     }
 
     @Override
 
-    public void stop() {
-        backRightMotor.setPower(0);
-        frontLeftMotor.setPower(0);
-        backLeftMotor.setPower(0);
-        frontRightMotor.setPower(0);
+    public void stop(){
+        time.reset();
     }
 
     /**
@@ -178,9 +172,9 @@ public class Team2Auto extends OpMode {
     }
 
     private void activateCatapultTime() {
-        startTime = System.currentTimeMillis();
+        time.reset();
 
-        while((System.currentTimeMillis() - startTime) < 1200) {
+        while(time.milliseconds() < 1700) {
             catapultMotor.setPower(1);
         }
 
@@ -188,9 +182,9 @@ public class Team2Auto extends OpMode {
     }
 
     private void moveForwardTime(double targetTimeMil, double targetPower){
-        startTime = System.currentTimeMillis();
+        time.reset();
 
-        while((System.currentTimeMillis() - startTime) < targetTimeMil){
+        while(time.milliseconds() < targetTimeMil){
             frontLeftMotor.setPower(targetPower);
             backLeftMotor.setPower(targetPower);
             backRightMotor.setPower(targetPower);
@@ -202,10 +196,11 @@ public class Team2Auto extends OpMode {
         backRightMotor.setPower(0);
     }
 
-    private void activateIntake(int targetRotations, double targetPower){
-        intakeOffset = intakeMotor.getCurrentPosition();
-        while((intakeMotor.getCurrentPosition() - intakeOffset) < targetRotations * 1120){
-            intakeMotor.setPower(targetPower);
+    private void activateIntake(double targetTimeMil, int targetPowerIntake){
+        time.reset();
+
+        while(time.milliseconds() < targetTimeMil) {
+            intakeMotor.setPower(targetPowerIntake);
         }
         intakeMotor.setPower(0);
     }

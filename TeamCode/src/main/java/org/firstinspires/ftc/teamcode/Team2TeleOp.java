@@ -73,7 +73,7 @@ public class Team2TeleOp extends OpMode {
         if(gamepad1.left_bumper) {
             intakeMotor.setPower(-1.0);
         }
-        else if(gamepad1.left_trigger > 0) {
+        else if(gamepad1.left_trigger > 0.1) {
             intakeMotor.setPower(1.0);
         }
         else {
