@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -13,16 +14,17 @@ import com.qualcomm.robotcore.hardware.Servo;
 //@Disabled
 public class Team3TeleOp extends OpMode {
 
-	
 	// Constants //
-    final int SHOOTER_ROTATION 	  = 760;
+    final int SHOOTER_ROTATION 	  = 730;
     final double LEFT_SERVO_MIN   = 0.132;
     final double RIGHT_SERVO_MIN  = 0;
     final double LEFT_SERVO_HOME  = 0.74;
     final double RIGHT_SERVO_HOME = 0.55;
 
     final double REGULATOR_SERVO_MIN  = 0;
-    final double REGULATOR_SERVO_HOME = 1;
+    final double REGULATOR_SERVO_HOME = 0.7;
+
+    final long REGULATOR_TIME = 800;
 
     // Member variables //
     int shooterOffset;
@@ -75,6 +77,8 @@ public class Team3TeleOp extends OpMode {
         rightBeaconServo.setPosition(1);
 
         regulatorServo.setPosition(1);
+
+        gamepad1.setJoystickDeadzone((float) 0.05);
     }
 
     @Override
@@ -102,6 +106,11 @@ public class Team3TeleOp extends OpMode {
             }
             shooterMotor.setPower(0);
             shooterOffset = shooterMotor.getCurrentPosition();
+            long startTime = System.currentTimeMillis();
+            while(System.currentTimeMillis() - startTime < REGULATOR_TIME) {
+                regulatorServo.setPosition(0);
+            }
+            regulatorServo.setPosition(1);
         }
         if(gamepad1.left_bumper) {
             shooterMotor.setPower(0.6);
@@ -118,12 +127,6 @@ public class Team3TeleOp extends OpMode {
             leftBeaconServo.setPosition((leftBeaconServo.getPosition() < 0.2) ? 1 : 0);
             leftBeaconButton = true;
         } else if(!gamepad1.x) leftBeaconButton = false;
-
-        if(gamepad1.y) {
-            regulatorServo.setPosition(0);
-        } else {
-            regulatorServo.setPosition(1);
-        }
     }
 
     private int getShooterPosition() {

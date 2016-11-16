@@ -38,7 +38,7 @@ public class Team3Auto extends OpMode {
     // TODO - Find thresholds
     protected final int RED_THRESHOLD      = 3000;
     protected final int BLUE_THRESHOLD     = 3000;
-    protected final double LIGHT_THRESHOLD = 0.6;
+    protected final double LIGHT_THRESHOLD = 0.24;
 
     // FTC Field constants //
     protected final double CENTER_TO_LINE = 3; // TODO - Calibrate
@@ -216,8 +216,9 @@ public class Team3Auto extends OpMode {
     }
 
     protected void driveToLine() {
+        //this.autoDriveDistance(10, 1.0);
         while(!this.lineDetected()) {
-            this.setPower(1.0);
+            this.setPower(-0.5);
         }
         this.setPower(0.0);
     }
@@ -231,6 +232,7 @@ public class Team3Auto extends OpMode {
                 this.setPower(1.0, -1.0);
             }
         }
+        this.setPower(0);
     }
 
 

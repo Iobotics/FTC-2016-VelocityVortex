@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.hardware.adafruit.AdafruitI2cColorSensor;
@@ -11,7 +12,7 @@ import com.qualcomm.robotcore.hardware.DigitalChannelController;
  */
 
 @TeleOp(name = "Color Sensor Test", group = "Color Sensor")
-//@Disabled
+@Disabled
 public class ColorSensorTest extends OpMode {
 
     AdafruitI2cColorSensor colorSensorL;

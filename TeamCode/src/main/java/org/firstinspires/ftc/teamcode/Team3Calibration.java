@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.DigitalChannelController;
-import com.qualcomm.robotcore.hardware.LED;
 import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -21,17 +20,20 @@ public class Team3Calibration extends OpMode {
 
 	// Constants //
     final int LED_PORT            = 5;
-    final int SHOOTER_ROTATION 	  = 760;
+    final int SHOOTER_ROTATION 	  = 730;
     final double LEFT_SERVO_MIN	  = 0.132;
     final double RIGHT_SERVO_MIN  = 0;
     final double LEFT_SERVO_HOME  = 0.74;
     final double RIGHT_SERVO_HOME = 0.55;
 
     final double REGULATOR_SERVO_MIN  = 0;
-    final double REGULATOR_SERVO_HOME = 1;
+    final double REGULATOR_SERVO_HOME = 0.7;
+
+    final double LIGHT_THRESHOLD = 0.24;
 
     // Member variables //
     int shooterOffset;
+    double lightOffset;
 
     boolean ledState = false;
     boolean leftBeaconButton = false;
@@ -76,6 +78,8 @@ public class Team3Calibration extends OpMode {
         leftBeaconServo = hardwareMap.servo.get("leftBeacon");
         rightBeaconServo = hardwareMap.servo.get("rightBeacon");
 
+        regulatorServo = hardwareMap.servo.get("regulator");
+
         leftBeaconServo.scaleRange(LEFT_SERVO_MIN, LEFT_SERVO_HOME);
         rightBeaconServo.scaleRange(RIGHT_SERVO_MIN, RIGHT_SERVO_HOME);
 
@@ -99,6 +103,9 @@ public class Team3Calibration extends OpMode {
         gyro.calibrate();
 
         lightSensor = hardwareMap.lightSensor.get("light");
+        lightSensor.enableLed(true);
+
+        gamepad1.setJoystickDeadzone((float) 0.05);
     }
 
     @Override
@@ -142,7 +149,13 @@ public class Team3Calibration extends OpMode {
             leftBeaconButton = true;
         } else if(!gamepad1.x) leftBeaconButton = false;
 
+        if(gamepad1.a) {
+            lightOffset = lightSensor.getLightDetected();
+        }
+
         telemetry.addData("Light Sensor", lightSensor.getLightDetected());
+        telemetry.addData("Line detected", (lightSensor.getLightDetected() >= LIGHT_THRESHOLD));
+        telemetry.addData("Alpha", sensorRGB.alpha());
         telemetry.addData("Red", sensorRGB.red());
         telemetry.addData("Green", sensorRGB.green());
         telemetry.addData("Blue", sensorRGB.blue());
