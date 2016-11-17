@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -14,7 +15,7 @@ import java.lang.Math;
  */
 
 @Autonomous(name ="CenterDriveAuto: Autonomous", group ="CenterDriveAuto")
-//@Disabled
+@Disabled
 public class CenterDriveAuto extends OpMode {
 
     DcMotor rightFrontMotor;

@@ -43,6 +43,8 @@ public class Team1TeleOp extends OpMode {
 
         intakeMotor.setDirection(DcMotor.Direction.REVERSE);
 
+        catapultMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
         catapultMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         catapultOffset = catapultMotor.getCurrentPosition();
 
@@ -102,8 +104,17 @@ public class Team1TeleOp extends OpMode {
         else{
             catapultMotor.setPower(0);
         }
+        /*
+        if (gamepad1.right_trigger>0);
+        {
+            time = System.currentTimeMillis();
 
-        telemetry.addData("Catapult Motor Position", catapultMotor.getCurrentPosition());
-        telemetry.update();
+            while ((System.currentTimeMillis() - time) < 1500) {
+                catapultMotor.setPower(1);
+            }
+
+            catapultMotor.setPower(0);
+        }
+        */
     }
 }

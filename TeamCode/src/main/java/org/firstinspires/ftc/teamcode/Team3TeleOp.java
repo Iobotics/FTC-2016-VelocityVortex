@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -13,13 +14,17 @@ import com.qualcomm.robotcore.hardware.Servo;
 //@Disabled
 public class Team3TeleOp extends OpMode {
 
-	
 	// Constants //
-    final int SHOOTER_ROTATION 	  = 765;
+    final int SHOOTER_ROTATION 	  = 730;
     final double LEFT_SERVO_MIN   = 0.132;
     final double RIGHT_SERVO_MIN  = 0;
     final double LEFT_SERVO_HOME  = 0.74;
     final double RIGHT_SERVO_HOME = 0.55;
+
+    final double REGULATOR_SERVO_MIN  = 0;
+    final double REGULATOR_SERVO_HOME = 0.7;
+
+    final long REGULATOR_TIME = 800;
 
     // Member variables //
     int shooterOffset;
@@ -35,9 +40,11 @@ public class Team3TeleOp extends OpMode {
     
     DcMotor intakeMotor;
     DcMotor shooterMotor;
-    
-    Servo rightBeaconServo;
+
     Servo leftBeaconServo;
+    Servo rightBeaconServo;
+
+    Servo regulatorServo;
 
     @Override
     public void init() {
@@ -52,6 +59,8 @@ public class Team3TeleOp extends OpMode {
         rightBeaconServo = hardwareMap.servo.get("rightBeacon");
         leftBeaconServo = hardwareMap.servo.get("leftBeacon");
 
+        regulatorServo = hardwareMap.servo.get("regulator");
+
         rightBackMotor.setDirection(DcMotor.Direction.REVERSE);
         rightFrontMotor.setDirection(DcMotor.Direction.REVERSE);
         
@@ -62,8 +71,14 @@ public class Team3TeleOp extends OpMode {
         leftBeaconServo.scaleRange(LEFT_SERVO_MIN, LEFT_SERVO_HOME);
         rightBeaconServo.scaleRange(RIGHT_SERVO_MIN, RIGHT_SERVO_HOME);
 
+        regulatorServo.scaleRange(REGULATOR_SERVO_MIN, REGULATOR_SERVO_HOME);
+
         leftBeaconServo.setPosition(1);
         rightBeaconServo.setPosition(1);
+
+        regulatorServo.setPosition(1);
+
+        gamepad1.setJoystickDeadzone((float) 0.05);
     }
 
     @Override
@@ -91,9 +106,14 @@ public class Team3TeleOp extends OpMode {
             }
             shooterMotor.setPower(0);
             shooterOffset = shooterMotor.getCurrentPosition();
+            long startTime = System.currentTimeMillis();
+            while(System.currentTimeMillis() - startTime < REGULATOR_TIME) {
+                regulatorServo.setPosition(0);
+            }
+            regulatorServo.setPosition(1);
         }
         if(gamepad1.left_bumper) {
-            shooterMotor.setPower(1);
+            shooterMotor.setPower(0.6);
         } else {
             shooterMotor.setPower(0);
         }

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -12,7 +13,7 @@ import com.qualcomm.robotcore.hardware.Servo;
     //When you turn on the robot the FTC app will automatically open.
     //Start+A button on remote to start TeleOp
 @TeleOp(name="TestRobot: Teleop", group="TestRobot") //Alt enter to import code
-//@Disabled
+@Disabled
 public class TestRobotTeleOp extends OpMode {
     DcMotor frontLeftMotor;
     DcMotor frontRightMotor;

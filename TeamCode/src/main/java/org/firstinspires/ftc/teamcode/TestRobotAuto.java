@@ -20,7 +20,7 @@ import static org.firstinspires.ftc.teamcode.SuperK9Base.FtcColor.NONE;
  */
 
 @Autonomous(name="TestRobot: Autonomous", group="TestRobot")
-//@Disabled
+@Disabled
 public class TestRobotAuto extends OpMode {
     DcMotor frontLeftMotor;
     DcMotor frontRightMotor;
