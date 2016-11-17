@@ -20,7 +20,7 @@ public class Team1TeleOp extends OpMode {
     DcMotor intakeMotor;
     DcMotor catapultMotor;
 
-    final int CATAPULT_TICKS = -(3 * 1120); // Three rotations
+    final int CATAPULT_TICKS = 3 * 1120; // Three rotations
 
     int catapultOffset;
 
@@ -72,7 +72,7 @@ public class Team1TeleOp extends OpMode {
         }
 
         if(gamepad1.right_trigger > 0) {
-            while(catapultMotor.getCurrentPosition() - catapultOffset > CATAPULT_TICKS) {
+            while(catapultMotor.getCurrentPosition() - catapultOffset < CATAPULT_TICKS) {
                 catapultMotor.setPower(1);
             }
             catapultMotor.setPower(0);
