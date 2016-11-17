@@ -10,14 +10,14 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 //@Disabled
 public class Team3AutoTest extends Team3Auto {
     @Override
-    public void init() {
-        super.init();
+    public void robot_init() {
         teamColor = FtcColor.RED;
     }
 
     @Override
-    public void loop() {
-        this.autoDriveToBeacon();
+    public void robot_loop() {
+        this.autoDriveDistance(10, 0.7);
+        //this.autoDriveToBeacon();
         /*this.autoDriveDistance(28, 1.0, 1.0);
         this.shootBall();
         this.runIntake(5);
@@ -30,7 +30,6 @@ public class Team3AutoTest extends Team3Auto {
         this.autoPressBeacon();
         this.autoTurnInPlace(-20, 1.0);
         this.autoDriveDistance(10, 1.0);*/
-        requestOpModeStop();
     }
 }
 

@@ -49,6 +49,7 @@ public class Team3Auto extends OpMode {
     protected int rightOffset;
     protected int intakeOffset;
     protected int shooterOffset;
+    protected double lightOffset;
     protected boolean ledState;
     protected FtcColor teamColor;
 
@@ -69,7 +70,7 @@ public class Team3Auto extends OpMode {
 
     private ModernRoboticsI2cGyro gyro;
 
-    private LightSensor lightSensor;
+    protected LightSensor lightSensor;
 
     /************** OpMode methods **************/
 
@@ -111,19 +112,34 @@ public class Team3Auto extends OpMode {
         gyro.setHeadingMode(ModernRoboticsI2cGyro.HeadingMode.HEADING_CARTESIAN);
         gyro.calibrate();
 
+        this.wait(200);
+
         lightSensor = hardwareMap.lightSensor.get("light");
 
         this.runUsingEncoders();
         this.resetEncoders();
+
+        this.robot_init();
     }
 
     @Override
-    public void loop() { }
+    public void loop() {
+        telemetry.addData("Light sensor", lightSensor.getLightDetected());
+        telemetry.addData("Line detected", (lightSensor.getLightDetected() >= LIGHT_THRESHOLD));
+        this.robot_loop();
+        requestOpModeStop();
+    }
 
     @Override
     public void stop() {
-        this.setPower(0);
+        this.robot_stop();
     }
+
+    protected void robot_init() { }
+
+    protected void robot_loop() { }
+
+    protected void robot_stop() { }
 
     /************** Utility methods **************/
 
@@ -150,6 +166,10 @@ public class Team3Auto extends OpMode {
         rightBeaconServo.setPosition(1);
     }
 
+    protected void resetLightSensor() {
+        lightOffset = lightSensor.getLightDetected();
+    }
+
     protected void calibrateGyro() {
         gyro.calibrate();
         while(gyro.isCalibrating()) {
@@ -173,13 +193,13 @@ public class Team3Auto extends OpMode {
     protected void setPower(double leftPower, double rightPower) {
         if(leftPower < 0) {
             leftPower += LEFT_POWER_OFFSET;
-        } else {
+        } else if(leftPower > 0) {
             leftPower -= LEFT_POWER_OFFSET;
         }
 
         if(rightPower < 0) {
             rightPower += RIGHT_POWER_OFFSET;
-        } else {
+        } else if(rightPower > 0) {
             rightPower -= RIGHT_POWER_OFFSET;
         }
 
@@ -204,6 +224,10 @@ public class Team3Auto extends OpMode {
         return shooterMotor.getCurrentPosition() - shooterOffset;
     }
 
+    protected double getLight() {
+        return lightSensor.getLightDetected() - lightOffset;
+    }
+
     protected void wait(int milliseconds) {
         long initTime = System.currentTimeMillis();
         while(System.currentTimeMillis() - initTime < milliseconds) {
@@ -212,11 +236,10 @@ public class Team3Auto extends OpMode {
     }
 
     protected boolean lineDetected() {
-        return (lightSensor.getLightDetected() > LIGHT_THRESHOLD);
+        return (lightSensor.getLightDetected() >= LIGHT_THRESHOLD);
     }
 
     protected void driveToLine() {
-        //this.autoDriveDistance(10, 1.0);
         while(!this.lineDetected()) {
             this.setPower(-0.5);
         }
@@ -254,7 +277,7 @@ public class Team3Auto extends OpMode {
      * @param rightPower (positive)
      */
     protected void autoDriveDistance(double distance, double leftPower, double rightPower) {
-        if(leftPower < 0 || rightPower < 0) throw new IllegalArgumentException("power = " + ((leftPower < 0) ? leftPower : rightPower));
+        //if(leftPower < 0 || rightPower < 0) throw new IllegalArgumentException("power = " + ((leftPower < 0) ? leftPower : rightPower));
         if(distance < 0) {
             leftPower = -leftPower;
             rightPower = -rightPower;
@@ -367,8 +390,8 @@ public class Team3Auto extends OpMode {
 
     protected void autoDriveToBeacon() {
         this.driveToLine();
-        this.alignToLine();
-        this.autoDriveDistance(BEACON_DISTANCE, 1.0);
+        //this.alignToLine();
+        //this.autoDriveDistance(BEACON_DISTANCE, 1.0);
     }
 
     /**
