@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
  * Created by Teacher on 9/28/2016.
@@ -22,11 +20,9 @@ public class Team1TeleOp extends OpMode {
     DcMotor intakeMotor;
     DcMotor catapultMotor;
 
-    final int CATAPULT_TICKS = 3 * 1120; // Three rotations
+    final int CATAPULT_TICKS = -(3 * 1120); // Three rotations
 
     int catapultOffset;
-
-    //ElapsedTime time;
 
     @Override
     public void init() {
@@ -42,13 +38,12 @@ public class Team1TeleOp extends OpMode {
         catapultMotor = hardwareMap.dcMotor.get("catapult");
 
         intakeMotor.setDirection(DcMotor.Direction.REVERSE);
-
-        catapultMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        catapultMotor.setDirection(DcMotor.Direction.REVERSE);
 
         catapultMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         catapultOffset = catapultMotor.getCurrentPosition();
 
-        gamepad1.setJoystickDeadzone((float) .1);
+        gamepad1.setJoystickDeadzone((float) 0.05);
 }
 
     @Override
@@ -71,50 +66,20 @@ public class Team1TeleOp extends OpMode {
             intakeMotor.setPower(0);
         }
 
-        if(gamepad1.right_trigger>0){
-
-        }
-            /*
-             while((catapultMotor.getCurrentPosition() - catapultOffset) < CATAPULT_TICKS) {
-                 catapultMotor.setPower(1);
-                 leftFrontMotor.setPower(gamepad1.left_stick_y);
-                 leftBackMotor.setPower(gamepad1.left_stick_y);
-                 rightFrontMotor.setPower(gamepad1.right_stick_y);
-                 rightBackMotor.setPower(gamepad1.right_stick_y);
-             }
-             catapultMotor.setPower(0);
-             catapultOffset = catapultMotor.getCurrentPosition();
-        }*/
-        if(gamepad1.right_trigger>0){
-            /*
-            time.reset();
-            while(time.milliseconds()<1500){
-                // Tank drive
-                leftFrontMotor.setPower(gamepad1.left_stick_y);
-                leftBackMotor.setPower(gamepad1.left_stick_y);
-                rightFrontMotor.setPower(gamepad1.right_stick_y);
-                rightBackMotor.setPower(gamepad1.right_stick_y);
-
-                catapultMotor.setPower(1);
-            }
-            catapultMotor.setPower(0);
-            */
+        if(gamepad1.x){
             catapultMotor.setPower(1);
         }
         else{
             catapultMotor.setPower(0);
         }
-        /*
-        if (gamepad1.right_trigger>0);
-        {
-            time = System.currentTimeMillis();
 
-            while ((System.currentTimeMillis() - time) < 1500) {
+        if(gamepad1.right_trigger > 0) {
+            while(catapultMotor.getCurrentPosition() - catapultOffset > CATAPULT_TICKS) {
                 catapultMotor.setPower(1);
             }
-
             catapultMotor.setPower(0);
+            catapultOffset = catapultMotor.getCurrentPosition();
         }
-        */
     }
+
 }

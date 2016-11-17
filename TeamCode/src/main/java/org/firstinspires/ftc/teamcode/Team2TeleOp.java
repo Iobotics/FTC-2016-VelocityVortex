@@ -24,7 +24,6 @@ public class Team2TeleOp extends OpMode {
     final int CATAPULT_TICKS = 3 * 1120; // Three rotations
 
     int catapultOffset;
-    int x =0;
 
     @Override
     public void init() {
@@ -39,41 +38,23 @@ public class Team2TeleOp extends OpMode {
         leftBackMotor.setDirection(DcMotor.Direction.REVERSE);
         leftFrontMotor.setDirection(DcMotor.Direction.REVERSE);
 
-
         catapultMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         catapultOffset = catapultMotor.getCurrentPosition();
 
-        gamepad1.setJoystickDeadzone((float) .1);
-
-        leftFrontMotor.setPower(0);
-        rightBackMotor.setPower(0);
-        rightFrontMotor.setPower(0);
-        leftBackMotor.setPower(0);
-        intakeMotor.setPower(0);
-        catapultMotor.setPower(0);
-
-}
+        gamepad1.setJoystickDeadzone((float) 0.05);
+    }
 
     @Override
     public void loop() {
-    while(x == 0){
-            leftFrontMotor.setPower(0);
-            rightBackMotor.setPower(0);
-            rightFrontMotor.setPower(0);
-            leftBackMotor.setPower(0);
-            intakeMotor.setPower(0);
-            catapultMotor.setPower(0);
-            x = 1;
-        }
     	leftFrontMotor.setPower(gamepad1.left_stick_y);
         rightBackMotor.setPower(gamepad1.right_stick_y);
         rightFrontMotor.setPower(gamepad1.right_stick_y);
         leftBackMotor.setPower(gamepad1.left_stick_y);
 
-        if(gamepad1.left_bumper) {
+        if(gamepad1.left_trigger > 0) {
             intakeMotor.setPower(-1.0);
         }
-        else if(gamepad1.left_trigger > 0.1) {
+        else if(gamepad1.left_bumper) {
             intakeMotor.setPower(1.0);
         }
         else {
@@ -107,10 +88,17 @@ public class Team2TeleOp extends OpMode {
         } else {
             catapultMotor.setPower(0.0);
         }
+
+        if(gamepad1.x) {
+            while(catapultMotor.getCurrentPosition() - catapultOffset < CATAPULT_TICKS) {
+                catapultMotor.setPower(1);
+            }
+            catapultMotor.setPower(0);
+            catapultOffset = catapultMotor.getCurrentPosition();
+        }
+
         telemetry.addData("Ticks", catapultMotor.getCurrentPosition() - catapultOffset);
         telemetry.addData("Intake motor", intakeMotor.getPower());
-        telemetry.addData("catapult offset", catapultOffset);
-        telemetry.addData("catapult ticks",catapultMotor.getCurrentPosition());
         telemetry.update();
     }
 }

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -19,6 +20,8 @@ public class Team1Calibration extends OpMode {
     DcMotor catapultMotor;
     DcMotor intakeMotor;
 
+  //  ModernRoboticsI2cGyro gyro;
+
     @Override
     public void init() {
         frontLeftMotor = hardwareMap.dcMotor.get("leftFront");
@@ -27,6 +30,11 @@ public class Team1Calibration extends OpMode {
         backRightMotor = hardwareMap.dcMotor.get("rightRear");
         catapultMotor = hardwareMap.dcMotor.get("catapult");
 
+/*
+        gyro = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
+        gyro.setHeadingMode(ModernRoboticsI2cGyro.HeadingMode.HEADING_CARTESIAN);
+        gyro.calibrate();
+*/
     }
     @Override
     public void loop() {
@@ -86,7 +94,8 @@ public class Team1Calibration extends OpMode {
         telemetry.addData("backRight Motor Position", backRightMotor.getCurrentPosition());
         telemetry.addData("Catapult Motor Position", catapultMotor.getCurrentPosition());
         telemetry.addData("Intake Motor Position", intakeMotor.getCurrentPosition());
-        telemetry.update();
+        //telemetry.addData("Gyro Sensor", gyro.getHeading());
+        //telemetry.update();
     }
     @Override
     public void stop() {
