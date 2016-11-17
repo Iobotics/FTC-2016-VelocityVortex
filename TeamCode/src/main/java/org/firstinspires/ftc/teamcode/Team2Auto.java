@@ -27,9 +27,9 @@ public class Team2Auto extends OpMode {
     DcMotor frontRightMotor;
     DcMotor backLeftMotor;
     DcMotor backRightMotor;
-
     DcMotor intakeMotor;
     DcMotor catapultMotor;
+    ModernRoboticsI2cGyro gyro;
 
     int leftOffset;
     int catapultOffset;
@@ -49,6 +49,8 @@ public class Team2Auto extends OpMode {
         catapultMotor = hardwareMap.dcMotor.get("catapult");
         intakeMotor = hardwareMap.dcMotor.get("intakeMotor");
 
+        gyro =  (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
+
         frontRightMotor.setDirection(DcMotor.Direction.REVERSE);
         backRightMotor.setDirection(DcMotor.Direction.REVERSE);
 
@@ -60,6 +62,8 @@ public class Team2Auto extends OpMode {
         catapultMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         time = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+        gyro.setHeadingMode(ModernRoboticsI2cGyro.HeadingMode.HEADING_CARTESIAN);
+        gyro.calibrate();
     }
 
     @Override
@@ -74,10 +78,6 @@ public class Team2Auto extends OpMode {
         activateCatapult();
 
         moveForward(30, 1);
-
-        turnDegrees(45,1, 'R');
-
-        moveForward(5, 0.5);
 
         requestOpModeStop();
     }
@@ -135,9 +135,9 @@ public class Team2Auto extends OpMode {
         leftOffset = frontLeftMotor.getCurrentPosition();
     }
     /*
-    Method that turns a trget amount of degrees at target power in target direction
+    Method that turns a ta rget amount of degrees at target power in target direction
     */
-    private void turnDegrees (int targetDegrees, double targetPower, char direction) {
+    private void turnDegreesUsingEncoders (int targetDegrees, double targetPower, char direction) {
         int distanceToTurn = distance(rotation(targetDegrees));
 
         if (direction == 'L') {
@@ -187,7 +187,12 @@ public class Team2Auto extends OpMode {
         catapultMotor.setPower(0);
     }
 
-    private void moveForwardTime(double targetTimeMil, double targetPower){
+    /**
+     * Moves forward for a target duration using system time
+     * @param targetTimeMil
+     * @param targetPower
+     */
+    private void moveForwardTime(long targetTimeMil, double targetPower){
         startTime = System.currentTimeMillis();
 
         while((System.currentTimeMillis() - startTime) < targetTimeMil){
@@ -202,6 +207,11 @@ public class Team2Auto extends OpMode {
         backRightMotor.setPower(0);
     }
 
+    /**
+     * rotates the intake by an amount of target rotations using encoders
+     * @param targetRotations
+     * @param targetPower
+     */
     private void activateIntake(int targetRotations, double targetPower){
         intakeOffset = intakeMotor.getCurrentPosition();
         while((intakeMotor.getCurrentPosition() - intakeOffset) < targetRotations * 1120){
@@ -210,4 +220,36 @@ public class Team2Auto extends OpMode {
         intakeMotor.setPower(0);
     }
 
+    /**
+     * Runs the intake for a chosen duration at target power using system time
+     * @param targetDuration
+     * @param targetPower
+     */
+    private void activateIntakeTime(int targetDuration, double targetPower){
+        startTime = System.currentTimeMillis();
+
+        while((System.currentTimeMillis() - startTime) < targetDuration){
+            intakeMotor.setPower(targetPower);
+        }
+        intakeMotor.setPower(0);
+    }
+
+    /**
+     * Method that turns target degrees using the gyro sensor
+     * @param targetPower
+     * @param targetDegrees
+     */
+    private void turnUsingGyro(double targetPower, int targetDegrees){
+        gyro.calibrate();
+        if(targetDegrees > 180){
+            targetPower = -targetPower;
+        }
+        while(gyro.getHeading() < targetDegrees){
+            frontLeftMotor.setPower(-targetPower);
+            frontRightMotor.setPower(targetPower);
+            backLeftMotor.setPower(-targetPower);
+            backRightMotor.setPower(targetPower);
+        }
+        gyro.calibrate();
+    }
 }

@@ -13,68 +13,60 @@ import com.qualcomm.robotcore.hardware.Servo;
 //@Disabled
 public class Team2Calibration extends OpMode {
 
-    final double LEFT_SERVO_HOME = 0.45;
-    final double RIGHT_SERVO_HOME = 0.55;
     final int TARGET_POS = 1120; // TODO - Calibrate value
 
     int shooterOffset;
 
-    DcMotor rightFrontMotor;
-    DcMotor leftFrontMotor;
-    DcMotor rightBackMotor;
-    DcMotor leftBackMotor;
+    DcMotor frontRightMotor;
+    DcMotor frontLeftMotor;
+    DcMotor backRightMotor;
+    DcMotor backLeftMotor;
 
     DcMotor intakeMotor;
-    DcMotor shooterMotor;
-
-    int leftRearOffset;
-    int rightRearOffset;
-    int leftFrontOffset;
-    int rightFrontOffset;
+    DcMotor catapultMotor;
 
     @Override
     public void init() {
-        leftFrontMotor = hardwareMap.dcMotor.get("leftFront");
-        rightFrontMotor = hardwareMap.dcMotor.get("rightFront");
-        leftBackMotor = hardwareMap.dcMotor.get("leftRear");
-        rightBackMotor = hardwareMap.dcMotor.get("rightRear");
+        frontLeftMotor = hardwareMap.dcMotor.get("leftFront");
+        frontRightMotor = hardwareMap.dcMotor.get("rightFront");
+        backLeftMotor = hardwareMap.dcMotor.get("leftRear");
+        backRightMotor = hardwareMap.dcMotor.get("rightRear");
 
         intakeMotor = hardwareMap.dcMotor.get("intakeMotor");
-        shooterMotor = hardwareMap.dcMotor.get("catapult");
+        catapultMotor = hardwareMap.dcMotor.get("catapult");
 
-        leftBackMotor.setDirection(DcMotor.Direction.REVERSE);
-        leftFrontMotor.setDirection(DcMotor.Direction.REVERSE);
+        backRightMotor.setDirection(DcMotor.Direction.REVERSE);
+        frontLeftMotor.setDirection(DcMotor.Direction.REVERSE);
 
-        shooterMotor.setDirection(DcMotor.Direction.REVERSE);
-        shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        shooterOffset = shooterMotor.getCurrentPosition();
-        leftFrontOffset = leftFrontMotor.getCurrentPosition();
-        leftRearOffset = leftBackMotor.getCurrentPosition();
-        rightFrontOffset = leftFrontMotor.getCurrentPosition();
-        rightRearOffset = rightBackMotor.getCurrentPosition();
+        catapultMotor.setDirection(DcMotor.Direction.REVERSE);
+        catapultMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooterOffset = catapultMotor.getCurrentPosition();
 
-        gamepad1.setJoystickDeadzone((float) .1);
+        frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        gamepad1.setJoystickDeadzone((float) 0.05);
     }
 
     @Override
     public void loop() {
+        frontLeftMotor.setPower(gamepad1.left_stick_y);
+        backRightMotor.setPower(gamepad1.right_stick_y);
+        frontRightMotor.setPower(gamepad1.right_stick_y);
+        backLeftMotor.setPower(gamepad1.left_stick_y);
 
         // Left trigger to use shooter
         if(gamepad1.left_trigger > 0) {
-            while((shooterMotor.getCurrentPosition() - shooterOffset) < TARGET_POS) {
-                shooterMotor.setPower(gamepad1.left_trigger);
-                telemetry.addData("Shooter position", shooterMotor.getCurrentPosition() - shooterOffset);
-                telemetry.update();
+            while((catapultMotor.getCurrentPosition() - shooterOffset) < TARGET_POS) {
+                catapultMotor.setPower(1);
             }
-            shooterMotor.setPower(0);
-            shooterOffset = shooterMotor.getCurrentPosition();
+            catapultMotor.setPower(0);
+            shooterOffset = catapultMotor.getCurrentPosition();
         }
 
-        telemetry.addData("Left front motor position", leftFrontMotor.getCurrentPosition()-leftFrontOffset);
-        telemetry.addData("Left rear motor position", leftBackMotor.getCurrentPosition()-leftRearOffset);
-        telemetry.addData("Right front motor position", rightFrontMotor.getCurrentPosition()-rightFrontOffset);
-        telemetry.addData("Right rear motor position", rightBackMotor.getCurrentPosition()-rightRearOffset);
-        telemetry.addData("Shooter pos", shooterMotor.getCurrentPosition() - shooterOffset);
+        telemetry.addData("Left front motor position", frontLeftMotor.getCurrentPosition());
+        telemetry.addData("Right front motor position", frontRightMotor.getCurrentPosition());
+        telemetry.addData("Shooter pos", catapultMotor.getCurrentPosition() - shooterOffset);
         telemetry.update();
     }
 }
