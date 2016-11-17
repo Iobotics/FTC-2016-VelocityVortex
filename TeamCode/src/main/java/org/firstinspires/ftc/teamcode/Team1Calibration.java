@@ -3,13 +3,16 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
  * Created by Teacher on 9/28/2016.
  */
 
-@Autonomous(name = "Team 1 Calibration: Teleop", group = "Team 1")
+@TeleOp(name = "Team 1 Calibration: Teleop", group = "Team 1")
 //@Disabled
 public class Team1Calibration extends OpMode {
 
@@ -21,6 +24,13 @@ public class Team1Calibration extends OpMode {
     DcMotor intakeMotor;
 
   //  ModernRoboticsI2cGyro gyro;
+    int frontLeftOffSet;
+    int frontRightOffSet;
+    int backLeftOffSet;
+    int backRightOffSet;
+    int catapultOffset;
+    int intakeOffSet;
+
 
     @Override
     public void init() {
@@ -28,16 +38,39 @@ public class Team1Calibration extends OpMode {
         frontRightMotor = hardwareMap.dcMotor.get("rightFront");
         backLeftMotor = hardwareMap.dcMotor.get("leftRear");
         backRightMotor = hardwareMap.dcMotor.get("rightRear");
-        catapultMotor = hardwareMap.dcMotor.get("catapult");
-
 /*
         gyro = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
         gyro.setHeadingMode(ModernRoboticsI2cGyro.HeadingMode.HEADING_CARTESIAN);
         gyro.calibrate();
 */
+        backLeftMotor.setDirection(DcMotor.Direction.REVERSE);
+
+        intakeMotor = hardwareMap.dcMotor.get("intakeMotor");
+        catapultMotor = hardwareMap.dcMotor.get("catapult");
+
+        intakeMotor.setDirection(DcMotor.Direction.REVERSE);
+
+        frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);intakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        catapultMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        catapultOffset = catapultMotor.getCurrentPosition();
+
+        gamepad1.setJoystickDeadzone((float) .1);
+
+        frontLeftOffSet = frontLeftMotor.getCurrentPosition();
+        frontRightOffSet = frontRightMotor.getCurrentPosition();
+        backLeftOffSet = backLeftMotor.getCurrentPosition();
+        backRightOffSet = backRightMotor.getCurrentPosition();
+        catapultOffset = catapultMotor.getCurrentPosition();
+        intakeOffSet = intakeMotor.getCurrentPosition();
+
+
     }
     @Override
     public void loop() {
+
         frontLeftMotor.setPower(gamepad1.left_stick_y);
         backLeftMotor.setPower(gamepad1.left_stick_y);
         frontRightMotor.setPower(gamepad1.right_stick_y);
@@ -88,12 +121,12 @@ public class Team1Calibration extends OpMode {
             catapultMotor.setPower(0);
         }
 
-        telemetry.addData("frontLeft Motor Position", frontLeftMotor.getCurrentPosition());
-        telemetry.addData("backLeft Motor Position", backLeftMotor.getCurrentPosition());
-        telemetry.addData("frontRight Motor Position", frontRightMotor.getCurrentPosition());
-        telemetry.addData("backRight Motor Position", backRightMotor.getCurrentPosition());
-        telemetry.addData("Catapult Motor Position", catapultMotor.getCurrentPosition());
-        telemetry.addData("Intake Motor Position", intakeMotor.getCurrentPosition());
+        telemetry.addData("frontLeft Motor Position", frontLeftMotor.getCurrentPosition() - frontLeftOffSet);
+        telemetry.addData("backLeft Motor Position", backLeftMotor.getCurrentPosition() - backLeftOffSet); //negative
+        telemetry.addData("frontRight Motor Position", frontRightMotor.getCurrentPosition()- frontRightOffSet); //negative
+        telemetry.addData("backRight Motor Position", backRightMotor.getCurrentPosition()- backRightOffSet); //negative
+        telemetry.addData("Catapult Motor Position", catapultMotor.getCurrentPosition() - catapultOffset); //negative
+        telemetry.addData("Intake Motor Position", intakeMotor.getCurrentPosition() - intakeOffSet); //negative
         //telemetry.addData("Gyro Sensor", gyro.getHeading());
         //telemetry.update();
     }

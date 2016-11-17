@@ -31,17 +31,15 @@ public class Team1TeleOp extends OpMode {
         leftBackMotor = hardwareMap.dcMotor.get("leftRear");
         rightBackMotor = hardwareMap.dcMotor.get("rightRear");
 
-        rightFrontMotor.setDirection(DcMotor.Direction.REVERSE);
         leftBackMotor.setDirection(DcMotor.Direction.REVERSE);
 
         intakeMotor = hardwareMap.dcMotor.get("intakeMotor");
         catapultMotor = hardwareMap.dcMotor.get("catapult");
 
         intakeMotor.setDirection(DcMotor.Direction.REVERSE);
-        catapultMotor.setDirection(DcMotor.Direction.REVERSE);
 
         catapultMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        catapultOffset = catapultMotor.getCurrentPosition();
+        catapultOffset = -catapultMotor.getCurrentPosition();
 
         gamepad1.setJoystickDeadzone((float) 0.05);
 }

@@ -64,7 +64,6 @@ public class Team1AutoBlue extends OpMode {
         frontRightMotor.setDirection(DcMotor.Direction.REVERSE);
         backRightMotor.setDirection(DcMotor.Direction.REVERSE);
 
-        catapultMotor.setDirection(DcMotor.Direction.REVERSE);
 
         frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -72,9 +71,10 @@ public class Team1AutoBlue extends OpMode {
         backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         catapultMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        rightMotorOffset = backRightMotor.getCurrentPosition();
-        catapultOffset = catapultMotor.getCurrentPosition();
-        leftMotorOffset = backLeftMotor.getCurrentPosition();
+        rightMotorOffset = -backRightMotor.getCurrentPosition();
+        catapultOffset = -catapultMotor.getCurrentPosition();
+        leftMotorOffset = frontLeftMotor.getCurrentPosition();
+        intakeOffset = -intakeMotor.getCurrentPosition();
 
     }
 
@@ -108,7 +108,7 @@ public class Team1AutoBlue extends OpMode {
     }
 
     private void moveRobot(int distance, double power) {
-        while (backRightMotor.getCurrentPosition() - rightMotorOffset < targetPosition(distance)) {
+        while (frontLeftMotor.getCurrentPosition() - leftMotorOffset < targetPosition(distance)) {
             frontLeftMotor.setPower(power);
             frontRightMotor.setPower(power);
             backLeftMotor.setPower(power);
@@ -144,13 +144,13 @@ public class Team1AutoBlue extends OpMode {
 
     private void resetEncoders() {
         leftMotorOffset = frontLeftMotor.getCurrentPosition();
-        rightMotorOffset = frontRightMotor.getCurrentPosition();
-        catapultOffset = catapultMotor.getCurrentPosition();
-        intakeOffset = intakeMotor.getCurrentPosition();
+        rightMotorOffset = -frontRightMotor.getCurrentPosition();
+        catapultOffset = -catapultMotor.getCurrentPosition();
+        intakeOffset = -intakeMotor.getCurrentPosition();
     }
 
     private void activateCatapult(){
-        while (catapultMotor.getCurrentPosition() - catapultOffset < ENCODER_TICKS_PER_REV * 3) {
+        while ((-catapultMotor.getCurrentPosition()) - catapultOffset < ENCODER_TICKS_PER_REV * 3) {
             catapultMotor.setPower(1);
         }
         catapultMotor.setPower(0);
@@ -159,7 +159,7 @@ public class Team1AutoBlue extends OpMode {
     }
 
     private void runIntake(){
-        while(intakeMotor.getCurrentPosition() + intakeOffset < INTAKE_TICKS){
+        while((-intakeMotor.getCurrentPosition()) - intakeOffset < INTAKE_TICKS){
             intakeMotor.setPower(0.4);
         }
         intakeMotor.setPower(0);
@@ -177,7 +177,7 @@ public class Team1AutoBlue extends OpMode {
             degrees = -degrees;
         }
         targetRotations = targetPosition(24 * Math.PI / (360 / degrees));
-        while (backLeftMotor.getCurrentPosition() - leftMotorOffset < targetRotations) {
+        while ((-backLeftMotor.getCurrentPosition()) - leftMotorOffset < targetRotations) {
                 frontLeftMotor.setPower(leftPower);
                 frontRightMotor.setPower(rightPower);
                 backLeftMotor.setPower(leftPower);
