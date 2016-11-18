@@ -16,8 +16,7 @@ public class Team3AutoTest extends Team3Auto {
 
     @Override
     public void robot_loop() {
-        this.autoDriveDistance(10, 0.7);
-        //this.autoDriveToBeacon();
+        this.autoDriveToBeacon();
         /*this.autoDriveDistance(28, 1.0, 1.0);
         this.shootBall();
         this.runIntake(5);

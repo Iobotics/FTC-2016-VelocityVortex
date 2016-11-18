@@ -23,7 +23,7 @@ public class Team3Auto extends OpMode {
     }
 
     // Robot constants //
-    protected final int TICK_OFFSET 		  = 450;  // TODO - Calibrate
+    protected final int TICK_OFFSET 		  = 0;  // TODO - Calibrate
     protected final int SHOOTER_ROTATION 	  = 760;  // TODO - Calibrate
     protected final int WHEEL_DIAMETER 		  = 4;
     protected final int ENCODER_TICKS_PER_REV = 1120;
@@ -124,8 +124,6 @@ public class Team3Auto extends OpMode {
 
     @Override
     public void loop() {
-        telemetry.addData("Light sensor", lightSensor.getLightDetected());
-        telemetry.addData("Line detected", (lightSensor.getLightDetected() >= LIGHT_THRESHOLD));
         this.robot_loop();
         requestOpModeStop();
     }
@@ -191,21 +189,6 @@ public class Team3Auto extends OpMode {
      * @param rightPower
      */
     protected void setPower(double leftPower, double rightPower) {
-        if(leftPower < 0) {
-            leftPower += LEFT_POWER_OFFSET;
-        } else if(leftPower > 0) {
-            leftPower -= LEFT_POWER_OFFSET;
-        }
-
-        if(rightPower < 0) {
-            rightPower += RIGHT_POWER_OFFSET;
-        } else if(rightPower > 0) {
-            rightPower -= RIGHT_POWER_OFFSET;
-        }
-
-        leftPower = Range.clip(leftPower, -1.0, 1.0);
-        rightPower = Range.clip(rightPower, -1.0, 1.0);
-
         leftFrontMotor.setPower(leftPower);
         leftBackMotor.setPower(leftPower);
         rightFrontMotor.setPower(rightPower);
@@ -236,23 +219,24 @@ public class Team3Auto extends OpMode {
     }
 
     protected boolean lineDetected() {
-        return (lightSensor.getLightDetected() >= LIGHT_THRESHOLD);
+        return (this.getLight() >= LIGHT_THRESHOLD);
     }
 
+    // FIXME - Loop error
     protected void driveToLine() {
         while(!this.lineDetected()) {
-            this.setPower(-0.5);
+            this.setPower(0.5);
         }
-        this.setPower(0.0);
+        this.setPower(0);
     }
 
     protected void alignToLine() {
         this.autoDriveDistance(CENTER_TO_LINE, 1.0);
         while(!this.lineDetected()) {
             if(teamColor == FtcColor.RED) {
-                this.setPower(-1.0, 1.0);
+                this.setPower(-1, 1);
             } else {
-                this.setPower(1.0, -1.0);
+                this.setPower(1, -1);
             }
         }
         this.setPower(0);
@@ -267,7 +251,7 @@ public class Team3Auto extends OpMode {
      * @param power (positive)
      */
     protected void autoDriveDistance(double distance, double power) {
-        this.autoDriveDistance(distance, power);
+        this.autoDriveDistance(distance, power, power);
     }
 
     /**
@@ -285,15 +269,13 @@ public class Team3Auto extends OpMode {
         }
         this.resetEncoders();
 
-        // FIXME - Offset for negative distance
+        // TODO - Offset for negative distance
         double distanceInTicks = (distance / INCHES_PER_TICK) + TICK_OFFSET;
 
         while(getLeftPosition() < distanceInTicks && getRightPosition() < distanceInTicks) {
             this.setPower(leftPower, rightPower);
         }
         this.setPower(0);
-
-        this.resetEncoders();
 
         this.wait(500);
     }
