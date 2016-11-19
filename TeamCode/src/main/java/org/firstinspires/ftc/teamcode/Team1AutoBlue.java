@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.adafruit.AdafruitBNO055IMU;
 import com.qualcomm.hardware.adafruit.AdafruitI2cColorSensor;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -33,6 +34,7 @@ public class Team1AutoBlue extends OpMode {
 
     DcMotor catapultMotor;
     DcMotor intakeMotor;
+    ModernRoboticsI2cGyro gyro;
 
     //ColorSensor colorSensor;
 
@@ -55,12 +57,14 @@ public class Team1AutoBlue extends OpMode {
 
         catapultMotor = hardwareMap.dcMotor.get("catapult");
         intakeMotor = hardwareMap.dcMotor.get("intakeMotor");
+   //     gyro = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
 
   //      leftServo = hardwareMap.servo.get("leftServo");
 //        rightServo = hardwareMap.servo.get("rightServo");
 
   //      colorSensor = (AdafruitI2cColorSensor) hardwareMap.colorSensor.get("colorSensor");
 
+        frontLeftMotor.setDirection(DcMotor.Direction.REVERSE);
         frontRightMotor.setDirection(DcMotor.Direction.REVERSE);
         backRightMotor.setDirection(DcMotor.Direction.REVERSE);
 
@@ -76,6 +80,8 @@ public class Team1AutoBlue extends OpMode {
         leftMotorOffset = frontLeftMotor.getCurrentPosition();
         intakeOffset = -intakeMotor.getCurrentPosition();
 
+     //   gyro.setHeadingMode(ModernRoboticsI2cGyro.HeadingMode.HEADING_CARTESIAN);
+      //  gyro.calibrate();
     }
 
     @Override
@@ -155,7 +161,7 @@ public class Team1AutoBlue extends OpMode {
         }
         catapultMotor.setPower(0);
 
-        catapultOffset = catapultMotor.getCurrentPosition();
+        catapultOffset = -catapultMotor.getCurrentPosition();
     }
 
     private void runIntake(){
