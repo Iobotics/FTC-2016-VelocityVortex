@@ -19,7 +19,7 @@ public class Team3AutoBlue extends Team3Auto {
     public void loop() {
         this.autoDriveDistance(28, 1.0, 1.0);
         this.shootBall();
-        this.runIntake(5);
+        this.runIntake();
         this.shootBall();
         this.autoTurnInPlace(-135, 1.0);
         this.autoDriveToBeacon();

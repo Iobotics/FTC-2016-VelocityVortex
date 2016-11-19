@@ -101,16 +101,16 @@ public class Team3TeleOp extends OpMode {
 
         // Left trigger to use shooter
         if(gamepad1.left_trigger > 0) {
-            while(getShooterPosition() < SHOOTER_ROTATION) {
-                shooterMotor.setPower(1);
-            }
-            shooterMotor.setPower(0);
-            shooterOffset = shooterMotor.getCurrentPosition();
             long startTime = System.currentTimeMillis();
             while(System.currentTimeMillis() - startTime < REGULATOR_TIME) {
                 regulatorServo.setPosition(0);
             }
             regulatorServo.setPosition(1);
+            while(getShooterPosition() < SHOOTER_ROTATION) {
+                shooterMotor.setPower(1);
+            }
+            shooterMotor.setPower(0);
+            shooterOffset = shooterMotor.getCurrentPosition();
         }
         if(gamepad1.left_bumper) {
             shooterMotor.setPower(0.6);

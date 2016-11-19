@@ -33,6 +33,8 @@ public class Team3Auto extends OpMode {
     protected final double RIGHT_SERVO_MIN    = 0;
     protected final double LEFT_SERVO_HOME    = 0.74;
     protected final double RIGHT_SERVO_HOME   = 0.55;
+    protected final double REGULATOR_SERVO_MIN  = 0;
+    protected final double REGULATOR_SERVO_HOME = 0.7;
     protected final double ROBOT_TURN_RADIUS  = 8; // Inches
     protected final double INCHES_PER_TICK 	  = (WHEEL_DIAMETER * Math.PI) / ENCODER_TICKS_PER_REV;
     // TODO - Find thresholds
@@ -65,6 +67,8 @@ public class Team3Auto extends OpMode {
     private Servo rightBeaconServo;
     private Servo leftBeaconServo;
 
+    private Servo regulatorServo;
+
     private ColorSensor sensorRGB;
     private DeviceInterfaceModule cdim;
 
@@ -94,11 +98,17 @@ public class Team3Auto extends OpMode {
         leftBeaconServo = hardwareMap.servo.get("leftBeacon");
         rightBeaconServo = hardwareMap.servo.get("rightBeacon");
 
+        regulatorServo = hardwareMap.servo.get("regulator");
+
         leftBeaconServo.scaleRange(LEFT_SERVO_MIN, LEFT_SERVO_HOME);
         rightBeaconServo.scaleRange(RIGHT_SERVO_MIN, RIGHT_SERVO_HOME);
 
+        regulatorServo.scaleRange(REGULATOR_SERVO_MIN, REGULATOR_SERVO_HOME);
+
         leftBeaconServo.setPosition(1);
         rightBeaconServo.setPosition(1);
+
+        regulatorServo.setPosition(1);
 
         ledState = false;
 
@@ -207,6 +217,10 @@ public class Team3Auto extends OpMode {
         return shooterMotor.getCurrentPosition() - shooterOffset;
     }
 
+    protected int getIntakePosition() {
+        return intakeMotor.getCurrentPosition() - intakeOffset;
+    }
+
     protected double getLight() {
         return lightSensor.getLightDetected() - lightOffset;
     }
@@ -216,6 +230,12 @@ public class Team3Auto extends OpMode {
         while(System.currentTimeMillis() - initTime < milliseconds) {
             this.setPower(0);
         }
+    }
+
+    protected void liftRegulator() {
+        regulatorServo.setPosition(0);
+        this.wait(800);
+        regulatorServo.setPosition(1);
     }
 
     protected boolean lineDetected() {
@@ -349,6 +369,8 @@ public class Team3Auto extends OpMode {
         }
         shooterMotor.setPower(0);
 
+        this.liftRegulator();
+
         this.resetEncoders();
 
         this.wait(250);
@@ -356,11 +378,9 @@ public class Team3Auto extends OpMode {
 
     /**
      * Runs the intake with a specified amount of rotations
-     * @param rotations
      */
-    protected void runIntake(int rotations) {
-        int intakeTicks = rotations * ENCODER_TICKS_PER_REV;
-        while(intakeMotor.getCurrentPosition() - intakeOffset < intakeTicks) {
+    protected void runIntake() {
+        while(getIntakePosition() < 4 * ENCODER_TICKS_PER_REV) {
             intakeMotor.setPower(1);
         }
         intakeMotor.setPower(0);

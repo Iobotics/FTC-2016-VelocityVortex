@@ -163,6 +163,7 @@ public class Team3Calibration extends OpMode {
         telemetry.addData("Blue", sensorRGB.blue());
         telemetry.addData("Shooter pos", shooterMotor.getCurrentPosition() - shooterOffset);
         telemetry.addData("Regulator", regulatorServo.getPosition());
+        telemetry.addData("Intake", intakeMotor.getCurrentPosition());
         telemetry.addData("Gyro", gyro.getHeading());
         telemetry.update();
     }
