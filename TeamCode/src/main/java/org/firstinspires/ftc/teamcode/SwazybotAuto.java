@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -13,7 +14,7 @@ import com.qualcomm.robotcore.hardware.Servo;
  */
 
 @Autonomous(name ="Swazybot: Autonomous", group ="Swazybot")
-//@Disabled
+@Disabled
 public class SwazybotAuto extends OpMode {
 
     DcMotor rightFrontMotor;

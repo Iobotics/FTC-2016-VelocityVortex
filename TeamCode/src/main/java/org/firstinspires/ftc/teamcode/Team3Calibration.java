@@ -67,8 +67,8 @@ public class Team3Calibration extends OpMode {
         rightFrontMotor = hardwareMap.dcMotor.get("rightFront");
         rightBackMotor = hardwareMap.dcMotor.get("rightRear");
 
-        leftBackMotor.setDirection(DcMotor.Direction.REVERSE);
-        leftFrontMotor.setDirection(DcMotor.Direction.REVERSE);
+        rightFrontMotor.setDirection(DcMotor.Direction.REVERSE);
+        rightBackMotor.setDirection(DcMotor.Direction.REVERSE);
 
         intakeMotor = hardwareMap.dcMotor.get("intakeMotor");
         shooterMotor = hardwareMap.dcMotor.get("shooter");
@@ -104,6 +104,8 @@ public class Team3Calibration extends OpMode {
 
         lightSensor = hardwareMap.lightSensor.get("light");
         lightSensor.enableLed(true);
+
+        lightOffset = lightSensor.getLightDetected();
 
         gamepad1.setJoystickDeadzone((float) 0.05);
     }
@@ -153,14 +155,15 @@ public class Team3Calibration extends OpMode {
             lightOffset = lightSensor.getLightDetected();
         }
 
-        telemetry.addData("Light Sensor", lightSensor.getLightDetected());
-        telemetry.addData("Line detected", (lightSensor.getLightDetected() >= LIGHT_THRESHOLD));
+        telemetry.addData("Light Sensor", lightSensor.getLightDetected() - lightOffset);
+        telemetry.addData("Line detected", (lightSensor.getLightDetected() - lightOffset >= LIGHT_THRESHOLD));
         telemetry.addData("Alpha", sensorRGB.alpha());
         telemetry.addData("Red", sensorRGB.red());
         telemetry.addData("Green", sensorRGB.green());
         telemetry.addData("Blue", sensorRGB.blue());
         telemetry.addData("Shooter pos", shooterMotor.getCurrentPosition() - shooterOffset);
         telemetry.addData("Regulator", regulatorServo.getPosition());
+        telemetry.addData("Intake", intakeMotor.getCurrentPosition());
         telemetry.addData("Gyro", gyro.getHeading());
         telemetry.update();
     }
