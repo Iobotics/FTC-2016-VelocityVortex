@@ -8,19 +8,19 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 @Autonomous(name = "Team 3: AutoTest", group = "Team 3")
 //@Disabled
 public class Team3AutoTest extends Team3Base {
+    private final int DISTANCE_OFFSET = 8;
     @Override
     public void robotInit() {
         teamColor = FtcColor.RED;
     }
 
     @Override
-    public void robotLoop() {
-        this.autoDriveDistance(28, 1.0);
-        this.shootBall();
-        this.runIntake(5); // Rotates intake 5 times
-        this.shootBall();
-        /*this.autoTurnInPlace(-135, 1.0);
-        this.autoDriveToBeacon();
+    public void robotMain() {
+        //this.autoDriveDistance(24 + DISTANCE_OFFSET, 1.0, 1.0);
+        //this.shootBall();
+        //this.shootBall();
+        this.autoTurnInPlace(-135, 1.0);
+        /*this.autoDriveToBeacon();
         this.autoPressBeacon();
         this.autoTurnInPlace(-90, 1.0);
         this.autoDriveToBeacon();

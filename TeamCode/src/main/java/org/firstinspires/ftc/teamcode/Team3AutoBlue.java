@@ -14,10 +14,10 @@ public class Team3AutoBlue extends Team3Base {
     }
 
     @Override
-    public void robotLoop() {
+    public void robotMain() {
         this.autoDriveDistance(28, 1.0, 1.0);
         this.shootBall();
-        this.runIntake(5); // Rotates intake 5 times
+        this.runIntake(); // Rotates intake 4 times
         this.shootBall();
         this.autoTurnInPlace(-135, 1.0);
         this.autoDriveToBeacon();
