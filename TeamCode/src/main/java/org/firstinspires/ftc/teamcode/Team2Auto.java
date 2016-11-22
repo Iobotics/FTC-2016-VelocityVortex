@@ -4,6 +4,7 @@ import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.vuforia.ar.pl.SystemTools;
 
@@ -54,12 +55,7 @@ public class Team2Auto extends OpMode {
         frontRightMotor.setDirection(DcMotor.Direction.REVERSE);
         backRightMotor.setDirection(DcMotor.Direction.REVERSE);
 
-        backLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        catapultMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        useEncoders();
 
         time = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         gyro.setHeadingMode(ModernRoboticsI2cGyro.HeadingMode.HEADING_CARTESIAN);
@@ -69,17 +65,17 @@ public class Team2Auto extends OpMode {
     @Override
     public void loop() {
 
-        moveForward(30, 1);
+        moveForward(25,1);
 
         activateCatapult();
 
-        activateIntake(4, -1);
+        activateIntakeTime(2000,1);
 
         activateCatapult();
 
-        moveForward(30, 1);
+        moveForward(25,1);
 
-        requestOpModeStop();
+        this.requestOpModeStop();
     }
 
     @Override
@@ -90,7 +86,15 @@ public class Team2Auto extends OpMode {
         backLeftMotor.setPower(0);
         frontRightMotor.setPower(0);
     }
-
+//*****************************************************************Utility*Methods***********************************************************
+    private void useEncoders(){
+        backLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        catapultMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        intakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
     /**
      * A method to calculate the number of ticks to move the robot a number of inches
      * @param distance
@@ -112,14 +116,18 @@ public class Team2Auto extends OpMode {
         double distanceInTicks = distanceInCm / CM_PER_TICK;
         return (int) distanceInTicks;
     }
+    //*****************************************************OPMode*Methods****************************************************
 
     /**
-     * Method that moves a target distance at a target power
+     * Method that moves the robot forward a specified number of inches.
      * @param targetDistance
      * @param targetPower
      */
     private void moveForward(int targetDistance, double targetPower){
         int distanceToTravel = distance(targetDistance);
+        leftOffset = frontLeftMotor.getCurrentPosition();
+
+
 
         while((frontLeftMotor.getCurrentPosition() - leftOffset) < distanceToTravel) {
             frontLeftMotor.setPower(targetPower);
@@ -132,7 +140,6 @@ public class Team2Auto extends OpMode {
         backLeftMotor.setPower(0);
         backRightMotor.setPower(0);
 
-        leftOffset = frontLeftMotor.getCurrentPosition();
     }
     /*
     Method that turns a ta rget amount of degrees at target power in target direction
@@ -175,6 +182,7 @@ public class Team2Auto extends OpMode {
             catapultMotor.setPower(1);
         }
         catapultMotor.setPower(0);
+        catapultOffset = catapultMotor.getCurrentPosition();
     }
 
     private void activateCatapultTime() {
@@ -245,10 +253,10 @@ public class Team2Auto extends OpMode {
             targetPower = -targetPower;
         }
         while(gyro.getHeading() < targetDegrees){
-            frontLeftMotor.setPower(-targetPower);
-            frontRightMotor.setPower(targetPower);
-            backLeftMotor.setPower(-targetPower);
-            backRightMotor.setPower(targetPower);
+            frontLeftMotor.setPower(targetPower);
+            frontRightMotor.setPower(-targetPower);
+            backLeftMotor.setPower(targetPower);
+            backRightMotor.setPower(-targetPower);
         }
         gyro.calibrate();
     }

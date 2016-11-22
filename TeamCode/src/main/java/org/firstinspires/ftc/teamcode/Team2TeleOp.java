@@ -97,6 +97,13 @@ public class Team2TeleOp extends OpMode {
             catapultOffset = catapultMotor.getCurrentPosition();
         }
 
+        if (gamepad1.right_trigger > .1) {
+            while((catapultMotor.getCurrentPosition() - catapultOffset) < CATAPULT_TICKS){
+                catapultMotor.setPower(CATAPULT_POWER);
+            }
+            catapultMotor.setPower(0);
+        }
+
         telemetry.addData("Ticks", catapultMotor.getCurrentPosition() - catapultOffset);
         telemetry.addData("Intake motor", intakeMotor.getPower());
         telemetry.update();
