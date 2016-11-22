@@ -9,12 +9,13 @@ import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.DigitalChannelController;
 import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.ElapsedTime.Resolution;
 import com.qualcomm.robotcore.util.Range;
 
 /**
- * Created by Teacher on 9/28/2016.
+ * Created by Darren Kam on 9/28/2016.
  */
-
 public class Team3Base extends LinearOpMode {
 
     protected enum FtcColor {
@@ -23,114 +24,137 @@ public class Team3Base extends LinearOpMode {
         NONE
     }
 
-    // Robot constants //
-    protected final int TICK_OFFSET 		  = 0;  // TODO - Calibrate
-    protected final int SHOOTER_ROTATION 	  = 760;  // TODO - Calibrate
-    protected final int WHEEL_DIAMETER 		  = 4;
-    protected final int ENCODER_TICKS_PER_REV = 1120;
-    protected final double LEFT_POWER_OFFSET  = 0.27; // TODO - Calibrate
-    protected final double RIGHT_POWER_OFFSET = 0.40; // TODO - Calibrate
-    protected final double LEFT_SERVO_MIN     = 0.132;
-    protected final double RIGHT_SERVO_MIN    = 0;
-    protected final double LEFT_SERVO_HOME    = 0.74;
-    protected final double RIGHT_SERVO_HOME   = 0.55;
-    protected final double REGULATOR_SERVO_MIN  = 0;
-    protected final double REGULATOR_SERVO_HOME = 0.7;
-    protected final double ROBOT_TURN_RADIUS  = 8; // Inches
-    protected final double INCHES_PER_TICK 	  = (WHEEL_DIAMETER * Math.PI) / ENCODER_TICKS_PER_REV;
-    // TODO - Find thresholds
-    protected final int RED_THRESHOLD      = 3000;
-    protected final int BLUE_THRESHOLD     = 3000;
-    protected final double LIGHT_THRESHOLD = 0.24;
+    /************** Constants **************/
+    
+    final static int ENCODER_TICKS_PER_REV = 1120; // Neverest 40
+    final static int WHEEL_DIAMETER 	   = 4; // Inches
+    final static double INCHES_PER_TICK    = (WHEEL_DIAMETER * Math.PI) / ENCODER_TICKS_PER_REV;
+    
+    final static double LEFT_SERVO_MIN     = 0.13;
+    final static double LEFT_SERVO_HOME    = 0.74;
+    final static double RIGHT_SERVO_MIN    = 0;
+    final static double RIGHT_SERVO_HOME   = 0.55;
+    final static double REGULATOR_SERVO_MIN  = 0;
+    final static double REGULATOR_SERVO_HOME = 0.7;
+    
+    final static double REGULATOR_TIME = 800;
+    
+    final static int TICK_OFFSET 		  = 0;  // TODO - Find ticks to offset distance
+    final static int SHOOTER_ROTATION 	  = 760;  // TODO - Find shooter ticks
+    
+    final static double LEFT_POWER_OFFSET  = 0.27;
+    final static double RIGHT_POWER_OFFSET = 0.40;
+    
+    // Color sensor (TODO - Find thresholds) //
+    final static int RED_THRESHOLD      = 3000;
+    final static int BLUE_THRESHOLD     = 3000;
+    
+    // Light sensor threshold //
+    final static double LIGHT_THRESHOLD = 0.24;
 
-    // FTC Field constants //
-    protected final double CENTER_TO_LINE = 3; // TODO - Calibrate
-    protected final double BEACON_DISTANCE = 5; // TODO - Calibrate
-
+    // Field constants //
+    final static double CENTER_TO_LINE = 3;
+    final static double DISTANCE_TO_BEACON = 5;
+    
     // Member variables //
-    protected int leftOffset;
-    protected int rightOffset;
-    protected int intakeOffset;
-    protected int shooterOffset;
-    protected double lightOffset;
-    protected boolean ledState;
-    protected FtcColor teamColor;
+    protected int _leftOffset;
+    protected int _rightOffset;
+    
+    protected int _intakeOffset;
+    protected int _shooterOffset;
+    
+    protected double _lightOffset;
+    protected boolean _ledState;
+    
+    protected FtcColor _teamColor;
 
     // Hardware declarations //
-    private DcMotor rightFrontMotor;
-    private DcMotor leftFrontMotor;
-    private DcMotor rightBackMotor;
-    private DcMotor leftBackMotor;
+    DcMotor _rightFrontMotor;
+    DcMotor _leftFrontMotor;
+    DcMotor _rightBackMotor;
+    DcMotor _leftBackMotor;
 
-    private DcMotor intakeMotor;
-    private DcMotor shooterMotor;
+    DcMotor _intakeMotor;
+    DcMotor _shooterMotor;
+    //DcMotor _liftMotor;
 
-    private Servo rightBeaconServo;
-    private Servo leftBeaconServo;
+    Servo _rightBeaconServo;
+    Servo _leftBeaconServo;
 
-    private Servo regulatorServo;
+    Servo _regulatorServo;
 
-    private ColorSensor sensorRGB;
-    private DeviceInterfaceModule cdim;
+    ColorSensor _sensorRGB;
+    DeviceInterfaceModule _cdim;
 
-    private ModernRoboticsI2cGyro gyro;
+    ModernRoboticsI2cGyro _gyro;
 
-    protected LightSensor lightSensor;
+    LightSensor _lightSensor;
+    
+    ElapsedTime _time = new ElapsedTime(Resolution.MILLISECONDS);
 
     /************** OpMode methods **************/
 
     public void baseInit() {
-        teamColor = FtcColor.NONE;
+    	_teamColor = FtcColor.NONE;
 
-        leftFrontMotor = hardwareMap.dcMotor.get("leftFront");
-        leftBackMotor = hardwareMap.dcMotor.get("leftRear");
-        rightFrontMotor = hardwareMap.dcMotor.get("rightFront");
-        rightBackMotor = hardwareMap.dcMotor.get("rightRear");
+        _leftFrontMotor = hardwareMap.dcMotor.get("leftFront");
+        _leftBackMotor = hardwareMap.dcMotor.get("leftRear");
+        _rightFrontMotor = hardwareMap.dcMotor.get("rightFront");
+        _rightBackMotor = hardwareMap.dcMotor.get("rightRear");
 
-        leftBackMotor.setDirection(DcMotor.Direction.REVERSE);
-        leftFrontMotor.setDirection(DcMotor.Direction.REVERSE);
+        _leftBackMotor.setDirection(DcMotor.Direction.REVERSE);
+        _leftFrontMotor.setDirection(DcMotor.Direction.REVERSE);
 
-        intakeMotor = hardwareMap.dcMotor.get("intakeMotor");
-        shooterMotor = hardwareMap.dcMotor.get("shooter");
+        _intakeMotor = hardwareMap.dcMotor.get("intakeMotor");
+        _shooterMotor = hardwareMap.dcMotor.get("shooter");
+        //_liftMotor = hardwareMap.dcMotor.get("lift");
 
-        shooterMotor.setDirection(DcMotor.Direction.REVERSE);
+        _shooterMotor.setDirection(DcMotor.Direction.REVERSE);
 
-        leftBeaconServo = hardwareMap.servo.get("leftBeacon");
-        rightBeaconServo = hardwareMap.servo.get("rightBeacon");
+        _leftBeaconServo = hardwareMap.servo.get("leftBeacon");
+        _rightBeaconServo = hardwareMap.servo.get("rightBeacon");
 
-        regulatorServo = hardwareMap.servo.get("regulator");
+        _regulatorServo = hardwareMap.servo.get("regulator");
 
-        leftBeaconServo.scaleRange(LEFT_SERVO_MIN, LEFT_SERVO_HOME);
-        rightBeaconServo.scaleRange(RIGHT_SERVO_MIN, RIGHT_SERVO_HOME);
+        _leftBeaconServo.scaleRange(LEFT_SERVO_MIN, LEFT_SERVO_HOME);
+        _rightBeaconServo.scaleRange(RIGHT_SERVO_MIN, RIGHT_SERVO_HOME);
 
-        regulatorServo.scaleRange(REGULATOR_SERVO_MIN, REGULATOR_SERVO_HOME);
+        _regulatorServo.scaleRange(REGULATOR_SERVO_MIN, REGULATOR_SERVO_HOME);
 
-        leftBeaconServo.setPosition(1);
-        rightBeaconServo.setPosition(1);
+        _leftBeaconServo.setPosition(1);
+        _rightBeaconServo.setPosition(1);
 
-        regulatorServo.setPosition(1);
+        _regulatorServo.setPosition(1);
 
-        ledState = false;
+        _ledState = false;
+        
+        _sensorRGB = hardwareMap.colorSensor.get("color");
 
-        sensorRGB = hardwareMap.colorSensor.get("color");
+        _cdim = hardwareMap.deviceInterfaceModule.get("dim");
+        _cdim.setDigitalChannelMode(5, DigitalChannelController.Mode.OUTPUT);
+        _cdim.setDigitalChannelState(5, _ledState);
 
-        cdim = hardwareMap.deviceInterfaceModule.get("dim");
-        cdim.setDigitalChannelMode(5, DigitalChannelController.Mode.OUTPUT);
-        cdim.setDigitalChannelState(5, ledState);
+        _lightSensor = hardwareMap.lightSensor.get("light");
 
-        gyro = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
-        gyro.setHeadingMode(ModernRoboticsI2cGyro.HeadingMode.HEADING_CARTESIAN);
+        _gyro = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
+        _gyro.setHeadingMode(ModernRoboticsI2cGyro.HeadingMode.HEADING_CARTESIAN);
+        
         this.calibrateGyro();
-
-        lightSensor = hardwareMap.lightSensor.get("light");
-
+        
         this.runUsingEncoders();
-        this.resetEncoders();
+        
+        this.resetMotors();
+        this.resetIntake();
+        this.resetShooter();
+        
+        _time.reset();
     }
 
     public void baseMain() { }
 
-    public void baseStop() { }
+    public void baseStop() {
+    	this.setPower(0);
+    }
 
     public void runOpMode() {
         this.baseInit();
@@ -152,35 +176,41 @@ public class Team3Base extends LinearOpMode {
     /************** Utility methods **************/
 
     protected void runUsingEncoders() {
-        leftFrontMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftBackMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightFrontMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightBackMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    	_leftFrontMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        _leftBackMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        _rightFrontMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        _rightBackMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        intakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        _intakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        _shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //_liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    protected void resetEncoders() {
-        leftOffset = leftFrontMotor.getCurrentPosition();
-        rightOffset = rightFrontMotor.getCurrentPosition();
-
-        intakeOffset = intakeMotor.getCurrentPosition();
-        shooterOffset = shooterMotor.getCurrentPosition();
+    protected void resetMotors() {
+        _leftOffset = _leftFrontMotor.getCurrentPosition();
+        _rightOffset = _rightFrontMotor.getCurrentPosition();
     }
-
-    protected void resetServos() {
-        leftBeaconServo.setPosition(1);
-        rightBeaconServo.setPosition(1);
+    
+    protected void resetIntake() {
+    	_intakeOffset = _intakeMotor.getCurrentPosition();
     }
-
+    
+    protected void resetShooter() {
+    	_shooterOffset = _shooterMotor.getCurrentPosition();
+    }
+    
     protected void resetLightSensor() {
-        lightOffset = lightSensor.getLightDetected();
+        _lightOffset = _lightSensor.getLightDetected();
+    }
+
+    protected void resetBeaconServos() {
+        _leftBeaconServo.setPosition(1);
+        _rightBeaconServo.setPosition(1);
     }
 
     protected void calibrateGyro() {
-        gyro.calibrate();
-        while(gyro.isCalibrating()) {
+        _gyro.calibrate();
+        while(_gyro.isCalibrating()) {
             this.setPower(0);
         }
     }
@@ -190,7 +220,7 @@ public class Team3Base extends LinearOpMode {
      * @param power
      */
     protected void setPower(double power) {
-        this.setPower(power, power);
+    	this.setPower(power, power);
     }
 
     /**
@@ -199,50 +229,53 @@ public class Team3Base extends LinearOpMode {
      * @param rightPower
      */
     protected void setPower(double leftPower, double rightPower) {
-        leftFrontMotor.setPower(leftPower);
-        leftBackMotor.setPower(leftPower);
-        rightFrontMotor.setPower(rightPower);
-        rightBackMotor.setPower(rightPower);
+        _leftFrontMotor.setPower(leftPower);
+        _leftBackMotor.setPower(leftPower);
+        _rightFrontMotor.setPower(rightPower);
+        _rightBackMotor.setPower(rightPower);
     }
 
     protected int getLeftPosition() {
-        return leftFrontMotor.getCurrentPosition() - leftOffset;
+        return _leftFrontMotor.getCurrentPosition() - _leftOffset;
     }
 
     protected int getRightPosition() {
-        return rightFrontMotor.getCurrentPosition() - rightOffset;
+        return _rightFrontMotor.getCurrentPosition() - _rightOffset;
     }
 
     protected int getShooterPosition() {
-        return shooterMotor.getCurrentPosition() - shooterOffset;
+        return _shooterMotor.getCurrentPosition() - _shooterOffset;
     }
 
     protected int getIntakePosition() {
-        return intakeMotor.getCurrentPosition() - intakeOffset;
+        return _intakeMotor.getCurrentPosition() - _intakeOffset;
     }
 
     protected double getLight() {
-        return lightSensor.getLightDetected() - lightOffset;
+        return _lightSensor.getLightDetected() - _lightOffset;
+    }
+    
+    protected double getTime() {
+    	return _time.time();
     }
 
     protected void wait(int milliseconds) {
-        long initTime = System.currentTimeMillis();
-        while(System.currentTimeMillis() - initTime < milliseconds) {
-            this.setPower(0);
+        int initTime = (int) _time.milliseconds();
+        while(_time.milliseconds() - initTime < milliseconds) {
+        	this.setPower(0.0);
         }
     }
 
     protected void liftRegulator() {
-        regulatorServo.setPosition(0);
+        _regulatorServo.setPosition(0);
         this.wait(800);
-        regulatorServo.setPosition(1);
+        _regulatorServo.setPosition(1);
     }
 
     protected boolean lineDetected() {
-        return (this.getLight() >= LIGHT_THRESHOLD);
+        return Math.abs(this.getLight()) > LIGHT_THRESHOLD;
     }
 
-    // FIXME - Loop error
     protected void driveToLine() {
         while(!this.lineDetected()) {
             this.setPower(0.5);
@@ -251,15 +284,14 @@ public class Team3Base extends LinearOpMode {
     }
 
     protected void alignToLine() {
-        this.autoDriveDistance(CENTER_TO_LINE, 1.0);
         while(!this.lineDetected()) {
-            if(teamColor == FtcColor.RED) {
-                this.setPower(-1, 1);
+            if(_teamColor == FtcColor.RED) {
+                this.setPower(-1.0, 1.0);
             } else {
-                this.setPower(1, -1);
+                this.setPower(1.0, -1.0);
             }
         }
-        this.setPower(0);
+        this.setPower(0.0);
     }
 
 
@@ -268,7 +300,7 @@ public class Team3Base extends LinearOpMode {
     /**
      * Method to drive distance with positive power
      * @param distance
-     * @param power (positive)
+     * @param power
      */
     protected void autoDriveDistance(double distance, double power) {
         this.autoDriveDistance(distance, power, power);
@@ -277,25 +309,26 @@ public class Team3Base extends LinearOpMode {
     /**
      * Method to drive distance with positive power
      * @param distance
-     * @param leftPower (positive)
-     * @param rightPower (positive)
+     * @param leftPower
+     * @param rightPower
      */
     protected void autoDriveDistance(double distance, double leftPower, double rightPower) {
-        //if(leftPower < 0 || rightPower < 0) throw new IllegalArgumentException("power = " + ((leftPower < 0) ? leftPower : rightPower));
+        if(leftPower < 0 || rightPower < 0) throw new IllegalArgumentException("left power = " + leftPower + "right power = " + rightPower);
+        
         if(distance < 0) {
             leftPower = -leftPower;
             rightPower = -rightPower;
             distance = -distance;
         }
-        this.resetEncoders();
+        
+        this.resetMotors();
 
-        // TODO - Offset for negative distance
-        double distanceInTicks = (distance / INCHES_PER_TICK) + TICK_OFFSET;
+        double distanceInTicks = distance / INCHES_PER_TICK;
 
         while(getLeftPosition() < distanceInTicks && getRightPosition() < distanceInTicks) {
             this.setPower(leftPower, rightPower);
         }
-        this.setPower(0);
+        this.setPower(0.0);
 
         this.wait(500);
     }
@@ -303,20 +336,20 @@ public class Team3Base extends LinearOpMode {
     /**
      * Method to drive distance with PID control
      * @param distance
-     * @param power (positive)
+     * @param power
      */
     // FIXME - Get this working
-    private final double PID_DRIVE_GAIN             = 0.5;
-    private final double PID_DRIVE_TOLERANCE_INCHES = 0.5;
+    /*private final double PID_DRIVE_GAIN             = 0.5; // TODO - Find value
+    private final double PID_DRIVE_TOLERANCE_INCHES = 0.5; // TODO - Find value
     protected void autoDriveDistancePID(double distance) {
-        if(distance < 0) {
-            distance = -distance;
-        }
-        // FIXME - Offset for negative distance
-        double distanceInTicks = (distance / INCHES_PER_TICK) + TICK_OFFSET;
-        this.resetEncoders();
+    	
+        double distanceInTicks = distance / INCHES_PER_TICK;
+        
+        this.resetMotors();
+        
         double errorLeft = distanceInTicks - getLeftPosition();
         double errorRight = distanceInTicks - getRightPosition();
+        
         double powerLeft;
         double powerRight;
 
@@ -327,17 +360,17 @@ public class Team3Base extends LinearOpMode {
             powerRight = Range.clip(PID_DRIVE_GAIN * errorRight, -1.0, 1.0);
             this.setPower(powerLeft, powerRight);
         }
-        this.setPower(0, 0);
+        this.setPower(0.0);
 
-        this.resetEncoders();
-    }
+        this.resetMotors();
+    }*/
 
     /**
      * Method to turn degrees with positive power
      * @param degrees
      * @param power
      */
-    // FIXME - Gets stuck in loop
+    // FIXME - Doesn't move
     protected void autoTurnInPlace(int degrees, double power) {
         if(degrees < -360) throw new IllegalArgumentException("degrees = " + degrees);
         if(power < 0) throw new IllegalArgumentException("power = " + power);
@@ -346,31 +379,29 @@ public class Team3Base extends LinearOpMode {
 
         if(degrees < 0) {
             degrees += 360;
-            while(gyro.getHeading() > degrees) {
+            while(_gyro.getHeading() > degrees) {
                 this.setPower(-power, power);
             }
         } else {
-            while(gyro.getHeading() < degrees) {
+            while(_gyro.getHeading() < degrees) {
                 this.setPower(power, -power);
             }
         }
         this.setPower(0, 0);
-
-        this.resetEncoders();
     }
 
     /**
-     * Shoots a ball
+     * Shoots a ball and reloads from the regulator servo
      */
     protected void shootBall() {
         while(getShooterPosition() < SHOOTER_ROTATION) {
-            shooterMotor.setPower(1);
+            _shooterMotor.setPower(1);
         }
-        shooterMotor.setPower(0);
+        _shooterMotor.setPower(0);
 
         this.liftRegulator();
 
-        this.resetEncoders();
+        this.resetShooter();
 
         this.wait(250);
     }
@@ -378,31 +409,35 @@ public class Team3Base extends LinearOpMode {
     /**
      * Runs the intake with a specified amount of rotations
      */
-    protected void runIntake() {
-        while(getIntakePosition() < 4 * ENCODER_TICKS_PER_REV) {
-            intakeMotor.setPower(1);
+    protected void runIntake(int rotations) {
+        while(getIntakePosition() < rotations * ENCODER_TICKS_PER_REV) {
+            _intakeMotor.setPower(1);
         }
-        intakeMotor.setPower(0);
+        _intakeMotor.setPower(0);
 
-        this.resetEncoders();
+        this.resetIntake();
 
         this.wait(250);
     }
 
+    /**
+     * Drives to the beacon
+     */
     protected void autoDriveToBeacon() {
         this.driveToLine();
-        //this.alignToLine();
-        //this.autoDriveDistance(BEACON_DISTANCE, 1.0);
+        this.autoDriveDistance(CENTER_TO_LINE, 1.0);
+        this.alignToLine();
+        this.autoDriveDistance(DISTANCE_TO_BEACON, 1.0);
     }
 
     /**
      * Press the beacon with your team's color
      */
     protected void autoPressBeacon() {
-        if(sensorRGB.red() >= RED_THRESHOLD && sensorRGB.blue() <= BLUE_THRESHOLD && teamColor == FtcColor.RED) {
-            leftBeaconServo.setPosition(LEFT_SERVO_MIN);
+        if(_sensorRGB.red() >= RED_THRESHOLD && _sensorRGB.blue() <= BLUE_THRESHOLD && _teamColor == FtcColor.RED) {
+            _leftBeaconServo.setPosition(LEFT_SERVO_MIN);
         } else {
-            rightBeaconServo.setPosition(RIGHT_SERVO_MIN);
+            _rightBeaconServo.setPosition(RIGHT_SERVO_MIN);
         }
     }
 }

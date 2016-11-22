@@ -11,7 +11,7 @@ public class Team3AutoTest extends Team3Base {
     private final int DISTANCE_OFFSET = 8;
     @Override
     public void robotInit() {
-        teamColor = FtcColor.RED;
+        _teamColor = FtcColor.RED;
     }
 
     @Override
@@ -27,7 +27,6 @@ public class Team3AutoTest extends Team3Base {
         this.autoPressBeacon();
         this.autoTurnInPlace(-20, 1.0);
         this.autoDriveDistance(10, 1.0);*/
-        requestOpModeStop();
     }
 }
 

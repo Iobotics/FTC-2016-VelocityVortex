@@ -11,9 +11,8 @@ import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 /**
- * Created by Teacher on 10/28/2016.
+ * Created by Darren Kam on 10/28/2016.
  */
-
 @TeleOp(name = "Team 3: Calibration", group = "Team 3")
 //@Disabled
 public class Team3Calibration extends OpMode {
@@ -32,143 +31,149 @@ public class Team3Calibration extends OpMode {
     final double LIGHT_THRESHOLD = 0.24;
 
     // Member variables //
-    int shooterOffset;
-    double lightOffset;
+    int _shooterOffset;
+    double _lightOffset;
 
-    boolean ledState = false;
-    boolean leftBeaconButton = false;
-    boolean rightBeaconButton = false;
+    boolean _ledState = false;
+    boolean _leftBeaconButton = false;
+    boolean _rightBeaconButton = false;
 
     // Hardware declarations //
-    DcMotor rightFrontMotor;
-    DcMotor leftFrontMotor;
-    DcMotor rightBackMotor;
-    DcMotor leftBackMotor;
+    DcMotor _rightFrontMotor;
+    DcMotor _leftFrontMotor;
+    DcMotor _rightBackMotor;
+    DcMotor _leftBackMotor;
 
-    DcMotor intakeMotor;
-    DcMotor shooterMotor;
+    DcMotor _intakeMotor;
+    DcMotor _shooterMotor;
 
-    Servo leftBeaconServo;
-    Servo rightBeaconServo;
+    Servo _leftBeaconServo;
+    Servo _rightBeaconServo;
 
-    Servo regulatorServo;
+    Servo _regulatorServo;
 
-    ColorSensor sensorRGB;
-    DeviceInterfaceModule cdim;
+    ColorSensor _sensorRGB;
+    DeviceInterfaceModule _cdim;
 
-    ModernRoboticsI2cGyro gyro;
+    ModernRoboticsI2cGyro _gyro;
 
-    LightSensor lightSensor;
+    LightSensor _lightSensor;
 
     @Override
     public void init() {
-        leftFrontMotor = hardwareMap.dcMotor.get("leftFront");
-        leftBackMotor = hardwareMap.dcMotor.get("leftRear");
-        rightFrontMotor = hardwareMap.dcMotor.get("rightFront");
-        rightBackMotor = hardwareMap.dcMotor.get("rightRear");
+        _leftFrontMotor = hardwareMap.dcMotor.get("leftFront");
+        _leftBackMotor = hardwareMap.dcMotor.get("leftRear");
+        _rightFrontMotor = hardwareMap.dcMotor.get("rightFront");
+        _rightBackMotor = hardwareMap.dcMotor.get("rightRear");
 
-        rightFrontMotor.setDirection(DcMotor.Direction.REVERSE);
-        rightBackMotor.setDirection(DcMotor.Direction.REVERSE);
+        _rightFrontMotor.setDirection(DcMotor.Direction.REVERSE);
+        _rightBackMotor.setDirection(DcMotor.Direction.REVERSE);
 
-        intakeMotor = hardwareMap.dcMotor.get("intakeMotor");
-        shooterMotor = hardwareMap.dcMotor.get("shooter");
+        _intakeMotor = hardwareMap.dcMotor.get("intakeMotor");
+        _shooterMotor = hardwareMap.dcMotor.get("shooter");
 
-        shooterMotor.setDirection(DcMotor.Direction.REVERSE);
+        _shooterMotor.setDirection(DcMotor.Direction.REVERSE);
 
-        leftBeaconServo = hardwareMap.servo.get("leftBeacon");
-        rightBeaconServo = hardwareMap.servo.get("rightBeacon");
+        _leftBeaconServo = hardwareMap.servo.get("leftBeacon");
+        _rightBeaconServo = hardwareMap.servo.get("rightBeacon");
 
-        regulatorServo = hardwareMap.servo.get("regulator");
+        _regulatorServo = hardwareMap.servo.get("regulator");
 
-        leftBeaconServo.scaleRange(LEFT_SERVO_MIN, LEFT_SERVO_HOME);
-        rightBeaconServo.scaleRange(RIGHT_SERVO_MIN, RIGHT_SERVO_HOME);
+        _leftBeaconServo.scaleRange(LEFT_SERVO_MIN, LEFT_SERVO_HOME);
+        _rightBeaconServo.scaleRange(RIGHT_SERVO_MIN, RIGHT_SERVO_HOME);
 
-        regulatorServo.scaleRange(REGULATOR_SERVO_MIN, REGULATOR_SERVO_HOME);
+        _regulatorServo.scaleRange(REGULATOR_SERVO_MIN, REGULATOR_SERVO_HOME);
 
-        leftBeaconServo.setPosition(1);
-        rightBeaconServo.setPosition(1);
+        _leftBeaconServo.setPosition(1);
+        _rightBeaconServo.setPosition(1);
 
-        regulatorServo.setPosition(1);
+        _regulatorServo.setPosition(1);
 
-        ledState = false;
+        _ledState = false;
 
-        sensorRGB = hardwareMap.colorSensor.get("color");
+        _sensorRGB = hardwareMap.colorSensor.get("color");
 
-        cdim = hardwareMap.deviceInterfaceModule.get("dim");
-        cdim.setDigitalChannelMode(LED_PORT, DigitalChannelController.Mode.OUTPUT);
-        cdim.setDigitalChannelState(LED_PORT, ledState);
+        _cdim = hardwareMap.deviceInterfaceModule.get("dim");
+        _cdim.setDigitalChannelMode(LED_PORT, DigitalChannelController.Mode.OUTPUT);
+        _cdim.setDigitalChannelState(LED_PORT, _ledState);
 
-        gyro = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
-        gyro.setHeadingMode(ModernRoboticsI2cGyro.HeadingMode.HEADING_CARTESIAN);
-        gyro.calibrate();
+        _gyro = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
+        _gyro.setHeadingMode(ModernRoboticsI2cGyro.HeadingMode.HEADING_CARTESIAN);
+        _gyro.calibrate();
 
-        lightSensor = hardwareMap.lightSensor.get("light");
-        lightSensor.enableLed(true);
+        _lightSensor = hardwareMap.lightSensor.get("light");
+        _lightSensor.enableLed(true);
 
-        lightOffset = lightSensor.getLightDetected();
+        _lightOffset = _lightSensor.getLightDetected();
 
         gamepad1.setJoystickDeadzone((float) 0.05);
+    }
+    
+    @Override
+    public void init_loop() {
+    	telemetry.addData("Gyro", _gyro.isCalibrating() ? "Calibrating" : _gyro.getHeading());
+    	telemetry.update();
     }
 
     @Override
     public void loop() {
-        leftFrontMotor.setPower(gamepad1.left_stick_y);
-        leftBackMotor.setPower(gamepad1.left_stick_y);
-        rightFrontMotor.setPower(gamepad1.right_stick_y);
-        rightBackMotor.setPower(gamepad1.right_stick_y);
+        _leftFrontMotor.setPower(gamepad1.left_stick_y);
+        _leftBackMotor.setPower(gamepad1.left_stick_y);
+        _rightFrontMotor.setPower(gamepad1.right_stick_y);
+        _rightBackMotor.setPower(gamepad1.right_stick_y);
 
         if(gamepad1.right_trigger > 0) {
-            intakeMotor.setPower(1);
+            _intakeMotor.setPower(1);
         }
         else if(gamepad1.right_bumper) {
-            intakeMotor.setPower(-1);
+            _intakeMotor.setPower(-1);
         }
         else {
-            intakeMotor.setPower(0);
+            _intakeMotor.setPower(0);
         }
 
         if(gamepad1.left_trigger > 0) {
             while(getShooterPosition() < SHOOTER_ROTATION) {
-                shooterMotor.setPower(1);
+                _shooterMotor.setPower(1);
             }
-            shooterMotor.setPower(0);
-            shooterOffset = shooterMotor.getCurrentPosition();
+            _shooterMotor.setPower(0);
+            _shooterOffset = _shooterMotor.getCurrentPosition();
         }
         else if(gamepad1.left_bumper) {
-            shooterMotor.setPower(1);
+            _shooterMotor.setPower(1);
         }
         else {
-            shooterMotor.setPower(0);
+            _shooterMotor.setPower(0);
         }
 
-        if(gamepad1.a && !rightBeaconButton) {
-            rightBeaconServo.setPosition((rightBeaconServo.getPosition() < 0.2) ? 1 : 0);
-            rightBeaconButton = true;
-        } else if(!gamepad1.a) rightBeaconButton = false;
+        if(gamepad1.a && !_rightBeaconButton) {
+            _rightBeaconServo.setPosition((_rightBeaconServo.getPosition() < 0.2) ? 1 : 0);
+            _rightBeaconButton = true;
+        } else if(!gamepad1.a) _rightBeaconButton = false;
 
-        if(gamepad1.x && !leftBeaconButton) {
-            leftBeaconServo.setPosition((leftBeaconServo.getPosition() < 0.2) ? 1 : 0);
-            leftBeaconButton = true;
-        } else if(!gamepad1.x) leftBeaconButton = false;
+        if(gamepad1.x && !_leftBeaconButton) {
+            _leftBeaconServo.setPosition((_leftBeaconServo.getPosition() < 0.2) ? 1 : 0);
+            _leftBeaconButton = true;
+        } else if(!gamepad1.x) _leftBeaconButton = false;
 
         if(gamepad1.a) {
-            lightOffset = lightSensor.getLightDetected();
+            _lightOffset = _lightSensor.getLightDetected();
         }
 
-        telemetry.addData("Light Sensor", lightSensor.getLightDetected() - lightOffset);
-        telemetry.addData("Line detected", (lightSensor.getLightDetected() - lightOffset >= LIGHT_THRESHOLD));
-        telemetry.addData("Alpha", sensorRGB.alpha());
-        telemetry.addData("Red", sensorRGB.red());
-        telemetry.addData("Green", sensorRGB.green());
-        telemetry.addData("Blue", sensorRGB.blue());
-        telemetry.addData("Shooter pos", shooterMotor.getCurrentPosition() - shooterOffset);
-        telemetry.addData("Regulator", regulatorServo.getPosition());
-        telemetry.addData("Intake", intakeMotor.getCurrentPosition());
-        telemetry.addData("Gyro", gyro.getHeading());
+        telemetry.addData("Light Sensor", _lightSensor.getLightDetected() - _lightOffset);
+        telemetry.addData("Line detected", (_lightSensor.getLightDetected() - _lightOffset >= LIGHT_THRESHOLD));
+        telemetry.addData("Alpha", _sensorRGB.alpha());
+        telemetry.addData("Red", _sensorRGB.red());
+        telemetry.addData("Green", _sensorRGB.green());
+        telemetry.addData("Blue", _sensorRGB.blue());
+        telemetry.addData("Shooter pos", _shooterMotor.getCurrentPosition() - _shooterOffset);
+        telemetry.addData("Regulator", _regulatorServo.getPosition());
+        telemetry.addData("Intake", _intakeMotor.getCurrentPosition());
+        telemetry.addData("Gyro", _gyro.getHeading());
         telemetry.update();
     }
 
     private int getShooterPosition() {
-        return shooterMotor.getCurrentPosition() - shooterOffset;
+        return _shooterMotor.getCurrentPosition() - _shooterOffset;
     }
 }
