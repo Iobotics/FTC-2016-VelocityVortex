@@ -127,6 +127,7 @@ public class Team1Calibration extends OpMode {
         telemetry.addData("backRight Motor Position", backRightMotor.getCurrentPosition()- backRightOffSet); //negative
         telemetry.addData("Catapult Motor Position", catapultMotor.getCurrentPosition() - catapultOffset); //negative
         telemetry.addData("Intake Motor Position", intakeMotor.getCurrentPosition() - intakeOffSet); //negative
+        telemetry.addData("Gamepad Y", gamepad1.left_stick_y);
         //telemetry.addData("Gyro Sensor", gyro.getHeading());
         //telemetry.update();
     }

@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 /**
  * Created by Teacher on 9/28/2016.
@@ -34,9 +35,9 @@ public class Team1TeleOp extends OpMode {
         leftBackMotor.setDirection(DcMotor.Direction.REVERSE);
 
         intakeMotor = hardwareMap.dcMotor.get("intakeMotor");
-        catapultMotor = hardwareMap.dcMotor.get("catapult");
+        //intakeMotor.setDirection(DcMotor.Direction.REVERSE);
 
-        intakeMotor.setDirection(DcMotor.Direction.REVERSE);
+        catapultMotor = hardwareMap.dcMotor.get("catapult");
 
         catapultMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         catapultOffset = -catapultMotor.getCurrentPosition();

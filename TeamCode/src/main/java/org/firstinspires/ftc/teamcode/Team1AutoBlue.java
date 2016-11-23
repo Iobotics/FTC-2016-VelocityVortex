@@ -1,14 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.adafruit.AdafruitBNO055IMU;
-import com.qualcomm.hardware.adafruit.AdafruitI2cColorSensor;
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
 /**
@@ -17,15 +11,12 @@ import com.qualcomm.robotcore.util.Range;
 
 @Autonomous(name = "Team 1 Blue: Autonomous", group = "Team 1 Blue")
 //@Disabled
-public class Team1AutoBlue extends OpMode {
+public class Team1AutoBlue extends LinearOpMode {
 
 	final int    ENCODER_TICKS_PER_REV = 1120; // Neverest 40
     final int    WHEEL_DIAMETER        = 6;
     final double INCHES_PER_TICK       = (WHEEL_DIAMETER * Math.PI) / ENCODER_TICKS_PER_REV; // INCHES / REV
-    final double LEFT_OFFSET = 0.25;
-    final int TICK_OFFSET = 700;
-    final int CATAPULT_ROTATIONS = 3 * ENCODER_TICKS_PER_REV;
-    final int INTAKE_TICKS = ENCODER_TICKS_PER_REV * 1;
+    final int INTAKE_TICKS             = ENCODER_TICKS_PER_REV * 1;
 
     DcMotor frontLeftMotor;
     DcMotor frontRightMotor;
@@ -34,12 +25,6 @@ public class Team1AutoBlue extends OpMode {
 
     DcMotor catapultMotor;
     DcMotor intakeMotor;
-    ModernRoboticsI2cGyro gyro;
-
-    //ColorSensor colorSensor;
-
-    //Servo leftServo;
-    //Servo rightServo;
 
     int catapultOffset;
     int rightMotorOffset;
@@ -48,8 +33,7 @@ public class Team1AutoBlue extends OpMode {
     int targetRotations;
     int intakeOffset;
 
-    @Override
-    public void init() {
+    public void robotInit() {
         frontLeftMotor = hardwareMap.dcMotor.get("leftFront");
         frontRightMotor = hardwareMap.dcMotor.get("rightFront");
         backLeftMotor = hardwareMap.dcMotor.get("leftRear");
@@ -57,64 +41,54 @@ public class Team1AutoBlue extends OpMode {
 
         catapultMotor = hardwareMap.dcMotor.get("catapult");
         intakeMotor = hardwareMap.dcMotor.get("intakeMotor");
-   //     gyro = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
 
-  //      leftServo = hardwareMap.servo.get("leftServo");
-//        rightServo = hardwareMap.servo.get("rightServo");
+        backLeftMotor.setDirection(DcMotor.Direction.REVERSE);
 
-  //      colorSensor = (AdafruitI2cColorSensor) hardwareMap.colorSensor.get("colorSensor");
+        this.runUsingEncoders();
 
-        frontLeftMotor.setDirection(DcMotor.Direction.REVERSE);
-        frontRightMotor.setDirection(DcMotor.Direction.REVERSE);
-        backRightMotor.setDirection(DcMotor.Direction.REVERSE);
-
-
-        frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        catapultMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        rightMotorOffset = -backRightMotor.getCurrentPosition();
-        catapultOffset = -catapultMotor.getCurrentPosition();
-        leftMotorOffset = frontLeftMotor.getCurrentPosition();
-        intakeOffset = -intakeMotor.getCurrentPosition();
-
-     //   gyro.setHeadingMode(ModernRoboticsI2cGyro.HeadingMode.HEADING_CARTESIAN);
-      //  gyro.calibrate();
+        this.resetEncoders();
     }
 
-    @Override
-    public void loop() {
-        this.moveRobot(77-22, 0.3);
+    public void robotMain() {
 
-        this.activateCatapult();
+        this.moveRobot(45, 0.3);
 
-        this.runIntake();
+        //this.activateCatapult();
 
-        this.activateCatapult();
+        //this.runIntake();
 
-        this.moveRobot(22, .3); //Temp auto stop here
+        //this.activateCatapult();
 
         //this.rotate(90, 0.3); //TODO - Eventual Auto
 
-        //this.moveRobot(71, .3);
+        //this.moveRobot(60, .3);
 
         //this.pressButton();
 
-        requestOpModeStop();
+        //this.move Robot(60, .3);
     }
 
-    @Override
-    public void stop() {
+    public void robotStop() {
         frontLeftMotor.setPower(0);
         frontRightMotor.setPower(0);
         backLeftMotor.setPower(0);
         backRightMotor.setPower(0);
     }
 
+    @Override
+    public void runOpMode() {
+        this.robotInit();
+
+        this.robotMain();
+
+        this.robotStop();
+    }
+
     private void moveRobot(int distance, double power) {
-        while (frontLeftMotor.getCurrentPosition() - leftMotorOffset < targetPosition(distance)) {
+        this.resetEncoders();
+
+        int distanceInTicks = (int) (distance / INCHES_PER_TICK);
+        while (frontLeftMotor.getCurrentPosition() - leftMotorOffset < distanceInTicks) {
             frontLeftMotor.setPower(power);
             frontRightMotor.setPower(power);
             backLeftMotor.setPower(power);
@@ -125,8 +99,6 @@ public class Team1AutoBlue extends OpMode {
         frontRightMotor.setPower(0);
         backLeftMotor.setPower(0);
         backRightMotor.setPower(0);
-
-        this.resetEncoders();
     }
 
     /**
@@ -144,6 +116,7 @@ public class Team1AutoBlue extends OpMode {
         backLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         catapultMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         intakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
@@ -151,7 +124,7 @@ public class Team1AutoBlue extends OpMode {
     private void resetEncoders() {
         leftMotorOffset = frontLeftMotor.getCurrentPosition();
         rightMotorOffset = -frontRightMotor.getCurrentPosition();
-        catapultOffset = -catapultMotor.getCurrentPosition();
+        catapultOffset = catapultMotor.getCurrentPosition();
         intakeOffset = -intakeMotor.getCurrentPosition();
     }
 
@@ -183,14 +156,14 @@ public class Team1AutoBlue extends OpMode {
             degrees = -degrees;
         }
         targetRotations = targetPosition(24 * Math.PI / (360 / degrees));
-        while ((-backLeftMotor.getCurrentPosition()) - leftMotorOffset < targetRotations) {
+        while (frontLeftMotor.getCurrentPosition() - leftMotorOffset < targetRotations) {
                 frontLeftMotor.setPower(leftPower);
                 frontRightMotor.setPower(rightPower);
                 backLeftMotor.setPower(leftPower);
                 backRightMotor.setPower(rightPower);
         }
     }
-/*
+    /*
     private void buttonPress(){ //Blue
         if (colorSensor.red() > 1400 && colorSensor.blue() <1500 && colorSensor.green()< 1000){
 
@@ -199,6 +172,5 @@ public class Team1AutoBlue extends OpMode {
 
         }
     }
-*/
-
+    */
 }
