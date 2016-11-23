@@ -19,7 +19,7 @@ public class Team3AutoTest extends Team3Base {
         //this.autoDriveDistance(24 + DISTANCE_OFFSET, 1.0, 1.0);
         //this.shootBall();
         //this.shootBall();
-        this.autoTurnInPlace(-135, 1.0);
+        this.autoTurnInPlace(225, 1.0); //this.autoTurnInPlace(-135, 1.0);
         /*this.autoDriveToBeacon();
         this.autoPressBeacon();
         this.autoTurnInPlace(-90, 1.0);

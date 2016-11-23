@@ -14,7 +14,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class Team3TeleOp extends OpMode {
 
 	// Constants //
-    final int SHOOTER_ROTATION 	  = 730;
+    final int SHOOTER_ROTATION 	  = 720;
     final double LEFT_SERVO_MIN   = 0.132;
     final double RIGHT_SERVO_MIN  = 0;
     final double LEFT_SERVO_HOME  = 0.74;
@@ -117,15 +117,15 @@ public class Team3TeleOp extends OpMode {
             _shooterMotor.setPower(0);
         }
 
-        if(gamepad1.a && !_rightBeaconButton) {
-            _rightBeaconServo.setPosition((_rightBeaconServo.getPosition() < 0.2) ? 1 : 0);
-            _rightBeaconButton = true;
-        } else if(!gamepad1.a) _rightBeaconButton = false;
-
-        if(gamepad1.x && !_leftBeaconButton) {
+        if(gamepad1.a && !_leftBeaconButton) {
             _leftBeaconServo.setPosition((_leftBeaconServo.getPosition() < 0.2) ? 1 : 0);
             _leftBeaconButton = true;
-        } else if(!gamepad1.x) _leftBeaconButton = false;
+        } else if(!gamepad1.a) _leftBeaconButton = false;
+
+        if(gamepad1.b && !_rightBeaconButton) {
+            _rightBeaconServo.setPosition((_rightBeaconServo.getPosition() < 0.2) ? 1 : 0);
+            _rightBeaconButton = true;
+        } else if(!gamepad1.b) _rightBeaconButton = false;
     }
 
     private int getShooterPosition() {

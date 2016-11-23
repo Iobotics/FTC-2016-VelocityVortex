@@ -162,7 +162,6 @@ public class Team3Calibration extends OpMode {
 
         telemetry.addData("Light Sensor", _lightSensor.getLightDetected() - _lightOffset);
         telemetry.addData("Line detected", (_lightSensor.getLightDetected() - _lightOffset >= LIGHT_THRESHOLD));
-        telemetry.addData("Alpha", _sensorRGB.alpha());
         telemetry.addData("Red", _sensorRGB.red());
         telemetry.addData("Green", _sensorRGB.green());
         telemetry.addData("Blue", _sensorRGB.blue());

@@ -211,7 +211,8 @@ public class Team3Base extends LinearOpMode {
     protected void calibrateGyro() {
         _gyro.calibrate();
         while(_gyro.isCalibrating()) {
-            this.setPower(0);
+            telemetry.addData("Gyro", _gyro.isCalibrating() ? "Calibrating" : _gyro.getHeading());
+            telemetry.update();
         }
     }
 
@@ -366,19 +367,20 @@ public class Team3Base extends LinearOpMode {
     }*/
 
     /**
-     * Method to turn degrees with positive power
+     * Method to turn degrees with specified power
      * @param degrees
      * @param power
      */
     // FIXME - Doesn't move
     protected void autoTurnInPlace(int degrees, double power) {
-        if(degrees < -360) throw new IllegalArgumentException("degrees = " + degrees);
+        if(degrees < -360 || degrees > 360) throw new IllegalArgumentException("degrees = " + degrees);
         if(power < 0) throw new IllegalArgumentException("power = " + power);
 
         this.calibrateGyro();
 
         if(degrees < 0) {
             degrees += 360;
+            // FIXME - Gyro calibration starts at heading 0
             while(_gyro.getHeading() > degrees) {
                 this.setPower(-power, power);
             }
