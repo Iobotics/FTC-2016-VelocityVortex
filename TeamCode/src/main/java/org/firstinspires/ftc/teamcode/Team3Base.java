@@ -280,6 +280,8 @@ public class Team3Base extends LinearOpMode {
     protected void driveToLine() {
         while(!this.lineDetected()) {
             this.setPower(0.5);
+            telemetry.addData("Light Sensor", this.getLight());
+            telemetry.addData("Line detected", (this.getLight() >= LIGHT_THRESHOLD));
         }
         this.setPower(0);
     }
@@ -427,9 +429,9 @@ public class Team3Base extends LinearOpMode {
      */
     protected void autoDriveToBeacon() {
         this.driveToLine();
-        this.autoDriveDistance(CENTER_TO_LINE, 1.0);
-        this.alignToLine();
-        this.autoDriveDistance(DISTANCE_TO_BEACON, 1.0);
+        //this.autoDriveDistance(CENTER_TO_LINE, 1.0);
+        //this.alignToLine();
+        //this.autoDriveDistance(DISTANCE_TO_BEACON, 1.0);
     }
 
     /**

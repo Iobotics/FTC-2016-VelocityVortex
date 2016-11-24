@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -12,10 +13,10 @@ import com.qualcomm.robotcore.hardware.DigitalChannelController;
  */
 
 @TeleOp(name = "Color Sensor Test", group = "Color Sensor")
-@Disabled
+//@Disabled
 public class ColorSensorTest extends OpMode {
 
-    AdafruitI2cColorSensor colorSensorL;
+    ModernRoboticsI2cColorSensor colorSensorL;
     DeviceInterfaceModule cdim;
     String color;
     static final int LED_CHANNEL = 5;
@@ -25,10 +26,11 @@ public class ColorSensorTest extends OpMode {
 
     @Override
     public void init() {
-        colorSensorL = (AdafruitI2cColorSensor) hardwareMap.colorSensor.get("colorSensor");
+        colorSensorL = (ModernRoboticsI2cColorSensor) hardwareMap.colorSensor.get("color");
         cdim = hardwareMap.deviceInterfaceModule.get("dim");
         cdim.setDigitalChannelMode(LED_CHANNEL, DigitalChannelController.Mode.OUTPUT);
         cdim.setDigitalChannelState(LED_CHANNEL, false);
+        colorSensorL.setI2cAddress();
 
     }
 
@@ -48,6 +50,8 @@ public class ColorSensorTest extends OpMode {
         }
         telemetry.addData("color", color);
         telemetry.addData("info", colorSensorL.getConnectionInfo());
+        telemetry.addData("info", colorSensorL.getI2cAddress());
+        telemetry.addData("Name", colorSensorL.getDeviceName());
         telemetry.update();
     }
 }
