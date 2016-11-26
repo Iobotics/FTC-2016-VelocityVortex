@@ -28,7 +28,7 @@ public class Team3Calibration extends OpMode {
     final double REGULATOR_SERVO_MIN  = 0;
     final double REGULATOR_SERVO_HOME = 0.7;
 
-    final double LIGHT_THRESHOLD = 0.24;
+    final double LIGHT_THRESHOLD = 0.2;
 
     // Member variables //
     int _shooterOffset;

@@ -23,7 +23,8 @@ public class Team1Calibration extends OpMode {
     DcMotor catapultMotor;
     DcMotor intakeMotor;
 
-  //  ModernRoboticsI2cGyro gyro;
+    // ModernRoboticsI2cGyro gyro;
+
     int frontLeftOffSet;
     int frontRightOffSet;
     int backLeftOffSet;
@@ -53,8 +54,10 @@ public class Team1Calibration extends OpMode {
         frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);intakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        intakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         catapultMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         catapultOffset = catapultMotor.getCurrentPosition();
 
         gamepad1.setJoystickDeadzone((float) .1);
