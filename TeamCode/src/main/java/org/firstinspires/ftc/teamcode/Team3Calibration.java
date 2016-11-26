@@ -1,14 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
-import com.qualcomm.robotcore.hardware.DigitalChannelController;
-import com.qualcomm.robotcore.hardware.LightSensor;
-import com.qualcomm.robotcore.hardware.Servo;
 
 /**
  * Created by Darren Kam on 10/28/2016.
@@ -17,162 +10,82 @@ import com.qualcomm.robotcore.hardware.Servo;
 //@Disabled
 public class Team3Calibration extends OpMode {
 
-	// Constants //
-    final int LED_PORT            = 5;
-    final int SHOOTER_ROTATION 	  = 730;
-    final double LEFT_SERVO_MIN	  = 0.132;
-    final double RIGHT_SERVO_MIN  = 0;
-    final double LEFT_SERVO_HOME  = 0.74;
-    final double RIGHT_SERVO_HOME = 0.55;
+	Team3Robot _robot = new Team3Robot();
 
-    final double REGULATOR_SERVO_MIN  = 0;
-    final double REGULATOR_SERVO_HOME = 0.7;
-
-    final double LIGHT_THRESHOLD = 0.2;
-
-    // Member variables //
-    int _shooterOffset;
-    double _lightOffset;
-
-    boolean _ledState = false;
     boolean _leftBeaconButton = false;
     boolean _rightBeaconButton = false;
-
-    // Hardware declarations //
-    DcMotor _rightFrontMotor;
-    DcMotor _leftFrontMotor;
-    DcMotor _rightBackMotor;
-    DcMotor _leftBackMotor;
-
-    DcMotor _intakeMotor;
-    DcMotor _shooterMotor;
-
-    Servo _leftBeaconServo;
-    Servo _rightBeaconServo;
-
-    Servo _regulatorServo;
-
-    ColorSensor _sensorRGB;
-    DeviceInterfaceModule _cdim;
-
-    ModernRoboticsI2cGyro _gyro;
-
-    LightSensor _lightSensor;
-
+    
+    boolean _liftButton = false;
+    
     @Override
     public void init() {
-        _leftFrontMotor = hardwareMap.dcMotor.get("leftFront");
-        _leftBackMotor = hardwareMap.dcMotor.get("leftRear");
-        _rightFrontMotor = hardwareMap.dcMotor.get("rightFront");
-        _rightBackMotor = hardwareMap.dcMotor.get("rightRear");
-
-        _rightFrontMotor.setDirection(DcMotor.Direction.REVERSE);
-        _rightBackMotor.setDirection(DcMotor.Direction.REVERSE);
-
-        _intakeMotor = hardwareMap.dcMotor.get("intakeMotor");
-        _shooterMotor = hardwareMap.dcMotor.get("shooter");
-
-        _shooterMotor.setDirection(DcMotor.Direction.REVERSE);
-
-        _leftBeaconServo = hardwareMap.servo.get("leftBeacon");
-        _rightBeaconServo = hardwareMap.servo.get("rightBeacon");
-
-        _regulatorServo = hardwareMap.servo.get("regulator");
-
-        _leftBeaconServo.scaleRange(LEFT_SERVO_MIN, LEFT_SERVO_HOME);
-        _rightBeaconServo.scaleRange(RIGHT_SERVO_MIN, RIGHT_SERVO_HOME);
-
-        _regulatorServo.scaleRange(REGULATOR_SERVO_MIN, REGULATOR_SERVO_HOME);
-
-        _leftBeaconServo.setPosition(1);
-        _rightBeaconServo.setPosition(1);
-
-        _regulatorServo.setPosition(1);
-
-        _ledState = false;
-
-        _sensorRGB = hardwareMap.colorSensor.get("color");
-
-        _cdim = hardwareMap.deviceInterfaceModule.get("dim");
-        _cdim.setDigitalChannelMode(LED_PORT, DigitalChannelController.Mode.OUTPUT);
-        _cdim.setDigitalChannelState(LED_PORT, _ledState);
-
-        _gyro = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
-        _gyro.setHeadingMode(ModernRoboticsI2cGyro.HeadingMode.HEADING_CARTESIAN);
-        _gyro.calibrate();
-
-        _lightSensor = hardwareMap.lightSensor.get("light");
-        _lightSensor.enableLed(true);
-
-        _lightOffset = _lightSensor.getLightDetected();
-
-        gamepad1.setJoystickDeadzone((float) 0.05);
+    	_robot.init(hardwareMap, telemetry);
     }
     
     @Override
     public void init_loop() {
-    	telemetry.addData("Gyro", _gyro.isCalibrating() ? "Calibrating" : _gyro.getHeading());
+    	telemetry.addData("Gyro", _robot._gyro.isCalibrating() ? "Calibrating" : _robot._gyro.getHeading());
     	telemetry.update();
     }
 
     @Override
     public void loop() {
-        _leftFrontMotor.setPower(gamepad1.left_stick_y);
-        _leftBackMotor.setPower(gamepad1.left_stick_y);
-        _rightFrontMotor.setPower(gamepad1.right_stick_y);
-        _rightBackMotor.setPower(gamepad1.right_stick_y);
+    	_robot.setPower(gamepad1.left_stick_y, gamepad1.right_stick_y);
 
+        // Activates intake when right trigger is pressed
         if(gamepad1.right_trigger > 0) {
-            _intakeMotor.setPower(1);
+            _robot._intakeMotor.setPower(1);
         }
         else if(gamepad1.right_bumper) {
-            _intakeMotor.setPower(-1);
+        	_robot._intakeMotor.setPower(-1);
         }
         else {
-            _intakeMotor.setPower(0);
+        	_robot._intakeMotor.setPower(0);
         }
 
+        // Left trigger to use shooter
         if(gamepad1.left_trigger > 0) {
-            while(getShooterPosition() < SHOOTER_ROTATION) {
-                _shooterMotor.setPower(1);
+            long startTime = System.currentTimeMillis();
+            while(System.currentTimeMillis() - startTime < Team3Robot.REGULATOR_TIME) {
+            	_robot._regulatorServo.setPosition(0);
             }
-            _shooterMotor.setPower(0);
-            _shooterOffset = _shooterMotor.getCurrentPosition();
+            _robot._regulatorServo.setPosition(1);
+            while(_robot.getShooterPosition() < Team3Robot.SHOOTER_ROTATION) {
+            	_robot._shooterMotor.setPower(1);
+            }
+            _robot._shooterMotor.setPower(0);
+            _robot._shooterOffset = _robot._shooterMotor.getCurrentPosition();
         }
-        else if(gamepad1.left_bumper) {
-            _shooterMotor.setPower(1);
-        }
-        else {
-            _shooterMotor.setPower(0);
+        if(gamepad1.left_bumper) {
+        	_robot._shooterMotor.setPower(0.6);
+        } else {
+        	_robot._shooterMotor.setPower(0);
         }
 
-        if(gamepad1.a && !_rightBeaconButton) {
-            _rightBeaconServo.setPosition((_rightBeaconServo.getPosition() < 0.2) ? 1 : 0);
-            _rightBeaconButton = true;
-        } else if(!gamepad1.a) _rightBeaconButton = false;
-
-        if(gamepad1.x && !_leftBeaconButton) {
-            _leftBeaconServo.setPosition((_leftBeaconServo.getPosition() < 0.2) ? 1 : 0);
+        if(gamepad1.a && !_leftBeaconButton) {
+        	_robot._leftBeaconServo.setPosition((_robot._leftBeaconServo.getPosition() < 0.2) ? 1 : 0);
             _leftBeaconButton = true;
-        } else if(!gamepad1.x) _leftBeaconButton = false;
+        } else if(!gamepad1.a) _leftBeaconButton = false;
 
-        if(gamepad1.a) {
-            _lightOffset = _lightSensor.getLightDetected();
-        }
+        if(gamepad1.b && !_rightBeaconButton) {
+        	_robot._rightBeaconServo.setPosition((_robot._rightBeaconServo.getPosition() < 0.2) ? 1 : 0);
+            _rightBeaconButton = true;
+        } else if(!gamepad1.b) _rightBeaconButton = false;
+        
+        if(gamepad1.x && !_liftButton) {
+        	_robot.setLiftPosition((_robot.getLiftPosition() > 0) ? Team3Robot.LIFT_HOME : Team3Robot.LIFT_UP);
+            _liftButton = true;
+        } else if(!gamepad1.x) _liftButton = false;
 
-        telemetry.addData("Light Sensor", _lightSensor.getLightDetected() - _lightOffset);
-        telemetry.addData("Line detected", (_lightSensor.getLightDetected() - _lightOffset >= LIGHT_THRESHOLD));
-        telemetry.addData("Red", _sensorRGB.red());
-        telemetry.addData("Green", _sensorRGB.green());
-        telemetry.addData("Blue", _sensorRGB.blue());
-        telemetry.addData("Shooter pos", _shooterMotor.getCurrentPosition() - _shooterOffset);
-        telemetry.addData("Regulator", _regulatorServo.getPosition());
-        telemetry.addData("Intake", _intakeMotor.getCurrentPosition());
-        telemetry.addData("Gyro", _gyro.getHeading());
+        telemetry.addData("Light Sensor", _robot.getLight());
+        telemetry.addData("Line detected", (_robot.getLight() >= Team3Robot.LIGHT_THRESHOLD));
+        telemetry.addData("Red", _robot._sensorRGB.red());
+        telemetry.addData("Green", _robot._sensorRGB.green());
+        telemetry.addData("Blue", _robot._sensorRGB.blue());
+        telemetry.addData("Shooter pos", _robot.getShooterPosition());
+        telemetry.addData("Regulator", _robot._regulatorServo.getPosition());
+        telemetry.addData("Intake", _robot.getIntakePosition());
+        telemetry.addData("Gyro", _robot.getGyro());
         telemetry.update();
-    }
-
-    private int getShooterPosition() {
-        return _shooterMotor.getCurrentPosition() - _shooterOffset;
     }
 }
