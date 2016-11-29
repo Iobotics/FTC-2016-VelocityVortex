@@ -1,8 +1,14 @@
+/* This Autonomous goes forward, shoots two balls,
+ * goes 90 degrees, hits the beacon, and parks on the center vortex.
+ */
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.util.Range;
 
 /**
@@ -26,9 +32,12 @@ public class Team1AutoBlue extends LinearOpMode {
     DcMotor catapultMotor;
     DcMotor intakeMotor;
 
+    ModernRoboticsI2cGyro gyro;
+
     int catapultOffset;
     int rightMotorOffset;
     int leftMotorOffset;
+    int gyroHeadingOffset;
 
     int targetRotations;
     int intakeOffset;
@@ -42,30 +51,40 @@ public class Team1AutoBlue extends LinearOpMode {
         catapultMotor = hardwareMap.dcMotor.get("catapult");
         intakeMotor = hardwareMap.dcMotor.get("intakeMotor");
 
-        backLeftMotor.setDirection(DcMotor.Direction.REVERSE);
+        gyro = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
+
+        frontLeftMotor.setDirection(DcMotor.Direction.REVERSE);
+        frontRightMotor.setDirection(DcMotor.Direction.REVERSE);
+        //backLeftMotor.setDirection(DcMotor.Direction.REVERSE);
+        backRightMotor.setDirection(DcMotor.Direction.REVERSE);
+
+        intakeMotor.setDirection(DcMotor.Direction.REVERSE);
 
         this.runUsingEncoders();
 
         this.resetEncoders();
+
+       // gyro.setHeadingMode(ModernRoboticsI2cGyro.HeadingMode.HEADING_CARTESIAN);
+       // gyro.calibrate();
     }
 
     public void robotMain() {
 
-        this.moveRobot(45, 0.3);
+        this.moveRobot(45, 0.3); //45 in forward
 
-        //this.activateCatapult();
+        this.activateCatapult(); //Shoots ball
 
         //this.runIntake();
 
-        //this.activateCatapult();
+        //this.activateCatapult(); // Shoots another ball
 
         //this.rotate(90, 0.3); //TODO - Eventual Auto
 
-        //this.moveRobot(60, .3);
+        //this.moveRobot(50, .3); //50 in forward
 
-        //this.pressButton();
+        //this.pressButton(); // button press blue
 
-        //this.move Robot(60, .3);
+        //this.move Robot(50, -.3); // 50 in backwards
     }
 
     public void robotStop() {
@@ -79,16 +98,46 @@ public class Team1AutoBlue extends LinearOpMode {
     public void runOpMode() {
         this.robotInit();
 
+        waitForStart();
+
         this.robotMain();
 
         this.robotStop();
     }
 
+    /**
+     *  Method finds frontLeft Motor Encoder Position
+     *  @param none
+     *  @return LeftEncoderPosition
+     */
+    private int getLeftPosition() {return (frontLeftMotor.getCurrentPosition() - leftMotorOffset); }
+
+    /**
+     *  Method finds intake Motor Encoder Position
+     *  Encoder Value returns negative
+     *  @param none
+     *  @return IntakeEncoderPosition
+     */
+    private int getIntakePosition() {return (-intakeMotor.getCurrentPosition()) - intakeOffset; }
+
+    /**
+     *  Method finds Catapult Motor Encoder Position
+     *  @param none
+     *  @return CatapultEncoderPosition
+     */
+    private int getCatapultPosition() {return (catapultMotor.getCurrentPosition() - catapultOffset); }
+
+    /**
+     * Moves robot in a line
+     * @param distance
+     * @param power
+     * @return none
+     */
     private void moveRobot(int distance, double power) {
         this.resetEncoders();
 
         int distanceInTicks = (int) (distance / INCHES_PER_TICK);
-        while (frontLeftMotor.getCurrentPosition() - leftMotorOffset < distanceInTicks) {
+        while (getLeftPosition() < distanceInTicks) {
             frontLeftMotor.setPower(power);
             frontRightMotor.setPower(power);
             backLeftMotor.setPower(power);
@@ -111,6 +160,9 @@ public class Team1AutoBlue extends LinearOpMode {
         return (int) distanceInTicks;
     }
 
+    /**
+     * Activates Encoders
+     */
     private void runUsingEncoders() {
         frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -129,7 +181,7 @@ public class Team1AutoBlue extends LinearOpMode {
     }
 
     private void activateCatapult(){
-        while ((-catapultMotor.getCurrentPosition()) - catapultOffset < ENCODER_TICKS_PER_REV * 3) {
+        while (getCatapultPosition() < ENCODER_TICKS_PER_REV * 3) {
             catapultMotor.setPower(1);
         }
         catapultMotor.setPower(0);
@@ -138,7 +190,7 @@ public class Team1AutoBlue extends LinearOpMode {
     }
 
     private void runIntake(){
-        while((-intakeMotor.getCurrentPosition()) - intakeOffset < INTAKE_TICKS){
+        while(getIntakePosition() < INTAKE_TICKS){
             intakeMotor.setPower(0.4);
         }
         intakeMotor.setPower(0);
@@ -147,21 +199,31 @@ public class Team1AutoBlue extends LinearOpMode {
 
     private void rotate(int degrees, double power) {
         if(power < 0) throw new IllegalArgumentException("power = " + power);
-        power = Range.clip(power, 0.0, 1.0);
-        double leftPower = power;
-        double rightPower = -power;
-        if(degrees < 0) {
-            leftPower = -power;
-            rightPower = power;
-            degrees = -degrees;
+
+        this.resetGyroHeading();
+
+        while (this.getGyroHeading() < degrees) {
+            frontLeftMotor.setPower(power);
+            frontRightMotor.setPower(-power);
+            backLeftMotor.setPower(power);
+            backRightMotor.setPower(-power);
         }
-        targetRotations = targetPosition(24 * Math.PI / (360 / degrees));
-        while (frontLeftMotor.getCurrentPosition() - leftMotorOffset < targetRotations) {
-                frontLeftMotor.setPower(leftPower);
-                frontRightMotor.setPower(rightPower);
-                backLeftMotor.setPower(leftPower);
-                backRightMotor.setPower(rightPower);
-        }
+    }
+
+    protected void calibrateGyro() {
+        gyro.calibrate();
+    }
+
+    protected boolean isGyroCalibrating() {
+        return gyro.isCalibrating();
+    }
+
+    protected int getGyroHeading() {
+        return gyro.getIntegratedZValue() - gyroHeadingOffset;
+    }
+
+    protected void resetGyroHeading() {
+        gyroHeadingOffset = gyro.getIntegratedZValue();
     }
     /*
     private void buttonPress(){ //Blue
