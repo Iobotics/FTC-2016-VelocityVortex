@@ -23,10 +23,10 @@ public class Team3AutoRed extends LinearOpMode {
     	_robot.autoDriveDistance(Team3Robot.DISTANCE_TO_VORTEX, 1.0);
     	_robot.shootBall();
     	_robot.shootBall();
-    	_robot.autoTurnInPlace(240, 0.3); //TODO - _robot.autoTurnInPlace(-135, 1.0);
+    	_robot.autoTurnInPlace(120, 0.3); //TODO - _robot.autoTurnInPlace(-135, 1.0);
     	_robot.autoDriveToBeacon();
     	_robot.autoPressBeacon();
-        _robot.autoTurnInPlace(270, 1.0);
+        _robot.autoTurnInPlace(90, 1.0);
         _robot.autoDriveToBeacon();
         _robot.autoTurnInPlace(90, 1.0);
         _robot.autoPressBeacon();
