@@ -79,10 +79,14 @@ public class Team1AutoBlue extends LinearOpMode {
         this.activateCatapult(); // Shoots another ball
 
         this.moveRobot(50, .3); //Right next to cat ball
-
+/* Activate and delete other after that in not finished yet
         this.ballHit();
 
         this.moveRobot(40, .3);
+*/
+        this.rotate(35, .3);
+
+        this.moveRobot(66, -.3);
 
         //this.rotate(90, 0.3); //TODO - Eventual Auto
 
@@ -228,8 +232,8 @@ public class Team1AutoBlue extends LinearOpMode {
         this.resetEncoders();
 
         while (getLeftPosition() < 3100){
-            frontLeftMotor.setPower(-.3);
-            backLeftMotor.setPower(-.3);
+            frontLeftMotor.setPower(.3);
+            backLeftMotor.setPower(.3);
         }
 
         frontLeftMotor.setPower(0);
@@ -238,8 +242,8 @@ public class Team1AutoBlue extends LinearOpMode {
         this.resetEncoders();
 
         while (getLeftPosition() > -3100) {
-            frontLeftMotor.setPower(.3);
-            backLeftMotor.setPower(.3);
+            frontLeftMotor.setPower(-.3);
+            backLeftMotor.setPower(-.3);
         }
 
         frontLeftMotor.setPower(0);

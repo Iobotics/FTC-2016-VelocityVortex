@@ -23,7 +23,7 @@ public class Team1Calibration extends OpMode {
     DcMotor catapultMotor;
     DcMotor intakeMotor;
 
-    // ModernRoboticsI2cGyro gyro;
+    ModernRoboticsI2cGyro gyro;
 
     int frontLeftOffSet;
     int frontRightOffSet;
@@ -32,6 +32,8 @@ public class Team1Calibration extends OpMode {
     int catapultOffset;
     int intakeOffSet;
 
+    int gyroOffSet;
+
 
     @Override
     public void init() {
@@ -39,15 +41,17 @@ public class Team1Calibration extends OpMode {
         frontRightMotor = hardwareMap.dcMotor.get("rightFront");
         backLeftMotor = hardwareMap.dcMotor.get("leftRear");
         backRightMotor = hardwareMap.dcMotor.get("rightRear");
-/*
+
         gyro = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
         gyro.setHeadingMode(ModernRoboticsI2cGyro.HeadingMode.HEADING_CARTESIAN);
         gyro.calibrate();
-*/
+
         backLeftMotor.setDirection(DcMotor.Direction.REVERSE);
 
         intakeMotor = hardwareMap.dcMotor.get("intakeMotor");
         catapultMotor = hardwareMap.dcMotor.get("catapult");
+
+
 
         intakeMotor.setDirection(DcMotor.Direction.REVERSE);
 
@@ -68,6 +72,8 @@ public class Team1Calibration extends OpMode {
         backRightOffSet = backRightMotor.getCurrentPosition();
         catapultOffset = catapultMotor.getCurrentPosition();
         intakeOffSet = intakeMotor.getCurrentPosition();
+
+        gyroOffSet = gyro.getIntegratedZValue();
 
 
     }
@@ -131,6 +137,7 @@ public class Team1Calibration extends OpMode {
         telemetry.addData("Catapult Motor Position", catapultMotor.getCurrentPosition() - catapultOffset); //negative
         telemetry.addData("Intake Motor Position", intakeMotor.getCurrentPosition() - intakeOffSet); //negative
         telemetry.addData("Gamepad Y", gamepad1.left_stick_y);
+        telemetry.addData("Gyro Heading", gyro.getIntegratedZValue());
         //telemetry.addData("Gyro Sensor", gyro.getHeading());
         //telemetry.update();
     }
