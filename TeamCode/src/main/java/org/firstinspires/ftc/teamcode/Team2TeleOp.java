@@ -2,7 +2,11 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
+import com.qualcomm.robotcore.hardware.DigitalChannelController;
+import com.qualcomm.robotcore.hardware.Servo;
 
 /**
  * Created by Teacher on 9/28/2016.
@@ -20,10 +24,25 @@ public class Team2TeleOp extends OpMode {
     DcMotor intakeMotor;
     DcMotor catapultMotor;
 
+    Servo beaconServo;
+
+    DeviceInterfaceModule cdim;
+    ColorSensor sensorRGB;
+
     final int CATAPULT_POWER = 1;
     final int CATAPULT_TICKS = 3 * 1120; // Three rotations
 
+    final int LED_PORT = 3;
+
+
+    final double BEACON_SERVO_LEFT  = 1.0;
+    final double BEACON_SERVO_HOME  = 0.5;
+    final double BEACON_SERVO_RIGHT = 0.0;
+
     int catapultOffset;
+    String beaconColor;
+
+    String teamColor;
 
     @Override
     public void init() {
@@ -38,10 +57,21 @@ public class Team2TeleOp extends OpMode {
         leftBackMotor.setDirection(DcMotor.Direction.REVERSE);
         leftFrontMotor.setDirection(DcMotor.Direction.REVERSE);
 
+        cdim = hardwareMap.deviceInterfaceModule.get("dim");
+        cdim.setDigitalChannelMode(LED_PORT, DigitalChannelController.Mode.OUTPUT);
+        cdim.setDigitalChannelState(LED_PORT, false);
+
+        sensorRGB = hardwareMap.colorSensor.get("color");
+
         catapultMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         catapultOffset = catapultMotor.getCurrentPosition();
 
+        beaconServo = hardwareMap.servo.get("beaconServo");
+        beaconServo.setPosition(BEACON_SERVO_HOME);
+
         gamepad1.setJoystickDeadzone((float) 0.05);
+
+        teamColor = "blue";
     }
 
     @Override
@@ -104,8 +134,37 @@ public class Team2TeleOp extends OpMode {
             catapultMotor.setPower(0);
         }
 
+        if(sensorRGB.red() > sensorRGB.blue() && sensorRGB.red() > sensorRGB.green()) {
+            beaconColor = "red";
+        } else if(sensorRGB.blue() > sensorRGB.red() || sensorRGB.green() > sensorRGB.red()) {
+            beaconColor = "blue";
+        }
+
+        if(gamepad1.a) {
+            beaconServo.setPosition(beaconServo.getPosition() - 0.005);
+        } else if(gamepad1.b) {
+            beaconServo.setPosition(beaconServo.getPosition() + 0.005);
+        }
+
+        if(gamepad1.y) {
+            if(teamColor.equals(beaconColor)) {
+                while(beaconServo.getPosition() > 0) {
+                    beaconServo.setPosition(beaconServo.getPosition() - 0.005);
+                }
+            } else {
+                while(beaconServo.getPosition() < 1) {
+                    beaconServo.setPosition(beaconServo.getPosition() + 0.005);
+                }
+            }
+            long initTime = System.currentTimeMillis();
+            while(System.currentTimeMillis() - initTime < 2000) { }
+            beaconServo.setPosition(BEACON_SERVO_HOME);
+        }
+
         telemetry.addData("Ticks", catapultMotor.getCurrentPosition() - catapultOffset);
         telemetry.addData("Intake motor", intakeMotor.getPower());
+        telemetry.addData("Beacon servo", beaconServo.getPosition());
+        telemetry.addData("Beacon color", beaconColor);
         telemetry.update();
     }
 }

@@ -2,9 +2,14 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
+import com.qualcomm.robotcore.hardware.DigitalChannelController;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.vuforia.ar.pl.SystemTools;
 
@@ -16,13 +21,21 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 @Autonomous(name = "Team 2: Autonomous", group = "Team 2")
 //@Disabled
-public class Team2Auto extends OpMode {
+public class Team2Auto extends LinearOpMode {
 	final int    ENCODER_TICKS_PER_REV = 1120; // Neverest 40
 	final int 	 CATAPULT_TICKS 	   = 3 * ENCODER_TICKS_PER_REV; // Three rotations
 	final int    CHASSIS_DIAMETER	   = 18; // CM
     final int    WHEEL_DIAMETER        = 10; // CM
     final double CM_PER_TICK		   = (WHEEL_DIAMETER * Math.PI) / ENCODER_TICKS_PER_REV; // CM / REV
 
+    final int LED_PORT = 3;
+
+    final double BEACON_SERVO_HOME = 0.5; // TODO - Find position
+
+    private enum FtcColor {
+        RED,
+        BLUE
+    }
 
     DcMotor frontLeftMotor;
     DcMotor frontRightMotor;
@@ -32,16 +45,22 @@ public class Team2Auto extends OpMode {
     DcMotor catapultMotor;
     ModernRoboticsI2cGyro gyro;
 
+    Servo beaconServo;
+
+    DeviceInterfaceModule cdim;
+    ColorSensor sensorRGB;
+
     int leftOffset;
     int catapultOffset;
     int intakeOffset;
 
     long startTime;
 
+    FtcColor teamColor;
+
     ElapsedTime time;
 
-    @Override
-    public void init() {
+    private void robotInit() {
         frontLeftMotor = hardwareMap.dcMotor.get("leftFront");
         frontRightMotor = hardwareMap.dcMotor.get("rightFront");
         backLeftMotor = hardwareMap.dcMotor.get("leftRear");
@@ -55,15 +74,22 @@ public class Team2Auto extends OpMode {
         frontRightMotor.setDirection(DcMotor.Direction.REVERSE);
         backRightMotor.setDirection(DcMotor.Direction.REVERSE);
 
-        useEncoders();
+        cdim = hardwareMap.deviceInterfaceModule.get("dim");
+        cdim.setDigitalChannelMode(LED_PORT, DigitalChannelController.Mode.OUTPUT);
+        cdim.setDigitalChannelState(LED_PORT, false);
+
+        sensorRGB = hardwareMap.colorSensor.get("color");
+
+        this.useEncoders();
+
+        teamColor = FtcColor.BLUE;
 
         time = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         gyro.setHeadingMode(ModernRoboticsI2cGyro.HeadingMode.HEADING_CARTESIAN);
         gyro.calibrate();
     }
 
-    @Override
-    public void loop() {
+    private void robotMain() {
 
         moveForward(25,1);
 
@@ -73,19 +99,38 @@ public class Team2Auto extends OpMode {
 
         activateCatapult();
 
-        moveForward(25,1);
+        //moveForward(25,1);
+
+        /* TODO
+        turnUsingGyro();
+
+        driveToBeacon();
+
+        alignToBeacon();*/
+
+        pressBeacon();
 
         this.requestOpModeStop();
     }
 
-    @Override
-
-    public void stop() {
+    private void robotStop() {
         backRightMotor.setPower(0);
         frontLeftMotor.setPower(0);
         backLeftMotor.setPower(0);
         frontRightMotor.setPower(0);
     }
+
+    @Override
+    public void runOpMode() {
+        robotInit();
+
+        waitForStart();
+
+        robotMain();
+
+        robotStop();
+    }
+
 //*****************************************************************Utility*Methods***********************************************************
     private void useEncoders(){
         backLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -116,6 +161,17 @@ public class Team2Auto extends OpMode {
         double distanceInTicks = distanceInCm / CM_PER_TICK;
         return (int) distanceInTicks;
     }
+
+    private FtcColor getBeaconColor() {
+        FtcColor beaconColor;
+        if(sensorRGB.red() > sensorRGB.blue() && sensorRGB.red() > sensorRGB.green()) {
+            beaconColor = FtcColor.RED;
+        } else {
+            beaconColor = FtcColor.BLUE;
+        }
+        return beaconColor;
+    }
+
     //*****************************************************OPMode*Methods****************************************************
 
     /**
@@ -129,7 +185,7 @@ public class Team2Auto extends OpMode {
 
 
 
-        while((frontLeftMotor.getCurrentPosition() - leftOffset) < distanceToTravel) {
+        while(opModeIsActive() && (frontLeftMotor.getCurrentPosition() - leftOffset) < distanceToTravel) {
             frontLeftMotor.setPower(targetPower);
             frontRightMotor.setPower(targetPower);
             backLeftMotor.setPower(targetPower);
@@ -178,7 +234,7 @@ public class Team2Auto extends OpMode {
      * Method to fire the catapult
      */
     private void activateCatapult() {
-        while((catapultMotor.getCurrentPosition() - catapultOffset) < CATAPULT_TICKS) {
+        while(opModeIsActive() && (catapultMotor.getCurrentPosition() - catapultOffset) < CATAPULT_TICKS) {
             catapultMotor.setPower(1);
         }
         catapultMotor.setPower(0);
@@ -236,7 +292,7 @@ public class Team2Auto extends OpMode {
     private void activateIntakeTime(int targetDuration, double targetPower){
         startTime = System.currentTimeMillis();
 
-        while((System.currentTimeMillis() - startTime) < targetDuration){
+        while(opModeIsActive() && (System.currentTimeMillis() - startTime) < targetDuration){
             intakeMotor.setPower(targetPower);
         }
         intakeMotor.setPower(0);
@@ -252,12 +308,36 @@ public class Team2Auto extends OpMode {
         if(targetDegrees > 180){
             targetPower = -targetPower;
         }
-        while(gyro.getHeading() < targetDegrees){
+        while(opModeIsActive() && gyro.getHeading() < targetDegrees){
             frontLeftMotor.setPower(targetPower);
             frontRightMotor.setPower(-targetPower);
             backLeftMotor.setPower(targetPower);
             backRightMotor.setPower(-targetPower);
         }
         gyro.calibrate();
+    }
+
+    private void pressBeacon() {
+        FtcColor beaconColor;
+        if(sensorRGB.red() > sensorRGB.blue() && sensorRGB.red() > sensorRGB.green()) {
+            beaconColor = FtcColor.RED;
+        } else if(sensorRGB.blue() > sensorRGB.red() || sensorRGB.green() > sensorRGB.red()) {
+            beaconColor = FtcColor.BLUE;
+        } else {
+            return;
+        }
+
+        if(teamColor == beaconColor) {
+            while(beaconServo.getPosition() > 0) {
+                beaconServo.setPosition(beaconServo.getPosition() - 0.005);
+            }
+        } else {
+            while(beaconServo.getPosition() < 1) {
+                beaconServo.setPosition(beaconServo.getPosition() + 0.005);
+            }
+        }
+        long initTime = System.currentTimeMillis();
+        while(System.currentTimeMillis() - initTime < 500) { }
+        beaconServo.setPosition(BEACON_SERVO_HOME);
     }
 }

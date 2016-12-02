@@ -25,6 +25,8 @@ public class Team2Calibration extends OpMode {
     DcMotor intakeMotor;
     DcMotor catapultMotor;
 
+    Servo beaconServo;
+
     @Override
     public void init() {
         frontLeftMotor = hardwareMap.dcMotor.get("leftFront");
