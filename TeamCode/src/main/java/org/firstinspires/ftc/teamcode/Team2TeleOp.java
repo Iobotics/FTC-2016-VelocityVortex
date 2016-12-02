@@ -149,11 +149,11 @@ public class Team2TeleOp extends OpMode {
         if(gamepad1.y) {
             if(teamColor.equals(beaconColor)) {
                 while(beaconServo.getPosition() > 0) {
-                    beaconServo.setPosition(beaconServo.getPosition() - 0.005);
+                    beaconServo.setPosition(beaconServo.getPosition() - 0.01);
                 }
             } else {
                 while(beaconServo.getPosition() < 1) {
-                    beaconServo.setPosition(beaconServo.getPosition() + 0.005);
+                    beaconServo.setPosition(beaconServo.getPosition() + 0.01);
                 }
             }
             long initTime = System.currentTimeMillis();
@@ -162,9 +162,9 @@ public class Team2TeleOp extends OpMode {
         }
 
         telemetry.addData("Ticks", catapultMotor.getCurrentPosition() - catapultOffset);
-        telemetry.addData("Intake motor", intakeMotor.getPower());
         telemetry.addData("Beacon servo", beaconServo.getPosition());
         telemetry.addData("Beacon color", beaconColor);
+        telemetry.addData("Intake motor", intakeMotor.getPower());
         telemetry.update();
     }
 }

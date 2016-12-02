@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.DigitalChannelController;
+import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.vuforia.ar.pl.SystemTools;
@@ -31,6 +32,7 @@ public class Team2Auto extends LinearOpMode {
     final int LED_PORT = 3;
 
     final double BEACON_SERVO_HOME = 0.5; // TODO - Find position
+    final double LIGHT_THRESHOLD = 0.2; // TODO - Find threshold
 
     private enum FtcColor {
         RED,
@@ -50,9 +52,12 @@ public class Team2Auto extends LinearOpMode {
     DeviceInterfaceModule cdim;
     ColorSensor sensorRGB;
 
+    LightSensor lightSensor;
+
     int leftOffset;
     int catapultOffset;
     int intakeOffset;
+    int gyroOffset;
 
     long startTime;
 
@@ -69,7 +74,7 @@ public class Team2Auto extends LinearOpMode {
         catapultMotor = hardwareMap.dcMotor.get("catapult");
         intakeMotor = hardwareMap.dcMotor.get("intakeMotor");
 
-        gyro =  (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
+        gyro = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
 
         frontRightMotor.setDirection(DcMotor.Direction.REVERSE);
         backRightMotor.setDirection(DcMotor.Direction.REVERSE);
@@ -80,6 +85,8 @@ public class Team2Auto extends LinearOpMode {
 
         sensorRGB = hardwareMap.colorSensor.get("color");
 
+        lightSensor = hardwareMap.lightSensor.get("lightSensor");
+
         this.useEncoders();
 
         teamColor = FtcColor.BLUE;
@@ -87,28 +94,29 @@ public class Team2Auto extends LinearOpMode {
         time = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         gyro.setHeadingMode(ModernRoboticsI2cGyro.HeadingMode.HEADING_CARTESIAN);
         gyro.calibrate();
+
+        this.resetGyro();
     }
 
     private void robotMain() {
 
-        moveForward(25,1);
+        moveForward(44, 1.0);
 
         activateCatapult();
 
-        activateIntakeTime(2000,1);
+        activateIntakeTime(2000, 1);
 
         activateCatapult();
 
-        //moveForward(25,1);
+        turnUsingGyro(70, 1);
+
+        moveForward(57, 1);
 
         /* TODO
-        turnUsingGyro();
-
-        driveToBeacon();
 
         alignToBeacon();*/
 
-        pressBeacon();
+        //pressBeacon();
 
         this.requestOpModeStop();
     }
@@ -124,7 +132,10 @@ public class Team2Auto extends LinearOpMode {
     public void runOpMode() {
         robotInit();
 
-        waitForStart();
+        while(!isStarted()) {
+            telemetry.addData("gyro", gyro.isCalibrating() ? "calibrating" : this.getGyroHeading());
+            telemetry.update();
+        }
 
         robotMain();
 
@@ -132,6 +143,17 @@ public class Team2Auto extends LinearOpMode {
     }
 
 //*****************************************************************Utility*Methods***********************************************************
+    private void setPower(double power) {
+        this.setPower(power, power);
+    }
+
+    private void setPower(double leftPower, double rightPower) {
+        frontLeftMotor.setPower(leftPower);
+        frontRightMotor.setPower(rightPower);
+        backLeftMotor.setPower(leftPower);
+        backRightMotor.setPower(rightPower);
+    }
+
     private void useEncoders(){
         backLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -172,6 +194,14 @@ public class Team2Auto extends LinearOpMode {
         return beaconColor;
     }
 
+    private int getGyroHeading() {
+        return gyro.getIntegratedZValue() - gyroOffset;
+    }
+
+    private void resetGyro() {
+        gyroOffset = gyro.getIntegratedZValue();
+    }
+
     //*****************************************************OPMode*Methods****************************************************
 
     /**
@@ -183,19 +213,10 @@ public class Team2Auto extends LinearOpMode {
         int distanceToTravel = distance(targetDistance);
         leftOffset = frontLeftMotor.getCurrentPosition();
 
-
-
         while(opModeIsActive() && (frontLeftMotor.getCurrentPosition() - leftOffset) < distanceToTravel) {
-            frontLeftMotor.setPower(targetPower);
-            frontRightMotor.setPower(targetPower);
-            backLeftMotor.setPower(targetPower);
-            backRightMotor.setPower(targetPower);
+            this.setPower(targetPower);
         }
-        frontLeftMotor.setPower(0);
-        frontRightMotor.setPower(0);
-        backLeftMotor.setPower(0);
-        backRightMotor.setPower(0);
-
+        this.setPower(0);
     }
     /*
     Method that turns a ta rget amount of degrees at target power in target direction
@@ -205,28 +226,16 @@ public class Team2Auto extends LinearOpMode {
 
         if (direction == 'L') {
             while ((frontLeftMotor.getCurrentPosition() - leftOffset) < distanceToTurn) {
-                frontLeftMotor.setPower(targetPower);
-                backLeftMotor.setPower(targetPower);
-                frontRightMotor.setPower(-targetPower);
-                backRightMotor.setPower(-targetPower);
+                this.setPower(targetPower, -targetPower);
             }
-            frontLeftMotor.setPower(0);
-            frontRightMotor.setPower(0);
-            backLeftMotor.setPower(0);
-            backRightMotor.setPower(0);
+            this.setPower(0);
         }
 
         if (direction == 'R') {
             while ((frontLeftMotor.getCurrentPosition() - leftOffset) < distanceToTurn) {
-                frontLeftMotor.setPower(-targetPower);
-                backLeftMotor.setPower(-targetPower);
-                frontRightMotor.setPower(targetPower);
-                backRightMotor.setPower(targetPower);
+                this.setPower(-targetPower, targetPower);
             }
-            frontLeftMotor.setPower(0);
-            frontRightMotor.setPower(0);
-            backLeftMotor.setPower(0);
-            backRightMotor.setPower(0);
+            this.setPower(0);
         }
     }
 
@@ -234,11 +243,11 @@ public class Team2Auto extends LinearOpMode {
      * Method to fire the catapult
      */
     private void activateCatapult() {
+        catapultOffset = catapultMotor.getCurrentPosition();
         while(opModeIsActive() && (catapultMotor.getCurrentPosition() - catapultOffset) < CATAPULT_TICKS) {
             catapultMotor.setPower(1);
         }
         catapultMotor.setPower(0);
-        catapultOffset = catapultMotor.getCurrentPosition();
     }
 
     private void activateCatapultTime() {
@@ -260,15 +269,9 @@ public class Team2Auto extends LinearOpMode {
         startTime = System.currentTimeMillis();
 
         while((System.currentTimeMillis() - startTime) < targetTimeMil){
-            frontLeftMotor.setPower(targetPower);
-            backLeftMotor.setPower(targetPower);
-            backRightMotor.setPower(targetPower);
-            frontRightMotor.setPower(targetPower);
+            this.setPower(targetPower);
         }
-        frontLeftMotor.setPower(0);
-        frontRightMotor.setPower(0);
-        backLeftMotor.setPower(0);
-        backRightMotor.setPower(0);
+        this.setPower(0);
     }
 
     /**
@@ -292,29 +295,36 @@ public class Team2Auto extends LinearOpMode {
     private void activateIntakeTime(int targetDuration, double targetPower){
         startTime = System.currentTimeMillis();
 
-        while(opModeIsActive() && (System.currentTimeMillis() - startTime) < targetDuration){
-            intakeMotor.setPower(targetPower);
-        }
+        intakeMotor.setPower(targetPower);
+
+        while(opModeIsActive() && (System.currentTimeMillis() - startTime) < targetDuration){ }
+
         intakeMotor.setPower(0);
     }
 
     /**
      * Method that turns target degrees using the gyro sensor
-     * @param targetPower
      * @param targetDegrees
+     * @param targetPower
      */
-    private void turnUsingGyro(double targetPower, int targetDegrees){
-        gyro.calibrate();
+    private void turnUsingGyro(int targetDegrees, double targetPower){
+        this.resetGyro();
+
         if(targetDegrees > 180){
             targetPower = -targetPower;
         }
-        while(opModeIsActive() && gyro.getHeading() < targetDegrees){
-            frontLeftMotor.setPower(targetPower);
-            frontRightMotor.setPower(-targetPower);
-            backLeftMotor.setPower(targetPower);
-            backRightMotor.setPower(-targetPower);
+        this.setPower(targetPower, -targetPower);
+
+        while(opModeIsActive() && this.getGyroHeading() < targetDegrees){ }
+
+        this.setPower(0);
+    }
+
+    private void driveToBeacon() {
+        while(opModeIsActive() && lightSensor.getLightDetected() < LIGHT_THRESHOLD) {
+            this.setPower(0.5);
         }
-        gyro.calibrate();
+        this.setPower(0);
     }
 
     private void pressBeacon() {
