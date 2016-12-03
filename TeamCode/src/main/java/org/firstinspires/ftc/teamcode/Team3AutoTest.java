@@ -1,39 +1,43 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 /**
  * Created by Darren Kam on 9/28/2016.
  */
 @Autonomous(name = "Team 3: AutoTest", group = "Team 3")
 //@Disabled
-public class Team3AutoTest extends LinearOpMode {
-	Team3Robot _robot = new Team3Robot();
-    
-    public void runOpMode() {
-    	// Init code //
-    	_robot.init(hardwareMap, telemetry);
-    	_robot.setTeamColor(Team3Robot.FtcColor.RED);
+public class Team3AutoTest extends Team3Robot {    
+    @Override
+	public void robotInit() {
+		this.setTeamColor(FtcColor.RED);
+	}
+	
+	@Override
+	public void robotMain() {
+    	this.wait(Team3Robot.WAIT_PERIOD);
     	
-    	waitForStart();
+    	this.autoDriveDistance(Team3Robot.DISTANCE_TO_VORTEX, 1.0);
     	
-    	// Main code //
-    	_robot.wait(Team3Robot.WAIT_PERIOD);
-    	_robot.autoDriveDistance(Team3Robot.DISTANCE_TO_VORTEX, 1.0);
-    	_robot.shootBall();
-    	_robot.shootBall();
-    	_robot.autoTurnInPlace(240, 0.3); //TODO - _robot.autoTurnInPlace(-135, 1.0);
-    	_robot.autoDriveToBeacon();
-    	_robot.autoPressBeacon();
-        /*_robot.autoTurnInPlace(-90, 1.0);
-        _robot.autoDriveToBeacon();
-        _robot.autoPressBeacon();
-        _robot.autoTurnInPlace(-20, 1.0);
-        _robot.autoDriveDistance(10, 1.0);*/
+    	this.shootBall();
+    	this.shootBall();
     	
-    	// Stop code //
-    	_robot.stop();
-    }
+    	this.autoTurnInPlace(240, 0.3); //TODO - _robot.autoTurnInPlace(-135, 1.0);
+    	
+    	this.autoDriveToBeacon();
+    	this.autoPressBeacon();
+    	
+        /*this.autoTurnInPlace(-90, 1.0);
+         * 
+        this.autoDriveToBeacon();
+        this.autoPressBeacon();
+        
+        this.autoTurnInPlace(-20, 1.0);
+        
+        this.autoDriveDistance(10, 1.0);*/
+	}
+	
+	@Override
+	public void robotStop() { }
 }
 

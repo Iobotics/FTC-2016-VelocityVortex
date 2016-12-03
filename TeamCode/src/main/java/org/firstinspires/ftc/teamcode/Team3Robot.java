@@ -1,14 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
-
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.DigitalChannelController;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -19,7 +16,7 @@ import com.qualcomm.robotcore.util.Range;
 /**
  * Created by Darren Kam on 9/28/2016.
  */
-public class Team3Robot {
+public class Team3Robot extends LinearOpMode {
 
     public enum FtcColor {
         RED,
@@ -121,17 +118,10 @@ public class Team3Robot {
     LightSensor _lightSensor;
     
     ElapsedTime _time = new ElapsedTime(Resolution.MILLISECONDS);
-    
-    // OpMode members //
-    HardwareMap hardwareMap = null;
-    Telemetry telemetry = null;
 
     /************** OpMode methods **************/
 
-    protected void init(HardwareMap hardwareMap, Telemetry telemetry) {
-    	this.hardwareMap = hardwareMap;
-    	this.telemetry = telemetry;
-
+    private void baseInit() {
         _teamColor = FtcColor.NONE;
         _ledState = false;
 
@@ -187,9 +177,33 @@ public class Team3Robot {
         
         _time.reset();
     }
+    
+    private void baseMain() { }
 
-    protected void stop() {
+    private void baseStop() {
     	this.setPower(0);
+    	this.setIntakePower(0);
+    	this.setLiftPower(0);
+    }
+    
+    protected void robotInit() { }
+    
+    protected void robotMain() { }
+    
+    protected void robotStop() { }
+    
+    @Override
+    public void runOpMode() {
+    	this.baseInit();
+    	this.robotInit();
+    	
+    	this.waitForStart();
+    	
+    	this.baseMain();
+    	this.robotMain();
+    	
+    	this.baseStop();
+    	this.robotStop();
     }
 
     /************** Utility methods **************/
@@ -204,6 +218,18 @@ public class Team3Robot {
         _shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         
         _liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+    
+    private void runToPosition() {
+    	_leftFrontMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        _leftBackMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        _rightFrontMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        _rightBackMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        _intakeMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        _shooterMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        
+        _liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     /**
@@ -330,7 +356,6 @@ public class Team3Robot {
         return _lightSensor.getLightDetected() - _lightOffset;
     }
     
-    // TODO - Fix for negative light
     protected boolean isLineDetected() {
         return Math.abs(this.getLightReading()) > LIGHT_THRESHOLD;
     }
@@ -502,16 +527,22 @@ public class Team3Robot {
         if(power < 0) throw new IllegalArgumentException("power = " + power);
 
         this.resetGyro();
+        
+        if(degrees < -180) {
+        	degrees = (degrees % 360) + 360;
+        } else if(degrees > 180) {
+        	degrees = (degrees % 360) - 360;
+        }
 
         if(degrees < 0) {
+        	this.setPower(-power, power);
             while(this.getGyroHeading() > degrees) {
-                this.setPower(-power, power);
                 telemetry.addData("gyro", this.getGyroHeading());
                 telemetry.update();
             }
         } else {
+        	this.setPower(power, -power);
             while(this.getGyroHeading() < degrees) {
-                this.setPower(power, -power);
                 telemetry.addData("gyro", this.getGyroHeading());
                 telemetry.update();
             }
