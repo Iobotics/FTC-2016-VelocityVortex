@@ -35,8 +35,6 @@ public class Team1AutoRed extends LinearOpMode {
     int rightMotorOffset;
     int leftMotorOffset;
     int gyroHeadingOffset;
-
-    int targetRotations;
     int intakeOffset;
 
     public void robotInit() {
@@ -103,7 +101,7 @@ public class Team1AutoRed extends LinearOpMode {
     public void runOpMode() {
         this.robotInit();
 
-        waitForStart();
+        this.waitForStart();
 
         this.robotMain();
 
@@ -139,7 +137,7 @@ public class Team1AutoRed extends LinearOpMode {
         this.resetEncoders();
 
         int distanceInTicks = (int) (distance / INCHES_PER_TICK);
-        while (getLeftPosition() < distanceInTicks) {
+        while (opModeIsActive() && getLeftPosition() < distanceInTicks) {
             frontLeftMotor.setPower(-power);
             frontRightMotor.setPower(-power);
             backLeftMotor.setPower(-power);
@@ -188,7 +186,7 @@ public class Team1AutoRed extends LinearOpMode {
      * Shoots Catapult
      */
     private void activateCatapult(){
-        while (getCatapultPosition() < ENCODER_TICKS_PER_REV * 3) {
+        while (opModeIsActive() && getCatapultPosition() < ENCODER_TICKS_PER_REV * 3) {
             catapultMotor.setPower(1);
         }
         catapultMotor.setPower(0);
@@ -199,7 +197,7 @@ public class Team1AutoRed extends LinearOpMode {
     private void runIntake(){
         this.resetEncoders();
 
-        while(getIntakePosition() < INTAKE_TICKS){
+        while(opModeIsActive() && getIntakePosition() < INTAKE_TICKS){
             intakeMotor.setPower(-1);
         }
         intakeMotor.setPower(0);
@@ -215,7 +213,7 @@ public class Team1AutoRed extends LinearOpMode {
 
         this.resetGyroHeading();
 
-        while (this.getGyroHeading() < degrees) {
+        while (opModeIsActive() && this.getGyroHeading() < degrees) {
             frontLeftMotor.setPower(power);
             frontRightMotor.setPower(-power);
             backLeftMotor.setPower(power);
@@ -227,7 +225,7 @@ public class Team1AutoRed extends LinearOpMode {
     private  void ballHit(){
         this.resetEncoders();
 
-        while (getLeftPosition() < 3100){
+        while (opModeIsActive() && getLeftPosition() < 3100){
             frontLeftMotor.setPower(-.3);
             backLeftMotor.setPower(-.3);
         }
@@ -237,7 +235,7 @@ public class Team1AutoRed extends LinearOpMode {
 
         this.resetEncoders();
 
-        while (getLeftPosition() > -3100) {
+        while (opModeIsActive() && getLeftPosition() > -3100) {
             frontLeftMotor.setPower(.3);
             backLeftMotor.setPower(.3);
         }

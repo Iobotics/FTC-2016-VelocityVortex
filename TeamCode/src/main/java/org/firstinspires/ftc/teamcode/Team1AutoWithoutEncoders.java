@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -15,7 +16,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  */
 
 @Autonomous(name = "Team 1: Autonomous w/o encoders", group = "Team 1")
-//@Disabled
+@Disabled
 public class Team1AutoWithoutEncoders extends OpMode {
 
     final int    ENCODER_TICKS_PER_REV = 1120; // Neverest 40

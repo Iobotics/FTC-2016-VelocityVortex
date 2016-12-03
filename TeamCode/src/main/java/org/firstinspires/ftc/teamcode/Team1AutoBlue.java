@@ -7,9 +7,6 @@ import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.GyroSensor;
-import com.qualcomm.robotcore.util.Range;
 
 /**
  * Created by Teacher on 9/28/2016.
@@ -38,8 +35,6 @@ public class Team1AutoBlue extends LinearOpMode {
     int rightMotorOffset;
     int leftMotorOffset;
     int gyroHeadingOffset;
-
-    int targetRotations;
     int intakeOffset;
 
     public void robotInit() {
@@ -106,7 +101,7 @@ public class Team1AutoBlue extends LinearOpMode {
     public void runOpMode() {
         this.robotInit();
 
-        waitForStart();
+        this.waitForStart();
 
         this.robotMain();
 
