@@ -77,23 +77,19 @@ public class Team1AutoRed extends LinearOpMode {
 
         this.moveRobot(50, .3); //Right next to cat ball
 
-/* Activate and delete other after that in not finished yet
-
         this.ballHit();
 
         this.moveRobot(40, .3);
-*/
+
+        /*
         this.rotate(-35, .3);
 
         this.moveRobot(66, -.3);
 
-        //this.rotate(90, 0.3); //TODO - Eventual Auto
+        this.pressButton(); // button press blue
 
-        //this.moveRobot(50, .3); //50 in forward
-
-        //this.pressButton(); // button press blue
-
-        //this.move Robot(50, -.3); // 50 in backwards
+        this.move Robot(50, -.3); // 50 in backwards
+    */
     }
 
     public void robotStop() {

@@ -70,7 +70,7 @@ public class Team1AutoBlue extends LinearOpMode {
 
     public void robotMain() {
 
-        this.moveRobot(50, 0.3);
+        this.moveRobot(60, 0.3);
 
         this.activateCatapult(); //Shoots ball
 
@@ -78,23 +78,21 @@ public class Team1AutoBlue extends LinearOpMode {
 
         this.activateCatapult(); // Shoots another ball
 
-        this.moveRobot(50, .3); //Right next to cat ball
-/* Activate and delete other after that in not finished yet
+        this.moveRobot(40, .3); //Right next to cat ball
+
         this.ballHit();
 
         this.moveRobot(40, .3);
-*/
+
+        /*
         this.rotate(35, .3);
 
         this.moveRobot(66, -.3);
 
-        //this.rotate(90, 0.3); //TODO - Eventual Auto
+        this.pressButton(); // button press blue
 
-        //this.moveRobot(50, .3); //50 in forward
-
-        //this.pressButton(); // button press blue
-
-        //this.move Robot(50, -.3); // 50 in backwards
+        this.move Robot(50, -.3); // 50 in backwards
+    */
     }
 
     public void robotStop() {
@@ -133,6 +131,8 @@ public class Team1AutoBlue extends LinearOpMode {
      *  @return CatapultEncoderPosition
      */
     private int getCatapultPosition() {return (catapultMotor.getCurrentPosition() - catapultOffset); }
+
+    private int getRightPosition() {return  (-frontRightMotor.getCurrentPosition()) - rightMotorOffset;}
 
     /**
      * Moves robot in a line
@@ -231,23 +231,23 @@ public class Team1AutoBlue extends LinearOpMode {
     private  void ballHit(){
         this.resetEncoders();
 
-        while (getLeftPosition() < 3100){
-            frontLeftMotor.setPower(.3);
-            backLeftMotor.setPower(.3);
+        while (getRightPosition() < 3100){
+            frontRightMotor.setPower(-.3);
+            backRightMotor.setPower(-.3);
         }
 
-        frontLeftMotor.setPower(0);
-        backLeftMotor.setPower(0);
+        frontRightMotor.setPower(0);
+        backRightMotor.setPower(0);
 
         this.resetEncoders();
 
-        while (getLeftPosition() > -3100) {
-            frontLeftMotor.setPower(-.3);
-            backLeftMotor.setPower(-.3);
+        while (getRightPosition() > -3100) {
+            frontRightMotor.setPower(.3);
+            backRightMotor.setPower(.3);
         }
 
-        frontLeftMotor.setPower(0);
-        backLeftMotor.setPower(0);
+        frontRightMotor.setPower(0);
+        backRightMotor.setPower(0);
     }
 
     protected void calibrateGyro() {
