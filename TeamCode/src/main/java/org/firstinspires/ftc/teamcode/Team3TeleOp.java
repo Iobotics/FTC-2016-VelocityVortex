@@ -46,32 +46,23 @@ public class Team3TeleOp extends OpMode {
     final static double REGULATOR_SERVO_HOME = 0.7;
 
     final static double HALF_SPEED = 0.5;
+    final static double FULL_SPEED = 1.0;
     
     final static int REGULATOR_TIME = 800;
     
-    final static int DISTANCE_OFFSET      = 8;
+    final static int DISTANCE_OFFSET      = 8; // TODO - Find offset
     final static int SHOOTER_ROTATION 	  = 720;  // TODO - Find shooter ticks
 
     // TODO - Find offsets //
     //final static double LEFT_POWER_OFFSET  = 0.27;
     //final static double RIGHT_POWER_OFFSET = 0.40;
-    final static int LED_PORT = 5;
     
     final static int LIFT_MINIMUM = 0;
-    final static int LIFT_MAXIMUM = 500; // TODO - Find lift value
+    final static int LIFT_MAXIMUM = 2000; // TODO - Find lift value
     
     final static double LIFT_POWER = 0.5;
     
-    // Light sensor threshold //
-    final static double LIGHT_THRESHOLD = 0.2;
-    
     // Field constants //
-    final static double DISTANCE_TO_VORTEX = 26 + DISTANCE_OFFSET;
-    final static double DISTANCE_TO_BEACON = 4 + DISTANCE_OFFSET;
-    final static int BEACON_DEGREES = 30;
-
-    final static double LINE_POWER = 0.3;
-    final static double BEACON_SPEED = -0.5;
     final static int WAIT_PERIOD = 250;
     
     // Member variables //
@@ -205,7 +196,7 @@ public class Team3TeleOp extends OpMode {
 
         // Start button to toggle half speed
         if(gamepad1.start && !_slowButton) {
-        	speedMultiplier = Team3Robot.HALF_SPEED;
+        	speedMultiplier = ((speedMultiplier != HALF_SPEED) ? HALF_SPEED : FULL_SPEED);
         	_slowButton = true;
         } else if(!gamepad1.start) _slowButton = false;
     }
@@ -220,18 +211,6 @@ public class Team3TeleOp extends OpMode {
         _shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         
         _liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    }
-    
-    private void runToPosition() {
-    	_leftFrontMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        _leftBackMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        _rightFrontMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        _rightBackMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        _intakeMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        _shooterMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        
-        _liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     /**
@@ -303,9 +282,9 @@ public class Team3TeleOp extends OpMode {
     protected void setLiftPower(double power) {
     	power = Range.clip(power, -1.0, 1.0);
 
-        if((this.getLiftPosition() <= 0 && power < 0) || (this.getLiftPosition() >= LIFT_MAXIMUM && power > 0)) {
+        /*if((this.getLiftPosition() <= 0 && power < 0) || (this.getLiftPosition() >= LIFT_MAXIMUM && power > 0)) {
             power = 0;
-        }
+        }*/
 
         _liftMotor.setPower(power);
     }
@@ -325,25 +304,9 @@ public class Team3TeleOp extends OpMode {
     protected double getRightServo() {
         return _rightBeaconServo.getPosition();
     }
-    
-    protected void setTeamColor(FtcColor teamColor) {
-        _teamColor = teamColor;
-    }
-
-    protected int getLeftMotor() {
-        return _leftFrontMotor.getCurrentPosition() - _leftOffset;
-    }
-
-    protected int getRightMotor() {
-        return _rightFrontMotor.getCurrentPosition() - _rightOffset;
-    }
 
     protected int getShooterPosition() {
         return _shooterMotor.getCurrentPosition() - _shooterOffset;
-    }
-
-    protected int getIntakePosition() {
-        return _intakeMotor.getCurrentPosition() - _intakeOffset;
     }
     
     protected int getLiftPosition() {

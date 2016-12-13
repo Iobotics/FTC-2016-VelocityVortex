@@ -22,19 +22,19 @@ public class Team3AutoTest extends Team3Robot {
     	this.shootBall();
     	this.shootBall();
     	
-    	this.autoTurnInPlace(240, 0.3); //TODO - _robot.autoTurnInPlace(-135, 1.0);
+    	this.autoTurnInPlace(120, 0.3); //TODO - _robot.autoTurnInPlace(-135, 1.0);
     	
     	this.autoDriveToBeacon();
     	this.autoPressBeacon();
     	
-        /*this.autoTurnInPlace(-90, 1.0);
-         * 
+        /*this.autoTurnInPlace(90, 0.3);
+
         this.autoDriveToBeacon();
         this.autoPressBeacon();
         
-        this.autoTurnInPlace(-20, 1.0);
+        this.autoTurnInPlace(37, 1.0);
         
-        this.autoDriveDistance(10, 1.0);*/
+        this.autoDriveDistance(20, 1.0);*/
 	}
 	
 	@Override

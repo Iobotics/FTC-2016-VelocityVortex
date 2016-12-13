@@ -50,6 +50,7 @@ public class Team3Calibration extends OpMode {
     final static double REGULATOR_SERVO_HOME = 0.7;
 
     final static double HALF_SPEED = 0.5;
+    final static double FULL_SPEED = 1.0;
     
     final static int REGULATOR_TIME = 800;
     
@@ -62,7 +63,7 @@ public class Team3Calibration extends OpMode {
     final static int LED_PORT = 5;
     
     final static int LIFT_MINIMUM = 0;
-    final static int LIFT_MAXIMUM = 500; // TODO - Find lift value
+    final static int LIFT_MAXIMUM = 2000; // TODO - Find lift value
     
     final static double LIFT_POWER = 0.5;
     
@@ -239,7 +240,7 @@ public class Team3Calibration extends OpMode {
 
         // Start button to toggle half speed
         if(gamepad1.start && !_slowButton) {
-            speedMultiplier = Team3Robot.HALF_SPEED;
+            speedMultiplier = ((speedMultiplier != HALF_SPEED) ? HALF_SPEED : FULL_SPEED);
             _slowButton = true;
         } else if(!gamepad1.start) _slowButton = false;
 
@@ -248,6 +249,13 @@ public class Team3Calibration extends OpMode {
         telemetry.addData("Lift pos", this.getLiftPosition());
         telemetry.addData("Shooter pos", this.getShooterPosition());
         telemetry.addData("Gyro", this.getGyroHeading());
+
+        telemetry.addData("leftFront", _leftFrontMotor.getCurrentPosition());
+        telemetry.addData("leftBack", _leftBackMotor.getCurrentPosition());
+        telemetry.addData("rightFront", _rightFrontMotor.getCurrentPosition());
+        telemetry.addData("rightBack", _rightBackMotor.getCurrentPosition());
+        telemetry.addData("Left Y", gamepad1.left_stick_y);
+        telemetry.addData("Right Y", gamepad1.right_stick_y);
         telemetry.update();
     }
     
@@ -346,9 +354,9 @@ public class Team3Calibration extends OpMode {
     protected void setLiftPower(double power) {
     	power = Range.clip(power, -1.0, 1.0);
 
-        if((this.getLiftPosition() <= 0 && power < 0) || (this.getLiftPosition() >= LIFT_MAXIMUM && power > 0)) {
+        /*if((this.getLiftPosition() <= 0 && power < 0) || (this.getLiftPosition() >= LIFT_MAXIMUM && power > 0)) {
             power = 0;
-        }
+        }*/
 
         _liftMotor.setPower(power);
     }
